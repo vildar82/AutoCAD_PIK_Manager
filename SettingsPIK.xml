@@ -1,0 +1,168 @@
+﻿<?xml version="1.0"?>
+<SettingsPikFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+	<ProfileName>ПИК</ProfileName>
+	<!-- Путь к папке локальных настроек. Буква диска определяется программно. -->	
+	<!-- <LocalSettingsPath>Autodesk\AutoCAD\Pik\Settings</LocalSettingsPath> -->
+	<!-- Путь к папке настроек на сервере. Путь к папке CAD_Settings определяется отдельно -->
+	<ServerSettingsPath>z:\AutoCAD_server\Адаптация</ServerSettingsPath>
+	<!-- Путь к файлу со списком ФИО и соответствующих шифров отделов. -->
+	<PathToUserList>z:\Settings\Users\UserList2.xlsx</PathToUserList>
+	<PathVariables> 
+		<!-- Пути доступа к всомогательным файлам. -->
+		<Supports>      
+			<Variable>
+				<Name>SupportPaths</Name>
+				<Value>Fonts</Value>
+				<!-- IsReWrite: true - перезаписывает существующее значение. false - добавляет значение к существующему. -->
+				<IsReWrite>false</IsReWrite>
+			</Variable>
+			<Variable>
+				<Name>SupportPaths</Name>
+				<Value>Support</Value>
+				<IsReWrite>false</IsReWrite>
+			</Variable>
+		</Supports>
+		<!-- Пути к папке конфигурации принтеров pc3. -->
+		<PrinterConfigPaths>
+			<Variable>
+				<Name>PrinterConfigPaths</Name>
+				<Value>Plotters</Value>
+				<IsReWrite>false</IsReWrite>
+			</Variable>
+		</PrinterConfigPaths>
+		<!-- Пути к папке настроек форматов листов в pmp файлах. -->
+		<PrinterDescPaths>
+			<Variable>
+				<Name>PrinterDescPaths</Name>
+				<Value>Plotters\PMP files</Value>
+				<IsReWrite>false</IsReWrite>
+			</Variable>
+		</PrinterDescPaths>
+		<!-- Пути к папке с файлами стилей печати ctb, stb. -->
+		<PrinterPlotStylePaths>
+			<Variable>
+				<Name>PrinterPlotStylePaths</Name>
+				<Value>Plotters\Plot Styles</Value>
+				<IsReWrite>false</IsReWrite>
+			</Variable>
+		</PrinterPlotStylePaths>
+		<!-- Путь к папке инструментальных палитр. -->
+		<ToolPalettePaths>						
+			<Variable>
+				<Name>ToolPalettePaths</Name>
+				<Value>ToolPalette</Value>
+				<!-- Оставляем только нашу папку с палитрами. все инструменты пользователей, если они были, переносим в наши палитры. -->
+				<IsReWrite>true</IsReWrite>
+			</Variable>
+		</ToolPalettePaths>
+		<!-- Папка с файлами шаблонов dwt.-->		
+		<!-- +\ШифрОтдела. Программно к этому пути будет добавлена приставка с папкой шифра отдела. -->
+		<TemplatePath>
+			<Name>TemplatePath</Name>
+			<Value>Template</Value>
+			<!-- Оставляем только нашу папку с шаблонами. -->
+			<IsReWrite>true</IsReWrite>
+		</TemplatePath>
+		<!-- Папка с файлами шаблонов подшивки dst. -->
+		<!-- +\ШифрОтдела. -->
+		<SheetSetTemplatePath>
+			<Name>SheetSetTemplatePath</Name>
+			<Value>Sheet set</Value>
+			<!-- Оставляем только нашу папку. -->
+			<IsReWrite>true</IsReWrite>		
+		</SheetSetTemplatePath>
+		<!-- Файл шаблона dwt для быстрого создания файлов БСОЗДАТЬ. -->
+		<!-- +\ШифрОтдела\ШифрОтдела.dwt -->
+		<QNewTemplateFile>
+			<Name>QNewTemplateFile</Name>
+			<Value>Template</Value>
+			<IsReWrite>true</IsReWrite>
+		</QNewTemplateFile>
+		<!-- Шаблон по умолчанию для переопределения набора параметров для публикации параметро. -->
+		<!-- Пока не используется -->
+		<PageSetupOverridesTemplateFile>
+			<Name>PageSetupOverridesTemplateFile</Name>
+			<Value>Sheet set</Value>
+			<IsReWrite>true</IsReWrite>
+		</PageSetupOverridesTemplateFile>
+	</PathVariables>
+	<!-- Установка системных переменных. -->
+	<!-- Внимание! Записывать только те переменные, которые хранятся в реестре. Т.к. программа выполняется при инициализации AutoCAD. -->
+	<SystemVariables>
+		<SystemVariable>
+			<!-- Альтернативный шрифт. -->
+			<Name>FONTALT</Name>
+			<Value>ISOCPEUR</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>
+		<SystemVariable>
+			<!-- Доверенные местоположения файлов программ, плагинов, загружаемых без вывода предупреждений в AutoCAD. -->
+			<Name>TRUSTEDPATHS</Name>
+			<Value>Script...;Dll...</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>		
+		<SystemVariable>
+			<!-- Отсчет смещения чертежа относительно кромок листа бумаги. -->
+			<!-- Для вставки блока рамки в точку 0,0 пространства листа. -->
+			<Name>PlotOffset</Name>
+			<Value>1</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>		
+		<SystemVariable>
+			<!-- Сохранение изменений, внесенных в рабочем пространстве, при переходе к другому рабочему пространству. -->
+			<Name>WSAUTOSAVE</Name>
+			<Value>1</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>
+		<SystemVariable>
+			<!-- Чертеж регенерируется только при первом заходе на каждую из вкладок. -->
+			<Name>LAYOUTREGENCTL</Name>
+			<Value>2</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>
+		<SystemVariable>
+			<!-- Вновь заданный масштаб аннотаций не добавляется к аннотативным объектам. -->
+			<Name>ANNOAUTOSCALE</Name>
+			<Value>0</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>
+		<SystemVariable>
+			<!-- При привязке значение координаты Z указанной точки заменяется значением уровня (ELEVATION), установленным для текущей ПСК. -->
+			<Name>OSNAPZ</Name>
+			<Value>1</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>
+		<SystemVariable>
+			<!-- Отображает диалоговые окна. -->
+			<Name>FILEDIA</Name>
+			<Value>1</Value>
+			<IsReWrite>true</IsReWrite>
+		</SystemVariable>		
+	</SystemVariables>
+	<!-- Группы отделов (Шифры отделов). -->
+	<!-- Не используется. Используется файл UserList2.xlsx. -->
+	<Groups>
+		<Group>
+			<Name>Общий отдел</Name>
+			<Code>О_о</Code>
+		</Group>
+		<Group>
+			<Name>Архитектурная мастерская новых разработок</Name>
+			<Code>АР</Code>
+		</Group>
+		<Group>
+			<Name>Архитектурная мастерская крупнопанельного домостроения</Name>
+			<Code>АР</Code>
+		</Group>
+		<Group>
+			<Name>Архитектурная мастерская объемно-планировочных решений</Name>
+			<Code>АР</Code>
+		</Group>
+	</Groups>
+	<!-- Если не будет определен шифр отдела, то будет выведено сообщение об ошибке с преложением отправить письмо CAD-менеджеру. -->
+	<!-- При получении такого письма, нужно добавить проектировщика в файл UserList2.xlsx. -->
+ <NameCADManager>Вильдару Хисяметдинову</NameCADManager>
+  <MailCADManager>KhisyametdinovVT@pik.ru</MailCADManager>
+<SubjectMail>Нет рабочей группы</SubjectMail>
+  <BodyMail>Моей учетной записи нет в списке пользователей: </BodyMail>
+</SettingsPikFile>
