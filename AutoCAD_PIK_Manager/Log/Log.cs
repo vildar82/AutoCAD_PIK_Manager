@@ -19,6 +19,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using AutoCAD_PIK_Manager.Settings;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -42,12 +43,13 @@ namespace AutoCAD_PIK_Manager
          _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
 
          string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-         //var config = new XmlLoggingConfiguration(assemblyFolder + "\\NLog.config", true);
          var config = new LoggingConfiguration();
+
+         string serverLogPath = PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
 
          var fileServerTarget = new FileTarget();
          config.AddTarget("serverFile", fileServerTarget);
-         fileServerTarget.FileName = string.Format(@"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs\{0}-{1}.log", Environment.UserName, Environment.MachineName);
+         fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
          fileServerTarget.Layout = "${longdate}_${level}:  ${message}";
          fileServerTarget.ArchiveAboveSize = 2097152;
          fileServerTarget.MaxArchiveFiles = 1;
@@ -55,6 +57,7 @@ namespace AutoCAD_PIK_Manager
 
          var rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
          config.LoggingRules.Add(rule);
+
 
          var fileLocalTarget = new FileTarget();
          config.AddTarget("localFile", fileLocalTarget);

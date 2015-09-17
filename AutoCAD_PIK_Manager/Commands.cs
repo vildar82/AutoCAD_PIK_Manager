@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using AutoCAD_PIK_Manager.Model;
 using AutoCAD_PIK_Manager.Settings;
+using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
 
 [assembly: ExtensionApplication(typeof(AutoCAD_PIK_Manager.Commands))]
@@ -14,14 +15,13 @@ namespace AutoCAD_PIK_Manager
    public class Commands : IExtensionApplication
    {
       public void Initialize()
-      {
+      {         
          // Исключения в Initialize проглотит автокад, без выдачи сообщений.
          // Програ загружена в автокад.
-         // Запись в лог
-         Log.Info("AutoCAD_PIK_Manager загружен - Initialize() start.");
-
          PikSettings.LoadSettings();
-         Log.Info("Настройки загружены LoadSettings() из {0}", PikSettings.CurDllLocation);
+         // Запись в лог                  
+         Log.Info("AutoCAD_PIK_Manager загружен. Настройки загружены из {0}", PikSettings.CurDllLocation);
+         Log.Info("Версия автокада - {0}", Application.Version.ToString());
 
          // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
          if (!IsProcessAny())

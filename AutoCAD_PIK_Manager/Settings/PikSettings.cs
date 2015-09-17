@@ -141,10 +141,12 @@ namespace AutoCAD_PIK_Manager.Settings
                   numberRow++;
                }
             }
+            Log.Info("{0} Группа - {1}", Environment.UserName,nameGroup);
          }
          catch (Exception ex)
          {
             Log.Error("Не определена рабочая группа (Шифр отдела). " + Environment.UserName, ex);
+            throw;
          }
          //if (nameGroup == "")
          //{

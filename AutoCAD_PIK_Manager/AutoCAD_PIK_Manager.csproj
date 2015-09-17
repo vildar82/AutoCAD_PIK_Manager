@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutoCAD_PIK_Manager</RootNamespace>
     <AssemblyName>AutoCAD_PIK_Manager</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -68,7 +68,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.1.1\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.1.1\lib\net40\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Commands.cs" />
     <Compile Include="Log\Log.cs" />
+    <Compile Include="Model\Env.cs" />
     <Compile Include="Model\Profile.cs" />
     <Compile Include="Model\ToolPaletteReplacePath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,13 +117,10 @@
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
     <None Include="Graph1.dgml" />
+    <None Include="packages.config" />
     <None Include="SettingsPIK.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.ApplicationServices;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
@@ -25,6 +27,13 @@ namespace AutoCAD_PIK_Manager.Model
          _settGroupFile = PikSettings.GroupFileSettings;
          _userGroup = PikSettings.UserGroup;
          _localSettingsFolder = PikSettings.LocalSettingsFolder;
+      }
+
+      static public void AddPath(string var, string path)
+      {
+         StringBuilder oldpath = new StringBuilder(Env.GetEnv(var));
+         oldpath.Append(";"); oldpath.Append(path);
+         Env.SetEnv(var, oldpath.ToString());
       }
 
       /// <summary>
@@ -72,26 +81,44 @@ namespace AutoCAD_PIK_Manager.Model
          catch { }
 
          // PrinterConfigPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
+         //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), Env.Ver == 20? preference.Files.PrinterConfigPath: Env.GetEnv("PrinterConfigDir"), "");
          try
          {
-            preference.Files.PrinterConfigPath = path;
+            if (Env.Ver == 20)
+            {
+               preference.Files.PrinterConfigPath = path;
+               Log.Info("preference.Files.PrinterConfigPath = {0}", path);
+            }
+            else
+            {
+               Env.SetEnv("PrinterConfigDir", path);
+               Log.Info("Env.SetEnv PrinterConfigDir {0}", path);
+            }
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path); }
 
          // PrinterDescPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
+         //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), Env.Ver == 20 ? preference.Files.PrinterDescPath : Env.GetEnv("PrinterDescDir") , "");
          try
          {
-            preference.Files.PrinterDescPath = path;
+            if (Env.Ver == 20)
+               preference.Files.PrinterDescPath = path;
+            else
+               Env.SetEnv("PrinterDescDir", path);                        
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterDescDir", path); }
 
          // PrinterPlotStylePaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
+         //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), Env.Ver == 20 ? preference.Files.PrinterStyleSheetPath : Env.GetEnv("PrinterStyleSheetDir"), "");
          try
          {
-            preference.Files.PrinterStyleSheetPath = path;
+            if (Env.Ver == 20)
+               preference.Files.PrinterStyleSheetPath = path;
+            else
+               Env.SetEnv("PrinterStyleSheetDir", path);            
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path); }
 
