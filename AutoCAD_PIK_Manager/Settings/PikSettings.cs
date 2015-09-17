@@ -51,6 +51,7 @@ namespace AutoCAD_PIK_Manager.Settings
          _userGroup = getUserGroup(_settingsPikFile.PathToUserList);
          _userGroups = getUserGroups();
          _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
+         if (_settingsGroupFile != null) Log.Info("Загружены настройки группы {0} из {1}", UserGroup, "SettingsGroup.xml");
       }
       internal static void UpdateSettings()
       {
@@ -64,12 +65,14 @@ namespace AutoCAD_PIK_Manager.Settings
             var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
             localSettDir.Create();
             copyFilesRecursively(serverSettDir, localSettDir);
+            // Копирование flexBrics если нужно
+            FlexBrics.Copy();
          }
          else
          {
             Log.Error("Недоступна папка настроек на сервере {0}", ServerSettingsFolder);
          }
-      }
+      }     
 
       /// <summary>
       /// Копирование файлов настроек с сервера

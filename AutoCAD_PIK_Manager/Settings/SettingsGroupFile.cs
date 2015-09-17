@@ -13,6 +13,7 @@ namespace AutoCAD_PIK_Manager.Settings
       public PathVariable PathVariables { get; set; }// Пути доступа (support paths, printers, templates)
 
       public List<SystemVariable> SystemVariables { get; set; }//Системные переменные
-      public bool SetupFlexBrics { get; set; }
+      public bool FlexBricsSetup { get; set; }
+      public string FlexBricsFolder { get; set; }
    }
 }

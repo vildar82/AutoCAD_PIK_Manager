@@ -13,14 +13,14 @@ using Autodesk.AutoCAD.Runtime;
 namespace AutoCAD_PIK_Manager
 {
    public class Commands : IExtensionApplication
-   {
+   {      
       public void Initialize()
-      {         
+      {
          // Исключения в Initialize проглотит автокад, без выдачи сообщений.
          // Програ загружена в автокад.
          PikSettings.LoadSettings();
          // Запись в лог                  
-         Log.Info("AutoCAD_PIK_Manager загружен. Настройки загружены из {0}", PikSettings.CurDllLocation);
+         Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
          Log.Info("Версия автокада - {0}", Application.Version.ToString());
 
          // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
@@ -53,8 +53,12 @@ namespace AutoCAD_PIK_Manager
       [CommandMethod("TestSettingsGroupFile")]
       public void TestSettingsGroupFile()
       {
-         PikSettings.GroupFileSettings.SetupFlexBrics = true;
-         SerializerXml ser = new SerializerXml(Path.Combine(PikSettings.LocalSettingsFolder, PikSettings.UserGroup, "SettingsGroup.xml"));
+         SettingsGroupFile setGroup = new SettingsGroupFile();
+         setGroup.FlexBricsSetup = true;
+         setGroup.FlexBricsFolder = @"z:\AutoCAD_server\flexBrics";
+         string fileGroup = Path.Combine(PikSettings.CurDllLocation, PikSettings.UserGroup, "SettingsGroup.xml");         
+         SerializerXml ser = new SerializerXml(fileGroup);
+         ser.SerializeList(setGroup);
       }
       private static bool IsProcessAny()
       {

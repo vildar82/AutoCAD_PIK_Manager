@@ -73,7 +73,7 @@ namespace AutoCAD_PIK_Manager.Model
          string path = string.Empty;
 
          // SupportPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile == null ? null : _settGroupFile.PathVariables.Supports), preference.Files.SupportPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
          try
          {
             preference.Files.SupportPath = path;
@@ -82,48 +82,42 @@ namespace AutoCAD_PIK_Manager.Model
 
          // PrinterConfigPaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), Env.Ver == 20? preference.Files.PrinterConfigPath: Env.GetEnv("PrinterConfigDir"), "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), Env.Ver == 20 ? preference.Files.PrinterConfigPath : Env.GetEnv("PrinterConfigDir"), "");
          try
          {
             if (Env.Ver == 20)
-            {
                preference.Files.PrinterConfigPath = path;
-               Log.Info("preference.Files.PrinterConfigPath = {0}", path);
-            }
             else
-            {
                Env.SetEnv("PrinterConfigDir", path);
-               Log.Info("Env.SetEnv PrinterConfigDir {0}", path);
-            }
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path); }
 
          // PrinterDescPaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), Env.Ver == 20 ? preference.Files.PrinterDescPath : Env.GetEnv("PrinterDescDir") , "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths), Env.Ver == 20 ? preference.Files.PrinterDescPath : Env.GetEnv("PrinterDescDir"), "");
          try
          {
             if (Env.Ver == 20)
                preference.Files.PrinterDescPath = path;
             else
-               Env.SetEnv("PrinterDescDir", path);                        
+               Env.SetEnv("PrinterDescDir", path);
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterDescDir", path); }
 
          // PrinterPlotStylePaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), Env.Ver == 20 ? preference.Files.PrinterStyleSheetPath : Env.GetEnv("PrinterStyleSheetDir"), "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths), Env.Ver == 20 ? preference.Files.PrinterStyleSheetPath : Env.GetEnv("PrinterStyleSheetDir"), "");
          try
          {
             if (Env.Ver == 20)
                preference.Files.PrinterStyleSheetPath = path;
             else
-               Env.SetEnv("PrinterStyleSheetDir", path);            
+               Env.SetEnv("PrinterStyleSheetDir", path);
          }
          catch { con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path); }
 
          // ToolPalettePath
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
          try
          {
             preference.Files.ToolPalettePath = path;
@@ -131,21 +125,31 @@ namespace AutoCAD_PIK_Manager.Model
          catch { con.OpenSubsection("General").WriteProperty("ToolPalettePath", path); }
 
          //TemplatePath
-         preference.Files.TemplateDwgPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup) + "\\";
+         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
+         if (Directory.Exists(path))         
+            preference.Files.TemplateDwgPath = path + "\\";
+
          //PageSetupOverridesTemplateFile
-         string templateDwg = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
-         preference.Files.PageSetupOverridesTemplateFile = templateDwg; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);
-         //QNewTemplateFile
-         preference.Files.QNewTemplateFile = templateDwg;
+         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
+         if (File.Exists(path))
+         {            
+            preference.Files.PageSetupOverridesTemplateFile = path; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);                                                                           
+            preference.Files.QNewTemplateFile = path;
+         }
 
          //SheetSetTemplatePath
-         con.OpenSubsection("General").WriteProperty("SheetSetTemplatePath", Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup));
+         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
+         if (Directory.Exists(path))
+            Env.SetEnv("SheetSetTemplatePath", path);
+         //con.OpenSubsection("General").WriteProperty("SheetSetTemplatePath", path);
          //con.OpenSubsection("General").WriteProperty("TemplatePath", _settingsPIK.PathVariables.SheetSetTemplatePath.Value + _userGroup);
 
          foreach (var sysVar in _settPikFile.SystemVariables)
          {
             SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
          }
+
+         FlexBrics.Setup();
       }
 
       private List<Variable> GetPaths(List<Variable> pathVars1, List<Variable> pathVars2)
@@ -173,10 +177,13 @@ namespace AutoCAD_PIK_Manager.Model
             foreach (var setting in settings)
             {
                string valuePath = Path.Combine(_localSettingsFolder, setting.Value, group);
-               isWrite = setting.IsReWrite;
-               if ((!path.ToUpper().Contains(valuePath.ToUpper())) || (isWrite))
+               if (Directory.Exists(valuePath))
                {
-                  fullPath += valuePath + ";";
+                  isWrite = setting.IsReWrite;
+                  if ((!path.ToUpper().Contains(valuePath.ToUpper())) || (isWrite))
+                  {
+                     fullPath += valuePath + ";";
+                  }
                }
             }
             if (!isWrite)
