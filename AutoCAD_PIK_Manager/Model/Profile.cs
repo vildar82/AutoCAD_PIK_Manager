@@ -8,7 +8,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using OfficeOpenXml;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
-namespace AutoCAD_PIK_Manager
+namespace AutoCAD_PIK_Manager.Model
 {
    /// <summary>
    /// Настройка профиля ПИК в автокаде.
@@ -17,7 +17,7 @@ namespace AutoCAD_PIK_Manager
    {
       private string _profileName;
       SettingsPikFile _settPikFile;
-      SettingsGroupFile _setttGroupFile;
+      SettingsGroupFile _settGroupFile;
       private string _userGroup;
       private string _localSettingsFolder;
 
@@ -25,7 +25,7 @@ namespace AutoCAD_PIK_Manager
       {
          _settPikFile = PikSettings.PikFileSettings;
          _profileName = _settPikFile.ProfileName;
-         _setttGroupFile = PikSettings.GroupFileSettings;
+         _settGroupFile = PikSettings.GroupFileSettings;
          _userGroup = PikSettings.UserGroup;
          _localSettingsFolder = PikSettings.LocalSettingsFolder; 
       }
@@ -38,7 +38,7 @@ namespace AutoCAD_PIK_Manager
          string path = string.Empty;
 
          // SupportPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _setttGroupFile.PathVariables.Supports), preference.Files.SupportPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile == null ? null : _settGroupFile.PathVariables.Supports), preference.Files.SupportPath, "");
          try
          {            
             preference.Files.SupportPath = path;
@@ -46,7 +46,7 @@ namespace AutoCAD_PIK_Manager
          catch { }
 
          // PrinterConfigPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _setttGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
          try
          {
             preference.Files.PrinterConfigPath = path;
@@ -54,7 +54,7 @@ namespace AutoCAD_PIK_Manager
          catch { con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path); }
 
          // PrinterDescPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _setttGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
          try
          {
             preference.Files.PrinterDescPath = path;
@@ -62,7 +62,7 @@ namespace AutoCAD_PIK_Manager
          catch { con.OpenSubsection("General").WriteProperty("PrinterDescDir", path); }
 
          // PrinterPlotStylePaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _setttGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
          try
          {
             preference.Files.PrinterStyleSheetPath = path;
@@ -70,7 +70,7 @@ namespace AutoCAD_PIK_Manager
          catch { con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path); }
 
          // ToolPalettePath
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _setttGroupFile.PathVariables.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
          try
          {
             preference.Files.ToolPalettePath = path;               
@@ -125,14 +125,19 @@ namespace AutoCAD_PIK_Manager
          bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
          if (isExistProfile)
          {
-            preferences.Profiles.ActiveProfile = _profileName;
+            if (preferences.Profiles.ActiveProfile != _profileName)
+            {
+               preferences.Profiles.ActiveProfile = _profileName;
+            }
             ApplySetting();
+            Log.Info("Профиль {0} обновлен", _profileName);
          }
          else
          {
             preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);                                
             preferences.Profiles.ActiveProfile = _profileName;                                                                 
-            ApplySetting();                                                                                       
+            ApplySetting();
+            Log.Info("Профиль {0} создан", _profileName);
          }         
       }
       

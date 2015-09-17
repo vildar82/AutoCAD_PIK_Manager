@@ -17,13 +17,8 @@
 //Fatal: Произошёл отказ весов.Посылки не будут приниматься до восстановления работоспособности.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using AutoCAD_PIK_Manager.Settings;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -41,15 +36,19 @@ namespace AutoCAD_PIK_Manager
    {
       private static Logger _logger;
 
-      static Log ()
+      static Log()
       {
-         _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
-         var config = new LoggingConfiguration();         
+         // Настройка конфигурации логгера.                  
+         _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");         
 
-         var fileServerTarget = new FileTarget();         
+         string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+         //var config = new XmlLoggingConfiguration(assemblyFolder + "\\NLog.config", true);
+         var config = new LoggingConfiguration();
+
+         var fileServerTarget = new FileTarget();
          config.AddTarget("serverFile", fileServerTarget);
          fileServerTarget.FileName = string.Format(@"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs\{0}-{1}.log", Environment.UserName, Environment.MachineName);
-         fileServerTarget.Layout = "${longdate} ${uppercase:${level} ${message}";
+         fileServerTarget.Layout = "${longdate}_${level}:  ${message}";
          fileServerTarget.ArchiveAboveSize = 2097152;
          fileServerTarget.MaxArchiveFiles = 1;
          fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
@@ -59,31 +58,30 @@ namespace AutoCAD_PIK_Manager
 
          var fileLocalTarget = new FileTarget();
          config.AddTarget("localFile", fileLocalTarget);
-         fileLocalTarget.FileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Log.txt");
-         fileLocalTarget.Layout = "${longdate} ${uppercase:${level} ${message}";
-
+         fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
+         fileLocalTarget.Layout = "${longdate}_${level}:  ${message}";
          rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
          config.LoggingRules.Add(rule);
-
-         LogManager.Configuration = config;  
+                   
+         LogManager.Configuration = config;
       }
 
-      ///// <summary>
-      ///// Debug: сообщения отладки, профилирования. В production системе обычно сообщения этого уровня включаются при первоначальном запуске системы или для поиска узких мест (bottleneck-ов).
-      ///// </summary>
-      ///// <param name="message"></param>
-      //public static void Debug(string message)
-      //{
-      //   _logger.Debug(message);
-      //}
-      //public static void Debug(string message, params object[] args)
-      //{
-      //   _logger.Debug(message, args);
-      //}
-      //public static void Debug(string message, Exception ex)
-      //{
-      //   _logger.Debug(message, ex);
-      //}
+      /// <summary>
+      /// Debug: сообщения отладки, профилирования. В production системе обычно сообщения этого уровня включаются при первоначальном запуске системы или для поиска узких мест (bottleneck-ов).
+      /// </summary>
+      /// <param name="message"></param>
+      public static void Debug(string message)
+      {
+         _logger.Debug(message);
+      }
+      public static void Debug(string message, params object[] args)
+      {
+         _logger.Debug(message, args);
+      }
+      public static void Debug(string message, Exception ex)
+      {
+         _logger.Debug(message, ex);
+      }
 
       /// <summary>
       /// Info: обычные сообщения, информирующие о действиях системы.Реагировать на такие сообщения вообще не надо, но они могут помочь, например, при поиске багов, расследовании интересных ситуаций итд.
