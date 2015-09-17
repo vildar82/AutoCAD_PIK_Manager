@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.ApplicationServices;
-using OfficeOpenXml;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace AutoCAD_PIK_Manager.Model
@@ -15,32 +13,60 @@ namespace AutoCAD_PIK_Manager.Model
    /// </summary>
    internal class Profile
    {
-      private string _profileName;
-      SettingsPikFile _settPikFile;
-      SettingsGroupFile _settGroupFile;
-      private string _userGroup;
       private string _localSettingsFolder;
-
-      public Profile ()
+      private string _profileName;
+      private SettingsGroupFile _settGroupFile;
+      private SettingsPikFile _settPikFile;
+      private string _userGroup;
+      public Profile()
       {
          _settPikFile = PikSettings.PikFileSettings;
          _profileName = _settPikFile.ProfileName;
          _settGroupFile = PikSettings.GroupFileSettings;
          _userGroup = PikSettings.UserGroup;
-         _localSettingsFolder = PikSettings.LocalSettingsFolder; 
+         _localSettingsFolder = PikSettings.LocalSettingsFolder;
+      }
+
+      /// <summary>
+      /// Настройка профиля ПИК в автокаде
+      /// </summary>
+      public void SetProfile()
+      {
+         dynamic preferences = AutoCadApp.Preferences;
+
+         object profiles = null;
+         preferences.Profiles.GetAllProfileNames(out profiles);
+         //Проверка существующих профилей
+         bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
+         if (isExistProfile)
+         {
+            if (preferences.Profiles.ActiveProfile != _profileName)
+            {
+               preferences.Profiles.ActiveProfile = _profileName;
+            }
+            ApplySetting();
+            Log.Info("Профиль {0} обновлен", _profileName);
+         }
+         else
+         {
+            preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
+            preferences.Profiles.ActiveProfile = _profileName;
+            ApplySetting();
+            Log.Info("Профиль {0} создан", _profileName);
+         }
       }
 
       // Настройка профиля
       private void ApplySetting()
       {
-         dynamic preference = AutoCadApp.Preferences; 
+         dynamic preference = AutoCadApp.Preferences;
          IConfigurationSection con = AutoCadApp.UserConfigurationManager.OpenCurrentProfile();
          string path = string.Empty;
 
          // SupportPaths
          path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile == null ? null : _settGroupFile.PathVariables.Supports), preference.Files.SupportPath, "");
          try
-         {            
+         {
             preference.Files.SupportPath = path;
          }
          catch { }
@@ -73,14 +99,14 @@ namespace AutoCAD_PIK_Manager.Model
          path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
          try
          {
-            preference.Files.ToolPalettePath = path;               
+            preference.Files.ToolPalettePath = path;
          }
          catch { con.OpenSubsection("General").WriteProperty("ToolPalettePath", path); }
 
          //TemplatePath
          preference.Files.TemplateDwgPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup) + "\\";
          //PageSetupOverridesTemplateFile
-         string templateDwg = Path.Combine (_localSettingsFolder , _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
+         string templateDwg = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
          preference.Files.PageSetupOverridesTemplateFile = templateDwg; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);
          //QNewTemplateFile
          preference.Files.QNewTemplateFile = templateDwg;
@@ -109,38 +135,8 @@ namespace AutoCAD_PIK_Manager.Model
                }
             }
          }
-         return resList;         
+         return resList;
       }
-
-      /// <summary>
-      /// Настройка профиля ПИК в автокаде
-      /// </summary>      
-      public void SetProfile()
-      {
-         dynamic preferences = AutoCadApp.Preferences;
-         
-         object profiles = null;
-         preferences.Profiles.GetAllProfileNames(out profiles);
-         //Проверка существующих профилей
-         bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
-         if (isExistProfile)
-         {
-            if (preferences.Profiles.ActiveProfile != _profileName)
-            {
-               preferences.Profiles.ActiveProfile = _profileName;
-            }
-            ApplySetting();
-            Log.Info("Профиль {0} обновлен", _profileName);
-         }
-         else
-         {
-            preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);                                
-            preferences.Profiles.ActiveProfile = _profileName;                                                                 
-            ApplySetting();
-            Log.Info("Профиль {0} создан", _profileName);
-         }         
-      }
-      
       private string GetPathVariable(List<Variable> settings, string path, string group)
       {
          string fullPath = string.Empty;
@@ -214,7 +210,7 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-               Log.Error("SetSystemVariable " + name, ex);               
+               Log.Error("SetSystemVariable " + name, ex);
             }
          }
       }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Xml.Serialization;
 using OfficeOpenXml;
 
 namespace AutoCAD_PIK_Manager.Settings
@@ -21,19 +20,6 @@ namespace AutoCAD_PIK_Manager.Settings
       private static string _userGroup;
       private static List<string> _userGroups;
 
-      internal static void LoadSettings()
-      {
-         _curDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-         //Путь до папки Settings на локальном компьютере.
-         _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
-         _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
-         if (_settingsPikFile == null) return;         
-         _serverSettingsFolder = _settingsPikFile.ServerSettingsPath;// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
-         _userGroup = getUserGroup(_settingsPikFile.PathToUserList);
-         _userGroups = getUserGroups();
-         _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
-      }
-
       /// <summary>
       /// Путь до папки настроек на локальном компьютере: c:\Autodesk\AutoCAD\Pik\Settings
       /// </summary>
@@ -48,12 +34,24 @@ namespace AutoCAD_PIK_Manager.Settings
 
       public static List<string> UserGroups { get { return _userGroups; } }
 
+      internal static string CurDllLocation { get { return _curDllLocation; } }
+
       internal static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }
 
       internal static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }
 
-      internal static string CurDllLocation { get { return _curDllLocation; } }
-
+      internal static void LoadSettings()
+      {
+         _curDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+         //Путь до папки Settings на локальном компьютере.
+         _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
+         _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
+         if (_settingsPikFile == null) return;
+         _serverSettingsFolder = _settingsPikFile.ServerSettingsPath;// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
+         _userGroup = getUserGroup(_settingsPikFile.PathToUserList);
+         _userGroups = getUserGroups();
+         _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
+      }
       internal static void UpdateSettings()
       {
          // Проверка доступности сетевых настроек
@@ -64,12 +62,38 @@ namespace AutoCAD_PIK_Manager.Settings
             deleteFilesRecursively(localSettDir);
             // Копирование настроек с сервера
             var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
-            localSettDir.Create(); 
+            localSettDir.Create();
             copyFilesRecursively(serverSettDir, localSettDir);
          }
          else
          {
             Log.Error("Недоступна папка настроек на сервере {0}", ServerSettingsFolder);
+         }
+      }
+
+      /// <summary>
+      /// Копирование файлов настроек с сервера
+      /// </summary>
+      private static void copyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+      {
+         // копрование всех папок из источника
+         foreach (DirectoryInfo dir in source.GetDirectories())
+         {
+            // Если это папка с именем другого отдело, то не копировать ее
+            if (isOtherGroupFolder(dir.Name)) continue;
+            copyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
+         }
+         // копирование всех файлов из папки источника
+         foreach (FileInfo f in source.GetFiles())
+         {
+            try
+            {
+               f.CopyTo(Path.Combine(target.FullName, f.Name), true);
+            }
+            catch (Exception ex)
+            {
+               Log.Error("CopyFilesRecursively " + f.FullName, ex);
+            }
          }
       }
 
@@ -89,39 +113,12 @@ namespace AutoCAD_PIK_Manager.Settings
             }
          }
       }
-
-      /// <summary>
-      /// Копирование файлов настроек с сервера
-      /// </summary>
-      private static void copyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
-      {  
-         // копрование всех папок из источника
-         foreach (DirectoryInfo dir in source.GetDirectories())
-         {
-            // Если это папка с именем другого отдело, то не копировать ее
-            if (isOtherGroupFolder(dir.Name)) continue;
-            copyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
-         }
-         // копирование всех файлов из папки источника
-         foreach (FileInfo f in source.GetFiles())
-         {
-            try
-            {
-               f.CopyTo(Path.Combine(target.FullName, f.Name), true);                
-            }
-            catch (Exception ex)
-            {
-               Log.Error("CopyFilesRecursively " + f.FullName, ex);
-            }
-         }
-      }
-
       private static T getSettings<T>(string file)
       {
          if (!File.Exists(file)) return default(T);
          SerializerXml ser = new SerializerXml(file);
          return ser.DeserializeXmlFile<T>();
-      }      
+      }
 
       // группа пользователя из списка сотрудников (Шифр_отдела: АР, КР-МН, КР-СБ, ВК, ОВ, и т.д.)
       private static string getUserGroup(string pathToList)
@@ -169,7 +166,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
       private static bool isOtherGroupFolder(string name)
       {
-         if (UserGroup.Equals (name, StringComparison.OrdinalIgnoreCase))
+         if (UserGroup.Equals(name, StringComparison.OrdinalIgnoreCase))
          {
             return false;
          }

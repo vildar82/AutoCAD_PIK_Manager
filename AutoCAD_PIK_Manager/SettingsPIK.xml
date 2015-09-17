@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0"?>
-<SettingsData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">	
+<SettingsData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ProfileName>ПИК</ProfileName>
 	<!-- Путь к папке локальных настроек. -->
 	<LocalSettingsPath>C:\Autodesk\AutoCAD\Pik\Settings\</LocalSettingsPath>
@@ -7,9 +7,9 @@
 	<ServerSettingsPath>\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\</ServerSettingsPath>
 	<!-- Путь к файлу со списком ФИО и соответствующих шифров отделов. -->
 	<PathToUserList>\\dsk2.picompany.ru\project\CAD_Settings\Settings\Users\UserList2.xlsx</PathToUserList>
-	<PathVariables> 
+	<PathVariables>
 		<!-- Пути доступа к всомогательным файлам. -->
-		<Supports>      
+		<Supports>
 			<Variable>
 				<Name>SupportPaths</Name>
 				<Value>C:\Autodesk\AutoCAD\Pik\Settings\Fonts</Value>
@@ -47,7 +47,7 @@
 			</Variable>
 		</PrinterPlotStylePaths>
 		<!-- Путь к папке инструментальных палитр. -->
-		<ToolPalettePaths>						
+		<ToolPalettePaths>
 			<Variable>
 				<Name>ToolPalettePaths</Name>
 				<Value>C:\Autodesk\AutoCAD\Pik\Settings\ToolPalette\</Value>
@@ -55,7 +55,7 @@
 				<IsReWrite>true</IsReWrite>
 			</Variable>
 		</ToolPalettePaths>
-		<!-- Папка с файлами шаблонов dwt.-->		
+		<!-- Папка с файлами шаблонов dwt.-->
 		<!-- +\ШифрОтдела. Программно к этому пути будет добавлена приставка с папкой шифра отдела. -->
 		<TemplatePath>
 			<Name>TemplatePath</Name>
@@ -69,7 +69,7 @@
 			<Name>SheetSetTemplatePath</Name>
 			<Value>C:\Autodesk\AutoCAD\Pik\Settings\Sheet set\</Value>
 			<!-- Оставляем только нашу папку. -->
-			<IsReWrite>true</IsReWrite>		
+			<IsReWrite>true</IsReWrite>
 		</SheetSetTemplatePath>
 		<!-- Файл шаблона dwt для быстрого создания файлов БСОЗДАТЬ. -->
 		<!-- +\ШифрОтдела\ШифрОтдела.dwt -->
@@ -100,14 +100,14 @@
 			<Name>TRUSTEDPATHS</Name>
 			<Value>C:\Autodesk\AutoCAD\PIK\Settings\Script...;C:\Autodesk\AutoCAD\PIK\Settings\Dll...</Value>
 			<IsReWrite>true</IsReWrite>
-		</SystemVariable>		
+		</SystemVariable>
 		<SystemVariable>
 			<!-- Отсчет смещения чертежа относительно кромок листа бумаги. -->
 			<!-- Для вставки блока рамки в точку 0,0 пространства листа. -->
 			<Name>PlotOffset</Name>
 			<Value>1</Value>
 			<IsReWrite>true</IsReWrite>
-		</SystemVariable>		
+		</SystemVariable>
 		<SystemVariable>
 			<!-- Сохранение изменений, внесенных в рабочем пространстве, при переходе к другому рабочему пространству. -->
 			<Name>WSAUTOSAVE</Name>
@@ -137,7 +137,7 @@
 			<Name>FILEDIA</Name>
 			<Value>1</Value>
 			<IsReWrite>true</IsReWrite>
-		</SystemVariable>		
+		</SystemVariable>
 	</SystemVariables>
 	<!-- Группы отделов (Шифры отделов). -->
 	<!-- Не используется. Используется файл UserList2.xlsx. -->

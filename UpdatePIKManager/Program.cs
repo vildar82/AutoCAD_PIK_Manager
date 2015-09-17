@@ -5,9 +5,9 @@ using System.Threading;
 
 namespace UpdatePIKManager
 {
-   class Program
+   internal class Program
    {
-      static void Main(string[] args)
+      private static void Main(string[] args)
       {
          try
          {
@@ -20,9 +20,9 @@ namespace UpdatePIKManager
             }
 
             string sourceFile = Path.GetFullPath(args[0]);// @"Z:\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll";
-            Trace.WriteLine("sourceFile " +sourceFile);
+            Trace.WriteLine("sourceFile " + sourceFile);
             string destFile = Path.GetFullPath(args[1]);// @"C:\Autodesk\AutoCAD\PIK\Dll\AutoCAD_PIK_Manager.dll";
-            Trace.WriteLine("destFile " +destFile);
+            Trace.WriteLine("destFile " + destFile);
 
             if (!File.Exists(sourceFile) || !File.Exists(destFile))
             {
@@ -44,7 +44,7 @@ namespace UpdatePIKManager
                   Thread.Sleep(5000);//Подождать пока автокад закроется (2015 закрывается очень долго).
                   i++;
                }
-            }                                  
+            }
          }
          catch (Exception ex)
          {

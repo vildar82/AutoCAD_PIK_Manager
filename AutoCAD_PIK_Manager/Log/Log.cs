@@ -38,8 +38,8 @@ namespace AutoCAD_PIK_Manager
 
       static Log()
       {
-         // Настройка конфигурации логгера.                  
-         _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");         
+         // Настройка конфигурации логгера.
+         _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
 
          string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
          //var config = new XmlLoggingConfiguration(assemblyFolder + "\\NLog.config", true);
@@ -62,7 +62,7 @@ namespace AutoCAD_PIK_Manager
          fileLocalTarget.Layout = "${longdate}_${level}:  ${message}";
          rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
          config.LoggingRules.Add(rule);
-                   
+
          LogManager.Configuration = config;
       }
 
@@ -74,10 +74,12 @@ namespace AutoCAD_PIK_Manager
       {
          _logger.Debug(message);
       }
+
       public static void Debug(string message, params object[] args)
       {
          _logger.Debug(message, args);
       }
+
       public static void Debug(string message, Exception ex)
       {
          _logger.Debug(message, ex);
@@ -87,14 +89,16 @@ namespace AutoCAD_PIK_Manager
       /// Info: обычные сообщения, информирующие о действиях системы.Реагировать на такие сообщения вообще не надо, но они могут помочь, например, при поиске багов, расследовании интересных ситуаций итд.
       /// </summary>
       /// <param name="message"></param>
-      public static void Info (string message)
+      public static void Info(string message)
       {
          _logger.Info(message);
       }
+
       public static void Info(string message, params object[] args)
       {
          _logger.Info(message, args);
       }
+
       public static void Info(string message, Exception ex)
       {
          _logger.Info(message, ex);
@@ -108,15 +112,16 @@ namespace AutoCAD_PIK_Manager
       {
          _logger.Warn(message);
       }
+
       public static void Warn(string message, params object[] args)
       {
          _logger.Warn(message, args);
       }
+
       public static void Warn(string message, Exception ex)
       {
          _logger.Warn(message, ex);
       }
-
 
       /// <summary>
       /// Error: ошибка в работе системы, требующая вмешательства. Что-то не сохранилось, что-то отвалилось. Необходимо принимать меры довольно быстро! Ошибки этого уровня и выше требуют немедленной записи в лог, чтобы ускорить реакцию на них.Нужно понимать, что ошибка пользователя – это не ошибка системы. Если пользователь ввёл в поле -1, где это не предполагалось – не надо писать об этом в лог ошибок.
@@ -126,10 +131,12 @@ namespace AutoCAD_PIK_Manager
       {
          _logger.Error(message);
       }
+
       public static void Error(string message, Exception ex)
       {
          _logger.Error(message, ex);
       }
+
       public static void Error(string message, params object[] args)
       {
          _logger.Error(message, args);
@@ -143,10 +150,12 @@ namespace AutoCAD_PIK_Manager
       {
          _logger.Fatal(message);
       }
+
       public static void Fatal(string message, Exception ex)
       {
          _logger.Fatal(message, ex);
       }
+
       public static void Fatal(string message, params object[] args)
       {
          _logger.Fatal(message, args);

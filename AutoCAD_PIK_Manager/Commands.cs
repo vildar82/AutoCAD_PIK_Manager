@@ -13,20 +13,13 @@ namespace AutoCAD_PIK_Manager
 {
    public class Commands : IExtensionApplication
    {
-      [CommandMethod("TestSettingsGroupFile")]
-      public void TestSettingsGroupFile ()
-      {
-         PikSettings.GroupFileSettings.SetupFlexBrics = true;
-         SerializerXml ser = new SerializerXml(Path.Combine(PikSettings.LocalSettingsFolder, PikSettings.UserGroup, "SettingsGroup.xml"));
-      }
-
       public void Initialize()
       {
          // Исключения в Initialize проглотит автокад, без выдачи сообщений.
          // Програ загружена в автокад.
          // Запись в лог
          Log.Info("AutoCAD_PIK_Manager загружен - Initialize() start.");
-         
+
          PikSettings.LoadSettings();
          Log.Info("Настройки загружены LoadSettings() из {0}", PikSettings.CurDllLocation);
 
@@ -48,7 +41,7 @@ namespace AutoCAD_PIK_Manager
 
       public void Terminate()
       {
-         // Обновление программы (копирование AutoCAD_PIK_Manager.dll)        
+         // Обновление программы (копирование AutoCAD_PIK_Manager.dll)
          string updater = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "UpdatePIKManager.exe");
          string sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
          string destDllPikManager = Path.Combine(PikSettings.LocalSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
@@ -57,6 +50,12 @@ namespace AutoCAD_PIK_Manager
          Process.Start(updater, arg);
       }
 
+      [CommandMethod("TestSettingsGroupFile")]
+      public void TestSettingsGroupFile()
+      {
+         PikSettings.GroupFileSettings.SetupFlexBrics = true;
+         SerializerXml ser = new SerializerXml(Path.Combine(PikSettings.LocalSettingsFolder, PikSettings.UserGroup, "SettingsGroup.xml"));
+      }
       private static bool IsProcessAny()
       {
          //logger.Info("IsProcessAny");

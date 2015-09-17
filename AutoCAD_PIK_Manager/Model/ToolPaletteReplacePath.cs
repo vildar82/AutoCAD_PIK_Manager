@@ -7,11 +7,11 @@ namespace AutoCAD_PIK_Manager.Model
 {
    // Замена путей к настройкам в файлах инструментальных палитр atc
    internal static class ToolPaletteReplacePath
-   {      
+   {
       public static void Replace()
       {
          string dirPalette = Path.Combine(PikSettings.LocalSettingsFolder, "ToolPalette");
-         if (Directory.Exists(dirPalette) )
+         if (Directory.Exists(dirPalette))
          {
             try
             {
@@ -25,7 +25,7 @@ namespace AutoCAD_PIK_Manager.Model
             {
                Log.Error("Замена путей в инструментальных палитрах.", ex);
             }
-         }         
+         }
       }
 
       private static void ReplacePathInATC(string file)
@@ -41,7 +41,7 @@ namespace AutoCAD_PIK_Manager.Model
          content = ReplaceCaseInsensitive(content, search, replace);
 
          search = "C:/Autodesk/AutoCAD/Pik/Settings";
-         replace = PikSettings.LocalSettingsFolder.Replace ("\\", "/");
+         replace = PikSettings.LocalSettingsFolder.Replace("\\", "/");
          content = ReplaceCaseInsensitive(content, search, replace);
 
          using (StreamWriter stream = new StreamWriter(file))

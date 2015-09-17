@@ -8,7 +8,7 @@ namespace AutoCAD_PIK_Manager.Settings
    /// </summary>
    [Serializable]
    public class SettingsPikFile
-   {      
+   {
       public string ProfileName { get; set; }// Имя для профиля в автокаде
 
       //public string LocalSettingsPath { get; set; }//Путь к папке локольных настроек: Autodesk\AutoCAD\Pik\Settings
@@ -23,5 +23,5 @@ namespace AutoCAD_PIK_Manager.Settings
       public string MailCADManager { get; set; }
       public string SubjectMail { get; set; }
       public string BodyMail { get; set; }
-   } 
+   }
 }
