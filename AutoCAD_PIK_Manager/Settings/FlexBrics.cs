@@ -14,7 +14,7 @@ namespace AutoCAD_PIK_Manager.Settings
          {
             try
             {
-               var sourceFB = new DirectoryInfo(PikSettings.GroupFileSettings.FlexBricsFolder);
+               var sourceFB = new DirectoryInfo(GetExistsFlexBricsServerFolder(PikSettings.GroupFileSettings.FlexBricsFolder));
                _fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
                var targetFB = new DirectoryInfo(_fbLocalDir);
                CopyAll(sourceFB, targetFB);
@@ -24,6 +24,24 @@ namespace AutoCAD_PIK_Manager.Settings
                Log.Error(ex,"FlexBrics не скопирровался.");
             }
          }
+      }
+
+      private static string GetExistsFlexBricsServerFolder(string flexBricsFolder)
+      {
+         string res = flexBricsFolder;
+         if (!Directory.Exists(res))
+         {
+            res = Path.Combine(@"\\ab4\CAD_Settings", flexBricsFolder.Substring(3));
+            if (!Directory.Exists(res))
+            {
+               res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", flexBricsFolder.Substring(3));
+               if (!Directory.Exists(res))
+               {
+                  Log.Error("Сетевой путь к настройкам недоступен - flexBricsFolder: {0}", flexBricsFolder);
+               }
+            }
+         }
+         return res;
       }
 
       internal static void Setup()
