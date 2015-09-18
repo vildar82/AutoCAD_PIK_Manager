@@ -70,14 +70,19 @@ namespace AutoCAD_PIK_Manager
             config.LoggingRules.Add(rule);
             LogManager.Configuration = config;
 
-            ////// Mail
-            //var mailTarget = new MailTarget();
-            //mailTarget.Name = "mail";
-            //mailTarget.To = "vildar82@gmail.com";
-            //config.AddTarget("mail", mailTarget);
-            //rule = new LoggingRule("mail", LogLevel.Debug, mailTarget);
-            //config.LoggingRules.Add(rule);
-            //LogManager.Configuration = config;
+            // mail
+            var mailTarget = new MailTarget();
+            mailTarget.To = "vildar82@gmail.com";
+            mailTarget.From = "KhisyametdinovVT@pik.ru";
+            mailTarget.Subject = "AutoCAD_PIK_Manager.Log. На компе ${machinename}, у " + Environment.UserName;
+            mailTarget.SmtpServer = "ex20pik.picompany.ru";
+            mailTarget.Body = "${longdate} ${message} ${exception:format=tostring}";
+
+            config.AddTarget("mail", mailTarget);
+
+            rule = new LoggingRule("*", LogLevel.Error, mailTarget);
+            config.LoggingRules.Add(rule);
+            LogManager.Configuration = config;
          }
          catch
          {
@@ -112,9 +117,9 @@ namespace AutoCAD_PIK_Manager
          _logger.Debug(message, args);
       }
 
-      public static void Debug(string message, Exception ex)
+      public static void Debug(Exception ex, string message, params object[] args)
       {
-         _logger.Debug(message, ex);
+         _logger.Debug(ex, message, args);
       }
 
       /// <summary>
@@ -131,9 +136,9 @@ namespace AutoCAD_PIK_Manager
          _logger.Info(message, args);
       }
 
-      public static void Info(string message, Exception ex)
+      public static void Info(Exception ex, string message, params object[] args)
       {
-         _logger.Info(message, ex);
+         _logger.Info(ex, message, args);
       }
 
       /// <summary>
@@ -150,9 +155,9 @@ namespace AutoCAD_PIK_Manager
          _logger.Warn(message, args);
       }
 
-      public static void Warn(string message, Exception ex)
+      public static void Warn(Exception ex, string message, params object[] args)
       {
-         _logger.Warn(message, ex);
+         _logger.Warn(ex, message, args);
       }
 
       /// <summary>
@@ -164,9 +169,9 @@ namespace AutoCAD_PIK_Manager
          _logger.Error(message);
       }
 
-      public static void Error(string message, Exception ex)
+      public static void Error(Exception ex, string message, params object[] args)
       {
-         _logger.Error(message, ex);
+         _logger.Error(ex, message, args);
       }
 
       public static void Error(string message, params object[] args)
@@ -183,9 +188,9 @@ namespace AutoCAD_PIK_Manager
          _logger.Fatal(message);
       }
 
-      public static void Fatal(string message, Exception ex)
+      public static void Fatal(Exception ex, string message, params object[] args)
       {
-         _logger.Fatal(message, ex);
+         _logger.Fatal(ex, message, args);
       }
 
       public static void Fatal(string message, params object[] args)

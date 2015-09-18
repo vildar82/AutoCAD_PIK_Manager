@@ -21,7 +21,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             catch (Exception ex)
             {
-               Log.Error("FlexBrics не скопирровался. ", ex);
+               Log.Error(ex,"FlexBrics не скопирровался.");
             }
          }
       }

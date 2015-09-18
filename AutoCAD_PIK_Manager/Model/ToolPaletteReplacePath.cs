@@ -23,7 +23,7 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-               Log.Error("Замена путей в инструментальных палитрах.", ex);
+               Log.Error(ex,"Замена путей в инструментальных палитрах.");
             }
          }
       }

@@ -34,7 +34,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             catch (Exception ex)
             {
-               Log.Fatal("DeserializeXmlFile " + _settingsFile, ex);
+               Log.Error(ex, "DeserializeXmlFile {0}", _settingsFile);
                throw;
             }
          }

@@ -43,7 +43,7 @@ namespace AutoCAD_PIK_Manager
          }
          catch (System.Exception ex)
          {
-            Log.Error("Ошибка настройки профиля SetProfile().", ex);
+            Log.Error(ex, "Ошибка настройки профиля SetProfile().");
          }
       }
 

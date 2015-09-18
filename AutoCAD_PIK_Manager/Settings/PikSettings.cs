@@ -132,7 +132,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             catch (Exception ex)
             {
-               Log.Error("CopyFilesRecursively " + f.FullName, ex);
+               Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
             }
          }
       }
@@ -189,7 +189,7 @@ namespace AutoCAD_PIK_Manager.Settings
          }
          catch (Exception ex)
          {
-            Log.Error("Не определена рабочая группа (Шифр отдела). " + Environment.UserName, ex);
+            Log.Error(ex,"Не определена рабочая группа (Шифр отдела). {0}", Environment.UserName);
             throw;
          }
          //if (nameGroup == "")

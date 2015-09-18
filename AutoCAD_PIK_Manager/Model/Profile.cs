@@ -73,7 +73,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(string.Format ("preference.Files.SupportPath = {0}", path), ex);
+            Log.Error(ex,"preference.Files.SupportPath = {0}", path);
          }
 
          // PrinterConfigPaths
@@ -88,7 +88,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(string.Format("preference.Files.PrinterConfigDir = {0}", path), ex);
+            Log.Error(ex, "preference.Files.PrinterConfigPath = {0}", path);
             //con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path);
          }
 
@@ -104,7 +104,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(string.Format("preference.Files.PrinterDescPath = {0}", path), ex);
+            Log.Error(ex, "preference.Files.PrinterDescDir = {0}", path);
             //con.OpenSubsection("General").WriteProperty("PrinterDescDir", path);
          }
 
@@ -120,7 +120,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(string.Format("preference.Files.PrinterStyleSheetPath = {0}", path), ex);
+            Log.Error(ex, "preference.Files.PrinterStyleSheetDir = {0}", path);
             //con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path);
          }
 
@@ -132,7 +132,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(string.Format("preference.Files.ToolPalettePath = {0}", path), ex);
+            Log.Error(ex, "preference.Files.ToolPalettePath = {0}", path);
             //con.OpenSubsection("General").WriteProperty("ToolPalettePath", path);
          }
 
@@ -256,7 +256,7 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-               Log.Error("SetSystemVariable " + name, ex);
+               Log.Error(ex,"SetSystemVariable {0}", name);
             }
          }
       }
