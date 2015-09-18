@@ -65,7 +65,12 @@ namespace AutoCAD_PIK_Manager
          rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
          config.LoggingRules.Add(rule);
 
-         LogManager.Configuration = config;
+         //// Mail
+         //var mailTarget = new MailTarget();
+         //mailTarget.Name = "mail";
+         //mailTarget. 
+
+         //LogManager.Configuration = config;
       }
 
       private static string GetExistServerLogPath(string logPath)

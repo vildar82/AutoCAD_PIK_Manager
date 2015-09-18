@@ -181,6 +181,10 @@ namespace AutoCAD_PIK_Manager.Settings
                   numberRow++;
                }
             }
+            if (string.IsNullOrEmpty(nameGroup))
+            {
+               throw new Exception("IsNullOrEmpty(nameGroup)");
+            }
             Log.Info("{0} Группа - {1}", Environment.UserName,nameGroup);
          }
          catch (Exception ex)
