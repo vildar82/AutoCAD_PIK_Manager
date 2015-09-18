@@ -34,10 +34,17 @@ namespace AutoCAD_PIK_Manager
             ToolPaletteReplacePath.Replace();
             Log.Info("Настройки обновлены");
          }
-         // Настройка профиля ПИК в автокаде
-         Profile profile = new Profile();
-         profile.SetProfile();
-         Log.Info("Профиль установлен SetProfile()");
+         try
+         {
+            // Настройка профиля ПИК в автокаде
+            Profile profile = new Profile();
+            profile.SetProfile();
+            Log.Info("Профиль установлен SetProfile()");
+         }
+         catch (System.Exception ex)
+         {
+            Log.Error("Ошибка настройки профиля SetProfile().", ex);
+         }
       }
 
       public void Terminate()

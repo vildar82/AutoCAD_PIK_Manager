@@ -71,7 +71,10 @@ namespace AutoCAD_PIK_Manager.Model
          {
             preference.Files.SupportPath = path;
          }
-         catch { }
+         catch (Exception ex)
+         {
+            Log.Error(string.Format ("preference.Files.SupportPath = {0}", path), ex);
+         }
 
          // PrinterConfigPaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
@@ -83,7 +86,11 @@ namespace AutoCAD_PIK_Manager.Model
             else
                Env.SetEnv("PrinterConfigDir", path);
          }
-         catch { con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path); }
+         catch (Exception ex)
+         {
+            Log.Error(string.Format("preference.Files.PrinterConfigDir = {0}", path), ex);
+            //con.OpenSubsection("General").WriteProperty("PrinterConfigDir", path);
+         }
 
          // PrinterDescPaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterDescPaths), preference.Files.PrinterDescPath, "");
@@ -95,7 +102,11 @@ namespace AutoCAD_PIK_Manager.Model
             else
                Env.SetEnv("PrinterDescDir", path);
          }
-         catch { con.OpenSubsection("General").WriteProperty("PrinterDescDir", path); }
+         catch (Exception ex)
+         {
+            Log.Error(string.Format("preference.Files.PrinterDescPath = {0}", path), ex);
+            //con.OpenSubsection("General").WriteProperty("PrinterDescDir", path);
+         }
 
          // PrinterPlotStylePaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
@@ -107,7 +118,11 @@ namespace AutoCAD_PIK_Manager.Model
             else
                Env.SetEnv("PrinterStyleSheetDir", path);
          }
-         catch { con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path); }
+         catch (Exception ex)
+         {
+            Log.Error(string.Format("preference.Files.PrinterStyleSheetPath = {0}", path), ex);
+            //con.OpenSubsection("General").WriteProperty("PrinterStyleSheetDir", path);
+         }
 
          // ToolPalettePath
          path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
@@ -115,7 +130,11 @@ namespace AutoCAD_PIK_Manager.Model
          {
             preference.Files.ToolPalettePath = path;
          }
-         catch { con.OpenSubsection("General").WriteProperty("ToolPalettePath", path); }
+         catch (Exception ex)
+         {
+            Log.Error(string.Format("preference.Files.ToolPalettePath = {0}", path), ex);
+            //con.OpenSubsection("General").WriteProperty("ToolPalettePath", path);
+         }
 
          //TemplatePath
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
