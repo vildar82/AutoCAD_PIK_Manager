@@ -50,7 +50,7 @@ namespace AutoCAD_PIK_Manager
             var fileLocalTarget = new FileTarget();
             config.AddTarget("localFile", fileLocalTarget);
             fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
-            fileLocalTarget.Layout = "${longdate}_${level}:  ${message}";
+            fileLocalTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";
 
             var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
             config.LoggingRules.Add(rule);
@@ -61,7 +61,7 @@ namespace AutoCAD_PIK_Manager
             var fileServerTarget = new FileTarget();
             config.AddTarget("serverFile", fileServerTarget);
             fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
-            fileServerTarget.Layout = "${longdate}_${level}:  ${message}";
+            fileServerTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";
             fileServerTarget.ArchiveAboveSize = 100152;
             fileServerTarget.MaxArchiveFiles = 2;
             fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
