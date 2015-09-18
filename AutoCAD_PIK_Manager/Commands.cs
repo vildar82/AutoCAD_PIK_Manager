@@ -18,7 +18,18 @@ namespace AutoCAD_PIK_Manager
       {
          // Исключения в Initialize проглотит автокад, без выдачи сообщений.
          // Програ загружена в автокад.
-         PikSettings.LoadSettings();
+         try
+         {
+            PikSettings.LoadSettings();
+         }
+         catch (System.Exception ex)
+         {
+            Log.Error(ex, "LoadSettings");
+            Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
+            Log.Info("Версия автокада - {0}", Application.Version.ToString());
+            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            throw;
+         }
          // Запись в лог                  
          Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
          Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
