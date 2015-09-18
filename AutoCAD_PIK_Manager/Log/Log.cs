@@ -39,38 +39,49 @@ namespace AutoCAD_PIK_Manager
 
       static Log()
       {
-         // Настройка конфигурации логгера.
-         _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
+         try
+         {
+            // Настройка конфигурации логгера.
+            _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
 
-         string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-         var config = new LoggingConfiguration();
+            string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var config = new LoggingConfiguration();            
 
-         string serverLogPath = GetExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
+            var fileLocalTarget = new FileTarget();
+            config.AddTarget("localFile", fileLocalTarget);
+            fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
+            fileLocalTarget.Layout = "${longdate}_${level}:  ${message}";
 
-         var fileServerTarget = new FileTarget();
-         config.AddTarget("serverFile", fileServerTarget);
-         fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
-         fileServerTarget.Layout = "${longdate}_${level}:  ${message}";
-         fileServerTarget.ArchiveAboveSize = 2097152;
-         fileServerTarget.MaxArchiveFiles = 1;
-         fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
+            var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
+            config.LoggingRules.Add(rule);
+            LogManager.Configuration = config;
 
-         var rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
-         config.LoggingRules.Add(rule);
+            string serverLogPath = GetExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
 
-         var fileLocalTarget = new FileTarget();
-         config.AddTarget("localFile", fileLocalTarget);
-         fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
-         fileLocalTarget.Layout = "${longdate}_${level}:  ${message}";
-         rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
-         config.LoggingRules.Add(rule);
+            var fileServerTarget = new FileTarget();
+            config.AddTarget("serverFile", fileServerTarget);
+            fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
+            fileServerTarget.Layout = "${longdate}_${level}:  ${message}";
+            fileServerTarget.ArchiveAboveSize = 100152;
+            fileServerTarget.MaxArchiveFiles = 2;
+            fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
 
-         //// Mail
-         //var mailTarget = new MailTarget();
-         //mailTarget.Name = "mail";
-         //mailTarget. 
+            rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
+            config.LoggingRules.Add(rule);
+            LogManager.Configuration = config;
 
-         //LogManager.Configuration = config;
+            ////// Mail
+            //var mailTarget = new MailTarget();
+            //mailTarget.Name = "mail";
+            //mailTarget.To = "vildar82@gmail.com";
+            //config.AddTarget("mail", mailTarget);
+            //rule = new LoggingRule("mail", LogLevel.Debug, mailTarget);
+            //config.LoggingRules.Add(rule);
+            //LogManager.Configuration = config;
+         }
+         catch
+         {
+         }
       }
 
       private static string GetExistServerLogPath(string logPath)

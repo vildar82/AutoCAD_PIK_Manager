@@ -119,9 +119,6 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="Graph1.dgml" />
     <None Include="packages.config" />
-    <None Include="SettingsPIK.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
