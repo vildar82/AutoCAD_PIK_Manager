@@ -47,12 +47,49 @@ namespace AutoCAD_PIK_Manager.Settings
          _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
          _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
          if (_settingsPikFile == null) return;
-         _serverSettingsFolder = _settingsPikFile.ServerSettingsPath;// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
-         _userGroup = getUserGroup(_settingsPikFile.PathToUserList);
+         _serverSettingsFolder = GetExistServersettingsPath (_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
+         _userGroup = getUserGroup(GetExistServerUserListFile(_settingsPikFile.PathToUserList));
          _userGroups = getUserGroups();
          _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
          if (_settingsGroupFile != null) Log.Info("Загружены настройки группы {0} из {1}", UserGroup, "SettingsGroup.xml");
       }
+
+      private static string GetExistServerUserListFile(string pathToUserList)
+      {
+         string res = pathToUserList;
+         if (!File.Exists(res))
+         {
+            res = Path.Combine(@"\\ab4\CAD_Settings", pathToUserList.Substring(3));
+            if (!File.Exists(res))
+            {
+               res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));
+               if (!File.Exists(res))
+               {
+                  Log.Error("Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {0}", pathToUserList);
+               }
+            }
+         }
+         return res;
+      }
+
+      private static string GetExistServersettingsPath(string serverSettingsPath)
+      {
+         string res = serverSettingsPath;
+         if (!Directory.Exists(res))
+         {
+            res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
+            if (!Directory.Exists(res))
+            {
+               res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", serverSettingsPath.Substring(3));
+               if (!Directory.Exists(res))
+               {
+                  Log.Error("Сетевой путь к настройкам недоступен - serverSettingsPath: {0}", serverSettingsPath);
+               }
+            }
+         }
+         return res;
+      }
+
       internal static void UpdateSettings()
       {
          // Проверка доступности сетевых настроек

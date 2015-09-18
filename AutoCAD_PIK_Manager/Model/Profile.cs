@@ -28,14 +28,7 @@ namespace AutoCAD_PIK_Manager.Model
          _userGroup = PikSettings.UserGroup;
          _localSettingsFolder = PikSettings.LocalSettingsFolder;
       }
-
-      static public void AddPath(string var, string path)
-      {
-         StringBuilder oldpath = new StringBuilder(Env.GetEnv(var));
-         oldpath.Append(";"); oldpath.Append(path);
-         Env.SetEnv(var, oldpath.ToString());
-      }
-
+      
       /// <summary>
       /// Настройка профиля ПИК в автокаде
       /// </summary>

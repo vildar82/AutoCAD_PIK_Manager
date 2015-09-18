@@ -45,7 +45,7 @@ namespace AutoCAD_PIK_Manager
          string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
          var config = new LoggingConfiguration();
 
-         string serverLogPath = PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+         string serverLogPath = GetExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
 
          var fileServerTarget = new FileTarget();
          config.AddTarget("serverFile", fileServerTarget);
@@ -58,7 +58,6 @@ namespace AutoCAD_PIK_Manager
          var rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
          config.LoggingRules.Add(rule);
 
-
          var fileLocalTarget = new FileTarget();
          config.AddTarget("localFile", fileLocalTarget);
          fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
@@ -67,6 +66,20 @@ namespace AutoCAD_PIK_Manager
          config.LoggingRules.Add(rule);
 
          LogManager.Configuration = config;
+      }
+
+      private static string GetExistServerLogPath(string logPath)
+      {
+         string res = logPath;
+         if (!Directory.Exists(res) )
+         {
+            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+            if (!Directory.Exists(res))
+            {
+               res = @"\\ab4\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+            }
+         }         
+         return res;
       }
 
       /// <summary>

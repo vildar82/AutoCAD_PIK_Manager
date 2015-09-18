@@ -21,6 +21,7 @@ namespace AutoCAD_PIK_Manager
          PikSettings.LoadSettings();
          // Запись в лог                  
          Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
+         Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
          Log.Info("Версия автокада - {0}", Application.Version.ToString());
 
          // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
@@ -49,17 +50,7 @@ namespace AutoCAD_PIK_Manager
          Log.Info("Запущена программа обновления UpdatePIKManager с аргументами: sourceDllPikManager - {0}, destDllPikManager - {1}", sourceDllPikManager, destDllPikManager);
          Process.Start(updater, arg);
       }
-
-      [CommandMethod("TestSettingsGroupFile")]
-      public void TestSettingsGroupFile()
-      {
-         SettingsGroupFile setGroup = new SettingsGroupFile();
-         setGroup.FlexBricsSetup = true;
-         setGroup.FlexBricsFolder = @"z:\AutoCAD_server\flexBrics";
-         string fileGroup = Path.Combine(PikSettings.CurDllLocation, PikSettings.UserGroup, "SettingsGroup.xml");         
-         SerializerXml ser = new SerializerXml(fileGroup);
-         ser.SerializeList(setGroup);
-      }
+      
       private static bool IsProcessAny()
       {
          //logger.Info("IsProcessAny");
