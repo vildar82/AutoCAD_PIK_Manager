@@ -130,9 +130,9 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                f.CopyTo(Path.Combine(target.FullName, f.Name), true);
             }
-            catch (Exception ex)
+            catch
             {
-               Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
+               //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
             }
          }
       }
