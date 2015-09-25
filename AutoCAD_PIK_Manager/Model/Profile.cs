@@ -33,8 +33,7 @@ namespace AutoCAD_PIK_Manager.Model
       /// Настройка профиля ПИК в автокаде
       /// </summary>
       public void SetProfile()
-      {
-         Log.Debug("SetProfile() start");
+      {         
          dynamic preferences = AutoCadApp.Preferences;
 
          object profiles = null;
@@ -56,14 +55,12 @@ namespace AutoCAD_PIK_Manager.Model
             preferences.Profiles.ActiveProfile = _profileName;
             ApplySetting();
             Log.Info("Профиль {0} создан", _profileName);
-         }
-         Log.Debug("SetProfile() end");
+         }         
       }
 
       // Настройка профиля
       private void ApplySetting()
-      {
-         Log.Debug("ApplySetting() start");
+      {         
          dynamic preference = AutoCadApp.Preferences;
          IConfigurationSection con = AutoCadApp.UserConfigurationManager.OpenCurrentProfile();
          string path = string.Empty;
@@ -164,8 +161,7 @@ namespace AutoCAD_PIK_Manager.Model
             SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
          }
 
-         FlexBrics.Setup();
-         Log.Debug("ApplySetting() end");
+         FlexBrics.Setup();         
       }
 
       private List<Variable> GetPaths(List<Variable> pathVars1, List<Variable> pathVars2)
