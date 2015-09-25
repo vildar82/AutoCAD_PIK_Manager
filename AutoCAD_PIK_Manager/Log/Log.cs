@@ -35,7 +35,13 @@ namespace AutoCAD_PIK_Manager
    ///</summary>
    public static class Log
    {
+      #region Private Fields
+
       private static Logger _logger;
+
+      #endregion Private Fields
+
+      #region Public Constructors
 
       static Log()
       {
@@ -45,7 +51,7 @@ namespace AutoCAD_PIK_Manager
             _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
 
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var config = new LoggingConfiguration();            
+            var config = new LoggingConfiguration();
 
             var fileLocalTarget = new FileTarget();
             config.AddTarget("localFile", fileLocalTarget);
@@ -56,7 +62,7 @@ namespace AutoCAD_PIK_Manager
             config.LoggingRules.Add(rule);
             LogManager.Configuration = config;
 
-            string serverLogPath = GetExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
+            string serverLogPath = getExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
 
             var fileServerTarget = new FileTarget();
             config.AddTarget("serverFile", fileServerTarget);
@@ -89,19 +95,9 @@ namespace AutoCAD_PIK_Manager
          }
       }
 
-      private static string GetExistServerLogPath(string logPath)
-      {
-         string res = logPath;
-         if (!Directory.Exists(res) )
-         {
-            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
-            if (!Directory.Exists(res))
-            {
-               res = @"\\ab4\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
-            }
-         }         
-         return res;
-      }
+      #endregion Public Constructors
+
+      #region Public Methods
 
       /// <summary>
       /// Debug: сообщения отладки, профилирования. В production системе обычно сообщения этого уровня включаются при первоначальном запуске системы или для поиска узких мест (bottleneck-ов).
@@ -120,6 +116,44 @@ namespace AutoCAD_PIK_Manager
       public static void Debug(Exception ex, string message, params object[] args)
       {
          _logger.Debug(ex, message, args);
+      }
+
+      /// <summary>
+      /// Error: ошибка в работе системы, требующая вмешательства. Что-то не сохранилось, что-то отвалилось. Необходимо принимать меры довольно быстро! Ошибки этого уровня и выше требуют немедленной записи в лог, чтобы ускорить реакцию на них.Нужно понимать, что ошибка пользователя – это не ошибка системы. Если пользователь ввёл в поле -1, где это не предполагалось – не надо писать об этом в лог ошибок.
+      /// </summary>
+      /// <param name="message"></param>
+      public static void Error(string message)
+      {
+         _logger.Error(message);
+      }
+
+      public static void Error(Exception ex, string message, params object[] args)
+      {
+         _logger.Error(ex, message, args);
+      }
+
+      public static void Error(string message, params object[] args)
+      {
+         _logger.Error(message, args);
+      }
+
+      /// <summary>
+      /// Fatal: это особый класс ошибок. Такие ошибки приводят к неработоспособности системы в целом, или неработоспособности одной из подсистем.Чаще всего случаются фатальные ошибки из-за неверной конфигурации или отказов оборудования. Требуют срочной, немедленной реакции. Возможно, следует предусмотреть уведомление о таких ошибках по SMS.
+      /// </summary>
+      /// <param name="message"></param>
+      public static void Fatal(string message)
+      {
+         _logger.Fatal(message);
+      }
+
+      public static void Fatal(Exception ex, string message, params object[] args)
+      {
+         _logger.Fatal(ex, message, args);
+      }
+
+      public static void Fatal(string message, params object[] args)
+      {
+         _logger.Fatal(message, args);
       }
 
       /// <summary>
@@ -160,42 +194,24 @@ namespace AutoCAD_PIK_Manager
          _logger.Warn(ex, message, args);
       }
 
-      /// <summary>
-      /// Error: ошибка в работе системы, требующая вмешательства. Что-то не сохранилось, что-то отвалилось. Необходимо принимать меры довольно быстро! Ошибки этого уровня и выше требуют немедленной записи в лог, чтобы ускорить реакцию на них.Нужно понимать, что ошибка пользователя – это не ошибка системы. Если пользователь ввёл в поле -1, где это не предполагалось – не надо писать об этом в лог ошибок.
-      /// </summary>
-      /// <param name="message"></param>
-      public static void Error(string message)
+      #endregion Public Methods
+
+      #region Private Methods
+
+      private static string getExistServerLogPath(string logPath)
       {
-         _logger.Error(message);
+         string res = logPath;
+         if (!Directory.Exists(res))
+         {
+            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+            if (!Directory.Exists(res))
+            {
+               res = @"\\ab4\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+            }
+         }
+         return res;
       }
 
-      public static void Error(Exception ex, string message, params object[] args)
-      {
-         _logger.Error(ex, message, args);
-      }
-
-      public static void Error(string message, params object[] args)
-      {
-         _logger.Error(message, args);
-      }
-
-      /// <summary>
-      /// Fatal: это особый класс ошибок. Такие ошибки приводят к неработоспособности системы в целом, или неработоспособности одной из подсистем.Чаще всего случаются фатальные ошибки из-за неверной конфигурации или отказов оборудования. Требуют срочной, немедленной реакции. Возможно, следует предусмотреть уведомление о таких ошибках по SMS.
-      /// </summary>
-      /// <param name="message"></param>
-      public static void Fatal(string message)
-      {
-         _logger.Fatal(message);
-      }
-
-      public static void Fatal(Exception ex, string message, params object[] args)
-      {
-         _logger.Fatal(ex, message, args);
-      }
-
-      public static void Fatal(string message, params object[] args)
-      {
-         _logger.Fatal(message, args);
-      }
+      #endregion Private Methods
    }
 }
