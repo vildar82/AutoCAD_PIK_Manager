@@ -13,7 +13,9 @@ using Autodesk.AutoCAD.Runtime;
 namespace AutoCAD_PIK_Manager
 {
    public class Commands : IExtensionApplication
-   {      
+   {
+      #region Public Methods
+
       public void Initialize()
       {
          // Исключения в Initialize проглотит автокад, без выдачи сообщений.
@@ -30,7 +32,7 @@ namespace AutoCAD_PIK_Manager
             Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
             throw;
          }
-         // Запись в лог                  
+         // Запись в лог
          Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
          Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
          Log.Info("Версия автокада - {0}", Application.Version.ToString());
@@ -43,14 +45,14 @@ namespace AutoCAD_PIK_Manager
             PikSettings.LoadSettings(); // Перезагрузка настроек (могли обновиться файлы настроек на сервере)
             // Замена путей к настройкам в файлах инструментальных палитр
             ToolPaletteReplacePath.Replace();
-            Log.Info("Настройки обновлены");
+            Log.Info("Настройки обновлены.");
          }
          try
          {
             // Настройка профиля ПИК в автокаде
             Profile profile = new Profile();
             profile.SetProfile();
-            Log.Info("Профиль установлен SetProfile()");
+            Log.Info("Профиль ПИК установлен.");
          }
          catch (System.Exception ex)
          {
@@ -68,7 +70,11 @@ namespace AutoCAD_PIK_Manager
          Log.Info("Запущена программа обновления UpdatePIKManager с аргументами: sourceDllPikManager - {0}, destDllPikManager - {1}", sourceDllPikManager, destDllPikManager);
          Process.Start(updater, arg);
       }
-      
+
+      #endregion Public Methods
+
+      #region Private Methods
+
       private static bool IsProcessAny()
       {
          //logger.Info("IsProcessAny");
@@ -80,5 +86,7 @@ namespace AutoCAD_PIK_Manager
          }
          return false;
       }
+
+      #endregion Private Methods
    }
 }

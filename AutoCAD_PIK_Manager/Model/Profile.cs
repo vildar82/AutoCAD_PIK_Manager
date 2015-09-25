@@ -15,11 +15,18 @@ namespace AutoCAD_PIK_Manager.Model
    /// </summary>
    internal class Profile
    {
+      #region Private Fields
+
       private string _localSettingsFolder;
       private string _profileName;
       private SettingsGroupFile _settGroupFile;
       private SettingsPikFile _settPikFile;
       private string _userGroup;
+
+      #endregion Private Fields
+
+      #region Public Constructors
+
       public Profile()
       {
          _settPikFile = PikSettings.PikFileSettings;
@@ -28,12 +35,16 @@ namespace AutoCAD_PIK_Manager.Model
          _userGroup = PikSettings.UserGroup;
          _localSettingsFolder = PikSettings.LocalSettingsFolder;
       }
-      
+
+      #endregion Public Constructors
+
+      #region Public Methods
+
       /// <summary>
       /// Настройка профиля ПИК в автокаде
       /// </summary>
       public void SetProfile()
-      {         
+      {
          dynamic preferences = AutoCadApp.Preferences;
 
          object profiles = null;
@@ -47,7 +58,6 @@ namespace AutoCAD_PIK_Manager.Model
                preferences.Profiles.ActiveProfile = _profileName;
             }
             ApplySetting();
-            Log.Info("Профиль {0} обновлен", _profileName);
          }
          else
          {
@@ -55,12 +65,16 @@ namespace AutoCAD_PIK_Manager.Model
             preferences.Profiles.ActiveProfile = _profileName;
             ApplySetting();
             Log.Info("Профиль {0} создан", _profileName);
-         }         
+         }
       }
+
+      #endregion Public Methods
+
+      #region Private Methods
 
       // Настройка профиля
       private void ApplySetting()
-      {         
+      {
          dynamic preference = AutoCadApp.Preferences;
          IConfigurationSection con = AutoCadApp.UserConfigurationManager.OpenCurrentProfile();
          string path = string.Empty;
@@ -73,7 +87,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          catch (Exception ex)
          {
-            Log.Error(ex,"preference.Files.SupportPath = {0}", path);
+            Log.Error(ex, "preference.Files.SupportPath = {0}", path);
          }
 
          // PrinterConfigPaths
@@ -138,14 +152,14 @@ namespace AutoCAD_PIK_Manager.Model
 
          //TemplatePath
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
-         if (Directory.Exists(path))         
+         if (Directory.Exists(path))
             preference.Files.TemplateDwgPath = path + "\\";
 
          //PageSetupOverridesTemplateFile
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
          if (File.Exists(path))
-         {            
-            preference.Files.PageSetupOverridesTemplateFile = path; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);                                                                           
+         {
+            preference.Files.PageSetupOverridesTemplateFile = path; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);
             preference.Files.QNewTemplateFile = path;
          }
 
@@ -161,7 +175,7 @@ namespace AutoCAD_PIK_Manager.Model
             SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
          }
 
-         FlexBrics.Setup();         
+         FlexBrics.Setup();
       }
 
       private List<Variable> GetPaths(List<Variable> pathVars1, List<Variable> pathVars2)
@@ -180,6 +194,7 @@ namespace AutoCAD_PIK_Manager.Model
          }
          return resList;
       }
+
       private string GetPathVariable(List<Variable> settings, string path, string group)
       {
          string fullPath = string.Empty;
@@ -256,10 +271,12 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-               Log.Error(ex,"SetSystemVariable {0}", name);
+               Log.Error(ex, "SetSystemVariable {0}", name);
             }
          }
       }
+
+      #endregion Private Methods
 
       /// <summary>
       /// Дефолтные настройки профиля.
