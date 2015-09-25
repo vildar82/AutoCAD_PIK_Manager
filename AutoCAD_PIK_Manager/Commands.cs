@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +15,35 @@ namespace AutoCAD_PIK_Manager
 {
    public class Commands : IExtensionApplication
    {
+      #region Private Fields
+
+      private static string _about;
+
+      #endregion Private Fields
+
+      #region Private Properties
+
+      private static string About
+      {
+         get
+         {
+            if (_about == null)
+               _about = "\nПрограмма настройки AutoCAD_Pik_Manager, версия: " + Assembly.GetExecutingAssembly().GetName().Version +
+                 "\nПользоватль: " + Environment.UserName + ", Группа: " + PikSettings.UserGroup;
+            return _about;
+         }
+      }
+
+      #endregion Private Properties
+
       #region Public Methods
+
+      [CommandMethod("PIK", "PIK_Manager_About", CommandFlags.Modal)]
+      public static void AboutCommand()
+      {
+         Document doc = Application.DocumentManager.MdiActiveDocument;
+         doc.Editor.WriteMessage("\n{0}", About);
+      }
 
       public void Initialize()
       {
@@ -77,7 +106,6 @@ namespace AutoCAD_PIK_Manager
 
       private static bool IsProcessAny()
       {
-         //logger.Info("IsProcessAny");
          Process[] acadProcess = Process.GetProcessesByName("acad");
          if (acadProcess.Count() > 1)
          {
