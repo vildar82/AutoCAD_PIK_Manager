@@ -67,9 +67,9 @@ namespace AutoCAD_PIK_Manager
             var fileServerTarget = new FileTarget();
             config.AddTarget("serverFile", fileServerTarget);
             fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
-            fileServerTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";
-            fileServerTarget.ArchiveAboveSize = 100152;
-            fileServerTarget.MaxArchiveFiles = 2;
+            fileServerTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";            
+            fileServerTarget.ArchiveAboveSize = 110152;
+            fileServerTarget.MaxArchiveFiles = 1;            
             fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
 
             rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
@@ -80,7 +80,7 @@ namespace AutoCAD_PIK_Manager
             var mailTarget = new MailTarget();
             mailTarget.To = "vildar82@gmail.com";
             mailTarget.From = "KhisyametdinovVT@pik.ru";
-            mailTarget.Subject = "AutoCAD_PIK_Manager.Log. На компе ${machinename}, у " + Environment.UserName;
+            mailTarget.Subject = string.Format ("Error у {0}, AutoCAD_PIK_Manager.Log", Environment.UserName);
             mailTarget.SmtpServer = "ex20pik.picompany.ru";
             mailTarget.Body = "${longdate} ${message} ${exception:format=tostring}";
 
