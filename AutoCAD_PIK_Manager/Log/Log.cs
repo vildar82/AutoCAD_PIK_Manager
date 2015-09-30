@@ -68,7 +68,7 @@ namespace AutoCAD_PIK_Manager
             config.AddTarget("serverFile", fileServerTarget);
             fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
             fileServerTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";            
-            fileServerTarget.ArchiveAboveSize = 110152;
+            fileServerTarget.ArchiveAboveSize = 210152;
             fileServerTarget.MaxArchiveFiles = 1;            
             fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
 
