@@ -33,7 +33,7 @@ namespace AutoCAD_PIK_Manager.Model
 
       static public void SetEnv(string var, string val)
       {
-         if (Ver <= 12) acedSetEnv12(var, val); else acedSetEnv13(var, val);
+         if (Ver <= 18) acedSetEnv12(var, val); else acedSetEnv13(var, val);
       }
    }
 }

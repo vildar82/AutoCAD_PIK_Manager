@@ -45,27 +45,33 @@ namespace AutoCAD_PIK_Manager.Model
       /// </summary>
       public void SetProfile()
       {
-         dynamic preferences = AutoCadApp.Preferences;
-
-         object profiles = null;
-         preferences.Profiles.GetAllProfileNames(out profiles);
-         //Проверка существующих профилей
-         bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
-         if (isExistProfile)
+         try
          {
-            if (preferences.Profiles.ActiveProfile != _profileName)
+            dynamic preferences = AutoCadApp.Preferences;
+            object profiles = null;
+            preferences.Profiles.GetAllProfileNames(out profiles);
+            //Проверка существующих профилей
+            bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
+            if (isExistProfile)
             {
-               preferences.Profiles.ActiveProfile = _profileName;
+               if (preferences.Profiles.ActiveProfile != _profileName)
+               {
+                  preferences.Profiles.ActiveProfile = _profileName;
+               }
             }
-            ApplySetting();
+            else
+            {
+               preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
+               preferences.Profiles.ActiveProfile = _profileName;
+               Log.Info("Профиль {0} создан", _profileName);
+            }
          }
-         else
+         catch (Exception ex)
          {
-            preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
-            preferences.Profiles.ActiveProfile = _profileName;
-            ApplySetting();
-            Log.Info("Профиль {0} создан", _profileName);
+            Log.Error(ex, "Ошибка управления профилями.");                        
          }
+         // Но настройки все равно настраиваем, даже в текущем профиле не ПИК.
+         ApplySetting();
       }
 
       #endregion Public Methods
@@ -80,10 +86,19 @@ namespace AutoCAD_PIK_Manager.Model
          string path = string.Empty;
 
          // SupportPaths
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
+         //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), Env.Ver == 20 ? preference.Files.SupportPath : Env.GetEnv("ACAD"), "");         
          try
          {
-            preference.Files.SupportPath = path;
+            //preference.Files.SupportPath = path;
+            if (!string.IsNullOrEmpty(path) )
+            {               
+               if (Env.Ver == 20)
+                  preference.Files.SupportPath = path;
+               else
+                  Env.SetEnv("ACAD", path);               
+            }
+            Log.Info("SupportPath={0}", path);
          }
          catch (Exception ex)
          {
@@ -92,13 +107,17 @@ namespace AutoCAD_PIK_Manager.Model
 
          // PrinterConfigPaths
          //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile == null ? null : _settGroupFile.PathVariables.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), Env.Ver == 20 ? preference.Files.PrinterConfigPath : Env.GetEnv("PrinterConfigDir"), "");
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), Env.Ver == 20 ? preference.Files.PrinterConfigPath : Env.GetEnv("PrinterConfigDir"), "");         
          try
          {
-            if (Env.Ver == 20)
-               preference.Files.PrinterConfigPath = path;
-            else
-               Env.SetEnv("PrinterConfigDir", path);
+            if (!string.IsNullOrEmpty(path))
+            {
+               if (Env.Ver == 20)
+                  preference.Files.PrinterConfigPath = path;
+               else
+                  Env.SetEnv("PrinterConfigDir", path);
+            }
+            Log.Info("PrinterConfigPath={0}", path);
          }
          catch (Exception ex)
          {
@@ -111,10 +130,14 @@ namespace AutoCAD_PIK_Manager.Model
          path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths), Env.Ver == 20 ? preference.Files.PrinterDescPath : Env.GetEnv("PrinterDescDir"), "");
          try
          {
-            if (Env.Ver == 20)
-               preference.Files.PrinterDescPath = path;
-            else
-               Env.SetEnv("PrinterDescDir", path);
+            if (!string.IsNullOrEmpty(path))
+            {
+               if (Env.Ver == 20)
+                  preference.Files.PrinterDescPath = path;
+               else
+                  Env.SetEnv("PrinterDescDir", path);
+            }
+            Log.Info("PrinterDescDir={0}", path);
          }
          catch (Exception ex)
          {
@@ -127,10 +150,14 @@ namespace AutoCAD_PIK_Manager.Model
          path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths), Env.Ver == 20 ? preference.Files.PrinterStyleSheetPath : Env.GetEnv("PrinterStyleSheetDir"), "");
          try
          {
-            if (Env.Ver == 20)
-               preference.Files.PrinterStyleSheetPath = path;
-            else
-               Env.SetEnv("PrinterStyleSheetDir", path);
+            if (!string.IsNullOrEmpty(path))
+            {
+               if (Env.Ver == 20)
+                  preference.Files.PrinterStyleSheetPath = path;
+               else
+                  Env.SetEnv("PrinterStyleSheetDir", path);
+            }
+            Log.Info("PrinterStyleSheetDir={0}", path);
          }
          catch (Exception ex)
          {
@@ -139,10 +166,16 @@ namespace AutoCAD_PIK_Manager.Model
          }
 
          // ToolPalettePath
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
+         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);         
+         //path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), Env.GetEnv("ToolPalettePath"), _userGroup);
          try
          {
-            preference.Files.ToolPalettePath = path;
+            if (!string.IsNullOrEmpty(path))
+            {
+               preference.Files.ToolPalettePath = path;
+               //Env.SetEnv("ToolPalettePath", path);
+            }
+            Log.Info("ToolPalettePath={0}", path);
          }
          catch (Exception ex)
          {
@@ -153,26 +186,39 @@ namespace AutoCAD_PIK_Manager.Model
          //TemplatePath
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
          if (Directory.Exists(path))
-            preference.Files.TemplateDwgPath = path + "\\";
+         {
+            if (!string.IsNullOrEmpty(path))
+            {
+               //preference.Files.TemplateDwgPath = path + "\\";
+               Env.SetEnv("TemplatePath", path);
+            }
+            Log.Info("TemplatePath={0}", path);
+         }
 
          //PageSetupOverridesTemplateFile
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
          if (File.Exists(path))
-         {
-            preference.Files.PageSetupOverridesTemplateFile = path; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);
-            preference.Files.QNewTemplateFile = path;
+         {            
+            Env.SetEnv("QnewTemplate", path);
+            Log.Info("QnewTemplate={0}", path);
+            //preference.Files.QNewTemplateFile = path;            
+            preference.Files.PageSetupOverridesTemplateFile = path; //Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PageSetupOverridesTemplateFile.Value);            
          }
 
          //SheetSetTemplatePath
          path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
          if (Directory.Exists(path))
+         {
             Env.SetEnv("SheetSetTemplatePath", path);
+            Log.Info("SheetSetTemplatePath={0}", path);
+         }
          //con.OpenSubsection("General").WriteProperty("SheetSetTemplatePath", path);
          //con.OpenSubsection("General").WriteProperty("TemplatePath", _settingsPIK.PathVariables.SheetSetTemplatePath.Value + _userGroup);
 
          foreach (var sysVar in _settPikFile.SystemVariables)
          {
             SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+            Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value,sysVar.IsReWrite);
          }
 
          FlexBrics.Setup();
@@ -215,16 +261,56 @@ namespace AutoCAD_PIK_Manager.Model
             }
             if (!isWrite)
             {
-               fullPath += path;
+               //fullPath += path;               
+               fullPath = path + (path.EndsWith(";") ? "" : ";") + fullPath;
             }
             else
             {
-               fullPath = fullPath.Remove(fullPath.Length - 1, 1);
+               // ???
+               //fullPath = fullPath.Remove(fullPath.Length - 1, 1);
             }
          }
          catch { }
 
+         fullPath =getOnlyExistsPaths(fullPath);
+
          return fullPath;
+      }
+
+      // Удаление несуществующих путей.
+      private string getOnlyExistsPaths(string fullPath)
+      {
+         Dictionary<string, string> existsPath = new Dictionary<string, string>();
+         string pathUpper;
+         var paths = fullPath.Split(';');
+         foreach (var path in paths)
+         {
+            if (string.IsNullOrWhiteSpace(path) )
+            {
+               continue;
+            }
+            pathUpper = path.ToUpper();
+            if (existsPath.ContainsKey(pathUpper))
+            {
+               continue;
+            }
+            FileAttributes attr = File.GetAttributes(path);            
+            if (attr.HasFlag(FileAttributes.Directory ) )
+            {  
+               if (Directory.Exists(path))
+               {
+                  existsPath.Add(pathUpper, path);
+               }
+            }
+            else
+            {
+               if (File.Exists(path))
+               {
+                  existsPath.Add(pathUpper,  path);
+               }
+            }            
+         }
+         return string.Join(";", existsPath.Values.ToArray()) + (existsPath.Count>1 ? ";" : "");
       }
 
       private void SetSystemVariable(string name, string value, bool isReWrite)

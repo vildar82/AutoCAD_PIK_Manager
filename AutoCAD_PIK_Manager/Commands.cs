@@ -56,10 +56,10 @@ namespace AutoCAD_PIK_Manager
          catch (System.Exception ex)
          {
             Log.Error(ex, "LoadSettings");
-            Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
+            Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
             Log.Info("Версия автокада - {0}", Application.Version.ToString());
-            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
-            throw;
+            Log.Info("Путь к сетевой папке настроек ? - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            throw; // Не допускаются ошибки при загрузке настроек. Последствия непредсказуемы. Нужно подойти и разобраться на месте.
          }
          // Запись в лог
          Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
@@ -70,11 +70,26 @@ namespace AutoCAD_PIK_Manager
          if (!IsProcessAny())
          {
             // Обновление настроек с сервера (удаление и копирование)
-            PikSettings.UpdateSettings();
-            PikSettings.LoadSettings(); // Перезагрузка настроек (могли обновиться файлы настроек на сервере)
-            // Замена путей к настройкам в файлах инструментальных палитр
-            ToolPaletteReplacePath.Replace();
-            Log.Info("Настройки обновлены.");
+            try
+            {
+               PikSettings.UpdateSettings();
+               Log.Info("Настройки обновлены.");
+            }
+            catch (System.Exception ex)
+            {
+               Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
+            }
+            try
+            {
+               PikSettings.LoadSettings(); // Перезагрузка настроек (могли обновиться файлы настроек на сервере)
+                                           // Замена путей к настройкам в файлах инструментальных палитр
+               ToolPaletteReplacePath.Replace();
+               Log.Info("Настройки загружены.");
+            }
+            catch (System.Exception ex)
+            {
+               Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
+            }
          }
          try
          {
