@@ -176,7 +176,24 @@ namespace AutoCAD_PIK_Manager.Model
          {
             if (!string.IsNullOrEmpty(path))
             {
-               preference.Files.PrinterStyleSheetPath = path;
+               if (cuVer < v2015)
+               {
+                  // Глючит печать в 2013-2014 версии.
+                  // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+                  if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
+                  {
+                     string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
+                     string pathCurProfilePlotStyle = Env.GetEnv("PrinterPlotStylePaths").Split(';').First();
+                     CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
+                     // Исключить наши папки из путей pathCurProfilePlotStyle
+                     path = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
+                     Env.SetEnv("PrinterPlotStylePaths", path);
+                  }
+               }
+               else
+               {
+                  preference.Files.PrinterStyleSheetPath = path;
+               }               
             }
             Log.Info("PrinterStyleSheetDir={0}", path);
          }
