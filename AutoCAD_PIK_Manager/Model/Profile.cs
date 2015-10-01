@@ -120,8 +120,9 @@ namespace AutoCAD_PIK_Manager.Model
                      string pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
                      CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
                      // Исключить наши папки из путей принтеров
-                     path = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
-                     Env.SetEnv("PrinterConfigDir", path);
+                     string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
+                     if (path != pathEx)
+                        Env.SetEnv("PrinterConfigDir", pathEx);
                   }
                }
                else
@@ -153,8 +154,9 @@ namespace AutoCAD_PIK_Manager.Model
                      string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
                      CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
                      // Исключить наши папки из путей принтеров
-                     path = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                     Env.SetEnv("PrinterDescDir", path);
+                     string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
+                     if (path != pathEx)
+                        Env.SetEnv("PrinterDescDir", pathEx);
                   }
                }
                else
@@ -186,8 +188,9 @@ namespace AutoCAD_PIK_Manager.Model
                      string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
                      CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
                      // Исключить наши папки из путей pathCurProfilePlotStyle
-                     path = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                     Env.SetEnv("PrinterStyleSheetDir", path);
+                     string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
+                     if (path != pathEx)
+                        Env.SetEnv("PrinterStyleSheetDir", pathEx);
                   }
                }
                else
