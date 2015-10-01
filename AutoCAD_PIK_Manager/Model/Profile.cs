@@ -183,11 +183,11 @@ namespace AutoCAD_PIK_Manager.Model
                   if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
                   {
                      string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
-                     string pathCurProfilePlotStyle = Env.GetEnv("PrinterPlotStylePaths").Split(';').First();
+                     string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
                      CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
                      // Исключить наши папки из путей pathCurProfilePlotStyle
                      path = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                     Env.SetEnv("PrinterPlotStylePaths", path);
+                     Env.SetEnv("PrinterStyleSheetDir", path);
                   }
                }
                else
