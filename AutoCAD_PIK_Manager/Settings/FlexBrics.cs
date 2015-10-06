@@ -70,7 +70,9 @@ namespace AutoCAD_PIK_Manager.Settings
 
       private static bool isAcadVerLater2013()
       {
-         return !(AutoCadApp.Version.Major == 19 && AutoCadApp.Version.Minor == 0);
+         Version acadVer = new Version(AutoCadApp.Version.Major, AutoCadApp.Version.Minor);
+         Version acad2013Ver = new Version(19, 0);
+         return acadVer > acad2013Ver;
       }
 
       private static string AddPath(string var, string path)

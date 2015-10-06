@@ -47,23 +47,27 @@ namespace AutoCAD_PIK_Manager.Model
       {
          try
          {
-            dynamic preferences = AutoCadApp.Preferences;
-            object profiles = null;
-            preferences.Profiles.GetAllProfileNames(out profiles);
-            //Проверка существующих профилей
-            bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
-            if (isExistProfile)
+            if (!string.Equals(Environment.UserName, "BystrovDS", StringComparison.InvariantCultureIgnoreCase) &&
+                  !string.Equals(Environment.UserName, "LilyuevAA", StringComparison.InvariantCultureIgnoreCase))
             {
-               if (preferences.Profiles.ActiveProfile != _profileName)
+               dynamic preferences = AutoCadApp.Preferences;
+               object profiles = null;
+               preferences.Profiles.GetAllProfileNames(out profiles);
+               //Проверка существующих профилей
+               bool isExistProfile = ((string[])profiles).Any(x => x.Equals(_profileName));
+               if (isExistProfile)
                {
-                  preferences.Profiles.ActiveProfile = _profileName;
+                  if (preferences.Profiles.ActiveProfile != _profileName)
+                  {
+                     preferences.Profiles.ActiveProfile = _profileName;
+                  }
                }
-            }
-            else
-            {
-               preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
-               preferences.Profiles.ActiveProfile = _profileName;
-               Log.Info("Профиль {0} создан", _profileName);
+               else
+               {
+                  preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
+                  preferences.Profiles.ActiveProfile = _profileName;
+                  Log.Info("Профиль {0} создан", _profileName);
+               }
             }
          }
          catch (Exception ex)
@@ -87,11 +91,10 @@ namespace AutoCAD_PIK_Manager.Model
          Version v2015 = new Version(20, 0);
          Version cuVer = new Version(Application.Version.Major, Application.Version.Minor);
 
-         // SupportPaths         
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
-         Log.Debug("SupportPaths path = {0}", path);
+         // SupportPaths    
          try
          {
+            path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");                  
             if (!string.IsNullOrEmpty(path))
             {
                preference.Files.SupportPath = path;
@@ -102,12 +105,10 @@ namespace AutoCAD_PIK_Manager.Model
          {
             Log.Error(ex, "preference.Files.SupportPath = {0}", path);
          }
-
          // PrinterConfigPaths         
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
-         Log.Debug("PrinterConfigPaths path = {0}", path);
          try
          {
+            path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
             if (!string.IsNullOrEmpty(path))
             {  
                if (cuVer < v2015)
@@ -138,10 +139,9 @@ namespace AutoCAD_PIK_Manager.Model
          }
 
          // PrinterDescPaths         
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths), preference.Files.PrinterDescPath, "");
-         Log.Debug("PrinterDescPaths path = {0}", path);
          try
          {
+            path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths), preference.Files.PrinterDescPath, "");                  
             if (!string.IsNullOrEmpty(path))
             {  
                if (cuVer < v2015)
@@ -172,10 +172,9 @@ namespace AutoCAD_PIK_Manager.Model
          }
 
          // PrinterPlotStylePaths         
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
-         Log.Debug("PrinterPlotStylePaths path = {0}", path);
          try
          {
+            path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
             if (!string.IsNullOrEmpty(path))
             {
                if (cuVer < v2015)
@@ -206,10 +205,9 @@ namespace AutoCAD_PIK_Manager.Model
          }
 
          // ToolPalettePath
-         path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
-         Log.Debug("ToolPalettePath path = {0}", path);
          try
          {
+            path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);         
             if (!string.IsNullOrEmpty(path))
             {
                preference.Files.ToolPalettePath = path;               
@@ -222,42 +220,77 @@ namespace AutoCAD_PIK_Manager.Model
          }
 
          //TemplatePath
-         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
-         if (Directory.Exists(path))
+         try
          {
-            if (!string.IsNullOrEmpty(path))
-            {               
-               Env.SetEnv("TemplatePath", path);
+            path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
+            if (Directory.Exists(path))
+            {
+               if (!string.IsNullOrEmpty(path))
+               {
+                  Env.SetEnv("TemplatePath", path);
+               }
+               Log.Info("TemplatePath={0}", path);
             }
-            Log.Info("TemplatePath={0}", path);
+         }
+         catch (Exception ex)
+         {
+            Log.Error(ex, "Env.SetEnv(TemplatePath = {0}", path);
          }
 
          //PageSetupOverridesTemplateFile
-         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
-         if (File.Exists(path))
-         {            
-            Env.SetEnv("QnewTemplate", path);
-            Log.Info("QnewTemplate={0}", path);            
-            preference.Files.PageSetupOverridesTemplateFile = path;
+         try
+         {
+            path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
+            if (File.Exists(path))
+            {
+               Env.SetEnv("QnewTemplate", path);
+               Log.Info("QnewTemplate={0}", path);
+               preference.Files.PageSetupOverridesTemplateFile = path;
+            }
+         }
+         catch (Exception ex)
+         {
+            Log.Error(ex, "Env.SetEnv(QnewTemplate = {0}", path);
          }
 
          //SheetSetTemplatePath
-         path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
-         if (Directory.Exists(path))
+         try
          {
-            Env.SetEnv("SheetSetTemplatePath", path);
-            Log.Info("SheetSetTemplatePath={0}", path);
-         }         
+            path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
+            if (Directory.Exists(path))
+            {
+               Env.SetEnv("SheetSetTemplatePath", path);
+               Log.Info("SheetSetTemplatePath={0}", path);
+            }
+         }
+         catch (Exception ex)
+         {
+            Log.Error(ex, "Env.SetEnv(SheetSetTemplatePath = {0}", path);
+         }
 
          foreach (var sysVar in _settPikFile.SystemVariables)
          {
-            SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-            Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value,sysVar.IsReWrite);
+            try
+            {
+               SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+               Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+            }
+            catch (Exception ex)
+            {
+               Log.Error(ex, "Уст сис перем {0} = {1}", sysVar.Name, sysVar.Value);
+            }
          }
 
          if (_settGroupFile?.FlexBricsSetup == true)
          {
-            FlexBrics.Setup();
+            try
+            {
+               FlexBrics.Setup();
+            }
+            catch (Exception ex)
+            {
+               Log.Error(ex, "FlexBrics.Setup()");
+            }
          }
       }
 
