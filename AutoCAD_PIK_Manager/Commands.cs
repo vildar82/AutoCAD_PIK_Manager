@@ -15,13 +15,7 @@ namespace AutoCAD_PIK_Manager
 {
    public class Commands : IExtensionApplication
    {
-      #region Private Fields
-
       private static string _about;
-
-      #endregion Private Fields
-
-      #region Private Properties
 
       private static string About
       {
@@ -33,10 +27,6 @@ namespace AutoCAD_PIK_Manager
             return _about;
          }
       }
-
-      #endregion Private Properties
-
-      #region Public Methods
 
       [CommandMethod("PIK", "PIK_Manager_About", CommandFlags.Modal)]
       public static void AboutCommand()
@@ -115,10 +105,6 @@ namespace AutoCAD_PIK_Manager
          Process.Start(updater, arg);
       }
 
-      #endregion Public Methods
-
-      #region Private Methods
-
       private static bool IsProcessAny()
       {
          Process[] acadProcess = Process.GetProcessesByName("acad");
@@ -129,7 +115,5 @@ namespace AutoCAD_PIK_Manager
          }
          return false;
       }
-
-      #endregion Private Methods
    }
 }

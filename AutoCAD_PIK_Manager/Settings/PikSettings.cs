@@ -19,6 +19,7 @@ namespace AutoCAD_PIK_Manager.Settings
       private static SettingsPikFile _settingsPikFile;
       private static string _userGroup;
       private static List<string> _userGroups;
+      public const string RegAppPath = @"Software\Vildar\AutoCAD_PIK_Manager";
 
       /// <summary>
       /// Путь до папки настроек на локальном компьютере: c:\Autodesk\AutoCAD\Pik\Settings
@@ -148,9 +149,7 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                target.Delete(true);
             }
-            catch
-            {
-            }
+            catch { }
          }
       }
       private static T getSettings<T>(string file)
@@ -183,6 +182,16 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             if (string.IsNullOrEmpty(nameGroup))
             {
+               Log.Error("Не определена группа по файлу UserGroup2.xlsx. {0}", pathToList);
+               // проверка была ли группа сохранена ранее в реестре
+               nameGroup = loadUserGroupFromRegistry();
+            }
+            else
+            {
+               saveUserGroupToRegistry(nameGroup);
+            }
+            if (string.IsNullOrEmpty(nameGroup))
+            {
                throw new Exception("IsNullOrEmpty(nameGroup)");
             }
             Log.Info("{0} Группа - {1}", Environment.UserName,nameGroup);
@@ -202,6 +211,27 @@ namespace AutoCAD_PIK_Manager.Settings
          //   }
          //}
          return nameGroup;
+      }
+
+      private static string loadUserGroupFromRegistry()
+      {
+         string res = ""; // default
+         try
+         {
+            var keyReg = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RegAppPath);
+            res = (string)keyReg.GetValue("UserGroup", res);
+         }
+         catch { }
+         return res;
+      }
+      private static void saveUserGroupToRegistry(string userGroup)
+      {
+         try
+         {
+            var keyReg = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(RegAppPath);
+            keyReg.SetValue("UserGroup", userGroup, Microsoft.Win32.RegistryValueKind.String);
+         }
+         catch { }
       }
 
       private static List<string> getUserGroups()
