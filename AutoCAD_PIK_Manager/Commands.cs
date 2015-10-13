@@ -48,7 +48,7 @@ namespace AutoCAD_PIK_Manager
             Log.Error(ex, "LoadSettings");
             Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
             Log.Info("Версия автокада - {0}", Application.Version.ToString());
-            Log.Info("Путь к сетевой папке настроек ? - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
             throw; // Не допускаются ошибки при загрузке настроек. Последствия непредсказуемы. Нужно подойти и разобраться на месте.
          }
          // Запись в лог
