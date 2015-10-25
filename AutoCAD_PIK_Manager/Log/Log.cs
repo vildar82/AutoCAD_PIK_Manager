@@ -62,7 +62,8 @@ namespace AutoCAD_PIK_Manager
             config.LoggingRules.Add(rule);
             LogManager.Configuration = config;
 
-            string serverLogPath = getExistServerLogPath(PikSettings.PikFileSettings?.ServerLogPath ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
+            string serverLogPath = PikSettings.GetExistServersettingsPath(
+               Path.Combine(PikSettings.PikFileSettings?.ServerShareSettings, @"AutoCAD_PIK_Manager\Logs") ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
 
             var fileServerTarget = new FileTarget();
             config.AddTarget("serverFile", fileServerTarget);
@@ -198,19 +199,19 @@ namespace AutoCAD_PIK_Manager
 
       #region Private Methods
 
-      private static string getExistServerLogPath(string logPath)
-      {
-         string res = logPath;
-         if (!Directory.Exists(res))
-         {
-            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
-            if (!Directory.Exists(res))
-            {
-               res = @"\\ab4\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
-            }
-         }
-         return res;
-      }
+      //private static string getExistServerLogPath(string logPath)
+      //{
+      //   string res = logPath;
+      //   if (!Directory.Exists(res))
+      //   {
+      //      res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+      //      if (!Directory.Exists(res))
+      //      {
+      //         res = @"\\ab4\CAD_Settings\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs";
+      //      }
+      //   }
+      //   return res;
+      //}
 
       #endregion Private Methods
    }
