@@ -84,6 +84,7 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Log\Log.cs" />
     <Compile Include="Model\Env.cs" />
+    <Compile Include="Model\LoadDll.cs" />
     <Compile Include="Model\Profile.cs" />
     <Compile Include="Model\ToolPaletteReplacePath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -120,7 +121,6 @@
     <None Include="Graph1.dgml" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

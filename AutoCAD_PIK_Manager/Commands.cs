@@ -92,6 +92,16 @@ namespace AutoCAD_PIK_Manager
          {
             Log.Error(ex, "Ошибка настройки профиля SetProfile().");
          }
+
+         // Загрузка библиотек
+         try
+         {
+            LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
+         }
+         catch (System.Exception ex)
+         {
+            Log.Error(ex, "Ошибка загрузки библиотеки.");
+         }
       }
 
       public void Terminate()
