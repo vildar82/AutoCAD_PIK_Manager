@@ -56,18 +56,13 @@ namespace UpdatePIKManager
 
       private static void copyFiles(string sourseDir, string destDir)
       {
+         Trace.WriteLine(string.Format("Копирование файлов из {0} в {1}", sourseDir, destDir));
          var dirSource = new DirectoryInfo(sourseDir);
          var filesSource = dirSource.GetFiles();
          foreach (var file in filesSource)
          {
-            try
-            {
-               file.CopyTo(Path.Combine(destDir, file.Name));
-            }
-            catch
-            {
-               Trace.WriteLine(string.Format("Не удалось скопировать файл {0}", file.FullName));
-            }
+            Trace.WriteLine(string.Format("Копирование файла из {0} в {1}", file.FullName, Path.Combine(destDir, file.Name)));
+            file.CopyTo(Path.Combine(destDir, file.Name), true);
          }
       }
    }
