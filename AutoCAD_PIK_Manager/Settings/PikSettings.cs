@@ -152,24 +152,11 @@ namespace AutoCAD_PIK_Manager.Settings
       {
          if (target.Name == "Settings" && target.Exists)
          {
-            var dirs = target.GetDirectories();
-            foreach (var item in dirs)
+            try
             {
-               try
-               {
-                  item.Delete(true);
-               }
-               catch { }
+               target.Delete();
             }
-            var files = target.GetFiles();
-            foreach (var item in files)
-            {
-               try
-               {
-                  item.Delete();
-               }
-               catch { }
-            }            
+            catch { }
          }
       }
       private static T getSettings<T>(string file)
