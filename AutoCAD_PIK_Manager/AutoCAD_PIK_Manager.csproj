@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutoCAD_PIK_Manager</RootNamespace>
     <AssemblyName>AutoCAD_PIK_Manager</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
@@ -46,25 +46,32 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\AutoCAD_PIK_Manager.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AcadLib, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\AcadLib\AcadLib\bin\Release\AcadLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AcCoreMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcCoreMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2013\inc\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcDbMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcDbMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2013\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AcMgd">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\AutoCAD\ObjectARX2013\inc\AcMgd.dll</HintPath>
+      <HintPath>..\..\ObjectARX\ObjectARX2013\inc\AcMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="EPPlus">
-      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\EPPlus.dll</HintPath>
+      <HintPath>..\..\Package\Excel\EPPlus.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">

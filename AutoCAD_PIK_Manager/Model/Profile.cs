@@ -22,6 +22,7 @@ namespace AutoCAD_PIK_Manager.Model
       private SettingsGroupFile _settGroupFile;
       private SettingsPikFile _settPikFile;
       private string _userGroup;
+      private List<string> _usersComError;
 
       #endregion Private Fields
 
@@ -29,6 +30,7 @@ namespace AutoCAD_PIK_Manager.Model
 
       public Profile()
       {
+         _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK"}; // у BystrovDS теперь другой комп
          _settPikFile = PikSettings.PikFileSettings;
          _profileName = _settPikFile.ProfileName;
          _settGroupFile = PikSettings.GroupFileSettings;
@@ -47,8 +49,7 @@ namespace AutoCAD_PIK_Manager.Model
       {
          try
          {
-            if (!string.Equals(Environment.UserName, "BystrovDS", StringComparison.InvariantCultureIgnoreCase) &&
-                  !string.Equals(Environment.UserName, "LilyuevAA", StringComparison.InvariantCultureIgnoreCase))
+            if (!_usersComError.Exists(u=>string.Equals(u, Environment.UserName, StringComparison.OrdinalIgnoreCase)))           
             {
                dynamic preferences = AutoCadApp.Preferences;
                object profiles = null;
