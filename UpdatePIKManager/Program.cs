@@ -58,7 +58,7 @@ namespace UpdatePIKManager
       {
          Trace.WriteLine(string.Format("Копирование файлов из {0} в {1}", sourseDir, destDir));
          var dirSource = new DirectoryInfo(sourseDir);
-         var filesSource = dirSource.GetFiles();
+         var filesSource = dirSource.GetFiles("*.dll");
          foreach (var file in filesSource)
          {
             Trace.WriteLine(string.Format("Копирование файла из {0} в {1}", file.FullName, Path.Combine(destDir, file.Name)));
