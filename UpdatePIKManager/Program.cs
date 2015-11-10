@@ -35,7 +35,9 @@ namespace UpdatePIKManager
             {
                try
                {
-                  File.Copy(sourceFile, destFile, true);
+                  //File.Copy(sourceFile, destFile, true);
+                  // копирование файлов в папке
+                  copyFiles(Path.GetDirectoryName(sourceFile), Path.GetDirectoryName(destFile));
                   Trace.WriteLine("Скопировалось");
                   break;
                }
@@ -49,6 +51,23 @@ namespace UpdatePIKManager
          catch (Exception ex)
          {
             Trace.WriteLine("Исключение: " + ex.Message);
+         }
+      }
+
+      private static void copyFiles(string sourseDir, string destDir)
+      {
+         var dirSource = new DirectoryInfo(sourseDir);
+         var filesSource = dirSource.GetFiles();
+         foreach (var file in filesSource)
+         {
+            try
+            {
+               file.CopyTo(Path.Combine(destDir, file.Name));
+            }
+            catch
+            {
+               Trace.WriteLine(string.Format("Не удалось скопировать файл {0}", file.FullName));
+            }
          }
       }
    }

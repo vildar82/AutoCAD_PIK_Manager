@@ -465,10 +465,10 @@ namespace AutoCAD_PIK_Manager.Model
 
       #endregion Private Methods
 
-      /// <summary>
-      /// Дефолтные настройки профиля.
-      /// Возможно лучше вообще ничего не делать, чем портить профиль человеку. Один фиг работать не будеть.!!!???
-      /// </summary>
+      ///// <summary>
+      ///// Дефолтные настройки профиля.
+      ///// Возможно лучше вообще ничего не делать, чем портить профиль человеку. Один фиг работать не будеть.!!!???
+      ///// </summary>
       //private static void CreateTemplateSettings()
       //{
       //   PathVariable pathVar = new PathVariable();
