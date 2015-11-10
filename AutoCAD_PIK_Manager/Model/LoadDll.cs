@@ -14,7 +14,7 @@ namespace AutoCAD_PIK_Manager.Model
          if (File.Exists(file))
          {
             Assembly.LoadFile(file);
-            //AcadLib.Comparers.StringsNumberComparer comparer = new AcadLib.Comparers.StringsNumberComparer ();
+            AcadLib.Comparers.StringsNumberComparer comparer = new AcadLib.Comparers.StringsNumberComparer ();
          }
       }
    }
