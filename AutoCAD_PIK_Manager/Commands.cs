@@ -37,70 +37,68 @@ namespace AutoCAD_PIK_Manager
 
       public void Initialize()
       {
-         // Исключения в Initialize проглотит автокад, без выдачи сообщений.
-         // Програ загружена в автокад.
+         // Исключения в Initialize проглотит автокад, без выдачи сообщений. При этом сборка не будет загружена!!!.         
          try
          {
             PikSettings.LoadSettings();
+            // Запись в лог
+            Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
+            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            Log.Info("Версия автокада - {0}", Application.Version.ToString());
+
+            // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
+            if (!IsProcessAny())
+            {
+               // Обновление настроек с сервера (удаление и копирование)
+               try
+               {
+                  PikSettings.UpdateSettings();
+                  Log.Info("Настройки обновлены.");
+               }
+               catch (System.Exception ex)
+               {
+                  Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
+               }
+               try
+               {
+                  PikSettings.LoadSettings(); // Перезагрузка настроек (могли обновиться файлы настроек на сервере)
+                                              // Замена путей к настройкам в файлах инструментальных палитр
+                  ToolPaletteReplacePath.Replace();
+                  Log.Info("Настройки загружены.");
+               }
+               catch (System.Exception ex)
+               {
+                  Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
+               }
+            }
+            try
+            {
+               // Настройка профиля ПИК в автокаде
+               Profile profile = new Profile();
+               profile.SetProfile();
+               Log.Info("Профиль ПИК установлен.");
+            }
+            catch (System.Exception ex)
+            {
+               Log.Error(ex, "Ошибка настройки профиля SetProfile().");
+            }
+
+            // Загрузка библиотек
+            try
+            {
+               LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
+            }
+            catch (System.Exception ex)
+            {
+               Log.Error(ex, "Ошибка загрузки библиотеки.");
+            }
          }
          catch (System.Exception ex)
          {
             Log.Error(ex, "LoadSettings");
             Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
             Log.Info("Версия автокада - {0}", Application.Version.ToString());
-            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
-            throw; // Не допускаются ошибки при загрузке настроек. Последствия непредсказуемы. Нужно подойти и разобраться на месте.
-         }
-         // Запись в лог
-         Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
-         Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
-         Log.Info("Версия автокада - {0}", Application.Version.ToString());
-
-         // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
-         if (!IsProcessAny())
-         {
-            // Обновление настроек с сервера (удаление и копирование)
-            try
-            {
-               PikSettings.UpdateSettings();
-               Log.Info("Настройки обновлены.");
-            }
-            catch (System.Exception ex)
-            {
-               Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
-            }
-            try
-            {
-               PikSettings.LoadSettings(); // Перезагрузка настроек (могли обновиться файлы настроек на сервере)
-                                           // Замена путей к настройкам в файлах инструментальных палитр
-               ToolPaletteReplacePath.Replace();
-               Log.Info("Настройки загружены.");
-            }
-            catch (System.Exception ex)
-            {
-               Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
-            }
-         }
-         try
-         {
-            // Настройка профиля ПИК в автокаде
-            Profile profile = new Profile();
-            profile.SetProfile();
-            Log.Info("Профиль ПИК установлен.");
-         }
-         catch (System.Exception ex)
-         {
-            Log.Error(ex, "Ошибка настройки профиля SetProfile().");
-         }
-
-         // Загрузка библиотек
-         try
-         {
-            LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
-         }
-         catch (System.Exception ex)
-         {
-            Log.Error(ex, "Ошибка загрузки библиотеки.");
+            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");            
          }
       }
 

@@ -30,6 +30,31 @@ namespace UpdatePIKManager
                return;
             }
 
+            // Удаление epplus.dll - скрытого
+            string fileEpplus = Path.Combine(Path.GetDirectoryName(destFile), "EPPlus.dll");
+            if (File.Exists(fileEpplus))
+            {               
+               try
+               {
+                  var attrs = File.GetAttributes(fileEpplus);
+                  if ((attrs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                  {
+                     Trace.WriteLine("Epplus скрытый");
+                     File.SetAttributes(fileEpplus, FileAttributes.Normal);
+                  }
+                  Trace.WriteLine("Удаление Epplus");
+                  File.Delete(fileEpplus);
+               }
+               catch (Exception ex)
+               {
+                  Trace.Write(ex.ToString());
+               }
+            }
+            else
+            {
+               Trace.WriteLine(string.Format("Файла Epplus не существует - {0}", fileEpplus));
+            }
+
             int i = 0;
             while (i < 5)
             {
