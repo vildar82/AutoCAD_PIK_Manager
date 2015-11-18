@@ -172,6 +172,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
          }
       }
+
       private static T getSettings<T>(string file)
       {
          if (!File.Exists(file)) return default(T);

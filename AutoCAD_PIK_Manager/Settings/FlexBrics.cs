@@ -4,11 +4,11 @@ using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace AutoCAD_PIK_Manager.Settings
 {
-   internal static class FlexBrics
+   public  static class FlexBrics
    {      
       private static string _fbLocalDir;
 
-      internal static void Copy()
+      public static void Copy()
       {
          if (PikSettings.GroupFileSettings?.FlexBricsSetup == true)
          {
@@ -44,7 +44,7 @@ namespace AutoCAD_PIK_Manager.Settings
          return res;
       }
 
-      internal static void Setup()
+      public static void Setup()
       {
          // Установка flexBrics
          // 1. Добавить папку в доверенные
@@ -90,8 +90,12 @@ namespace AutoCAD_PIK_Manager.Settings
             Directory.CreateDirectory(target.FullName);         
                   
          foreach (FileInfo fi in source.GetFiles())
-         {            
-            fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+         {
+            try
+            {
+               fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+            }
+            catch { }
          }         
          foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
          {
