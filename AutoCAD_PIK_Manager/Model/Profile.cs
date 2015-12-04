@@ -269,6 +269,7 @@ namespace AutoCAD_PIK_Manager.Model
             Log.Error(ex, "Env.SetEnv(SheetSetTemplatePath = {0}", path);
          }
 
+         // Системные переменные
          foreach (var sysVar in _settPikFile.SystemVariables)
          {
             try
@@ -384,6 +385,10 @@ namespace AutoCAD_PIK_Manager.Model
          Dictionary<string, string> existsPath = new Dictionary<string, string>();
          string pathUpper;
          var paths = fullPath.Split(';');
+         if (paths.Length <=1)
+         {
+            return fullPath;
+         }
          foreach (var path in paths)
          {
             if (string.IsNullOrWhiteSpace(path) )
@@ -416,12 +421,6 @@ namespace AutoCAD_PIK_Manager.Model
 
       private void SetSystemVariable(string name, string value, bool isReWrite)
       {
-         if (name.ToUpper() == "TRUSTEDPATHS")
-         {
-            var paths = value.Split(';').Select(p => Path.Combine(_localSettingsFolder, p));
-            value = String.Join(";", paths);
-         }
-
          object nameVar = null;
          try
          {
@@ -431,21 +430,40 @@ namespace AutoCAD_PIK_Manager.Model
          {
             return;
          }
-         if (isReWrite)
+
+         if (name.ToUpper() == "TRUSTEDPATHS")
          {
-            nameVar = value;
-         }
-         else
-         {
-            if ((nameVar == null) || (Convert.ToString(nameVar) == ""))
+            var paths = value.Split(';').Select(p => Path.Combine(_localSettingsFolder, p));
+            value = String.Join(";", paths);
+            if (isReWrite)
             {
                nameVar = value;
             }
-            else if (!value.ToUpper().Contains((nameVar.ToString().Remove(nameVar.ToString().Length - 1, 1)).ToUpper()))
+            else
             {
                nameVar += ";" + value;
             }
+            nameVar = getOnlyExistsPaths(nameVar.ToString());
          }
+         else
+         {
+            if (isReWrite)
+            {
+               nameVar = value;
+            }
+            else
+            {
+               if ((nameVar == null) || (Convert.ToString(nameVar) == ""))
+               {
+                  nameVar = value;
+               }
+               else if (!value.ToUpper().Contains((nameVar.ToString().Remove(nameVar.ToString().Length - 1, 1)).ToUpper()))
+               {
+                  nameVar += ";" + value;
+               }
+            }
+         }
+         
          try
          {
             AutoCadApp.SetSystemVariable(name, nameVar);
