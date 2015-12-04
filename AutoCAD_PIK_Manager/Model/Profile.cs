@@ -444,6 +444,7 @@ namespace AutoCAD_PIK_Manager.Model
                nameVar += ";" + value;
             }
             nameVar = getOnlyExistsPaths(nameVar.ToString());
+            Log.Info("TRUSTEDPATHS = {0}", nameVar);
          }
          else
          {
