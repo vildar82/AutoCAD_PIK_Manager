@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortToolPalette.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="1372685215_67962.ico" />

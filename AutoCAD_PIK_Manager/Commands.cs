@@ -108,9 +108,13 @@ namespace AutoCAD_PIK_Manager
          string updater = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "UpdatePIKManager.exe");
          string sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
          string destDllPikManager = Path.Combine(PikSettings.LocalSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
-         string arg = string.Format("\"{0}\" \"{1}\"", sourceDllPikManager, destDllPikManager);
-         Log.Info("Запущена программа обновления UpdatePIKManager с аргументами: sourceDllPikManager - {0}, destDllPikManager - {1}", sourceDllPikManager, destDllPikManager);
-         Process.Start(updater, arg);
+         string roamableFolder =Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });         
+         string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);
+         Log.Info("Запущена программа обновления UpdatePIKManager с аргументом: {0}", arg);
+         ProcessStartInfo startInfo = new ProcessStartInfo(updater);
+         startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+         startInfo.Arguments = arg;         
+         Process.Start(startInfo);
       }
 
       private static bool IsProcessAny()
