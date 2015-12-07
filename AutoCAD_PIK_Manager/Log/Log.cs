@@ -23,6 +23,7 @@ using AutoCAD_PIK_Manager.Settings;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Targets.Wrappers;
 
 namespace AutoCAD_PIK_Manager
 {
@@ -48,47 +49,54 @@ namespace AutoCAD_PIK_Manager
          try
          {
             // Настройка конфигурации логгера.
-            _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");
-
+            _logger = LogManager.GetLogger("AutoCAD_PIK_Manager");            
             string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var config = new LoggingConfiguration();
 
-            var fileLocalTarget = new FileTarget();
-            config.AddTarget("localFile", fileLocalTarget);
+            // Локальный лог
+            var fileLocalTarget = new FileTarget();            
             fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
             fileLocalTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";
-
+            config.AddTarget("localFile", fileLocalTarget);
             var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
             config.LoggingRules.Add(rule);
             LogManager.Configuration = config;
 
+            // Серверный лог
             string serverLogPath = PikSettings.GetExistServersettingsPath(
                Path.Combine(PikSettings.PikFileSettings?.ServerShareSettings, @"AutoCAD_PIK_Manager\Logs") ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
-
-            var fileServerTarget = new FileTarget();
-            config.AddTarget("serverFile", fileServerTarget);
+            var fileServerTarget = new FileTarget();            
             fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);
             fileServerTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=tostring}";            
             fileServerTarget.ArchiveAboveSize = 210152;
             fileServerTarget.MaxArchiveFiles = 1;            
             fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
-
+            config.AddTarget("serverFile", fileServerTarget);
             rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
             config.LoggingRules.Add(rule);
             LogManager.Configuration = config;
 
             // mail
-            var mailTarget = new MailTarget();
+            var mailTarget = new MailTarget();            
             mailTarget.To = "vildar82@gmail.com";
             mailTarget.From = "KhisyametdinovVT@pik.ru";
             mailTarget.Subject = string.Format ("Error у {0}, AutoCAD_PIK_Manager.Log", Environment.UserName);
             mailTarget.SmtpServer = "ex20pik.picompany.ru";
             mailTarget.Body = "${longdate} ${message} ${exception:format=tostring}";
 
-            config.AddTarget("mail", mailTarget);
+            //config.AddTarget("mail", mailTarget);
+            //rule = new LoggingRule("*", LogLevel.Error, mailTarget);
+            //config.LoggingRules.Add(rule);       
 
-            rule = new LoggingRule("*", LogLevel.Error, mailTarget);
-            config.LoggingRules.Add(rule);
+            // Set up asynchronous database logging assuming dbTarget is your existing target
+            AsyncTargetWrapper asyncWrapper = new AsyncTargetWrapper(mailTarget);            
+            asyncWrapper.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
+            asyncWrapper.QueueLimit = 100;            
+            config.AddTarget("async", asyncWrapper);
+            // Define rules
+            LoggingRule ruleAsync = new LoggingRule("*", LogLevel.Error, asyncWrapper);
+            config.LoggingRules.Add(ruleAsync);                
+
             LogManager.Configuration = config;
          }
          catch
@@ -125,7 +133,7 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public static void Error(string message)
       {
-         _logger.Error(message);
+         _logger.Error(message);         
       }
 
       public static void Error(Exception ex, string message, params object[] args)
