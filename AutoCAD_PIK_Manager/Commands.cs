@@ -16,6 +16,7 @@ namespace AutoCAD_PIK_Manager
    public class Commands : IExtensionApplication
    {
       private static string _about;
+      private static string _err = string.Empty;
 
       private static string About
       {
@@ -33,6 +34,10 @@ namespace AutoCAD_PIK_Manager
       {
          Document doc = Application.DocumentManager.MdiActiveDocument;
          doc.Editor.WriteMessage("\n{0}", About);
+         if (!string.IsNullOrEmpty(_err))
+         {
+            doc.Editor.WriteMessage("\n{0}", _err);
+         }         
       }
 
       public void Initialize()
@@ -58,6 +63,7 @@ namespace AutoCAD_PIK_Manager
                catch (System.Exception ex)
                {
                   Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
+                  _err += ex.Message;
                }
                try
                {
@@ -69,6 +75,7 @@ namespace AutoCAD_PIK_Manager
                catch (System.Exception ex)
                {
                   Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
+                  _err += ex.Message;
                }
             }
             try
@@ -81,6 +88,7 @@ namespace AutoCAD_PIK_Manager
             catch (System.Exception ex)
             {
                Log.Error(ex, "Ошибка настройки профиля SetProfile().");
+               _err += ex.Message;
             }
 
             // Загрузка библиотек
@@ -91,6 +99,7 @@ namespace AutoCAD_PIK_Manager
             catch (System.Exception ex)
             {
                Log.Error(ex, "Ошибка загрузки библиотеки.");
+               _err += ex.Message;
             }
          }
          catch (System.Exception ex)
@@ -98,7 +107,8 @@ namespace AutoCAD_PIK_Manager
             Log.Error(ex, "LoadSettings");
             Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
             Log.Info("Версия автокада - {0}", Application.Version.ToString());
-            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");            
+            Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            _err += ex.Message;
          }
       }
 

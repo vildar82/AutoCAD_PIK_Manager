@@ -400,21 +400,29 @@ namespace AutoCAD_PIK_Manager.Model
             {
                continue;
             }
-            FileAttributes attr = File.GetAttributes(path);            
-            if (attr.HasFlag(FileAttributes.Directory ) )
-            {  
-               if (Directory.Exists(path))
+            try
+            {
+               FileAttributes attr = File.GetAttributes(path);
+               if (attr.HasFlag(FileAttributes.Directory))
                {
-                  existsPath.Add(pathUpper, path);
+                  if (Directory.Exists(path))
+                  {
+                     existsPath.Add(pathUpper, path);
+                  }
+               }
+               else
+               {
+                  if (File.Exists(path))
+                  {
+                     existsPath.Add(pathUpper, path);
+                  }
                }
             }
-            else
+            catch
             {
-               if (File.Exists(path))
-               {
-                  existsPath.Add(pathUpper,  path);
-               }
-            }            
+               // Это не путь
+               continue;
+            }  
          }
          return string.Join(";", existsPath.Values.ToArray()) + (existsPath.Count>1 ? ";" : "");
       }
@@ -441,9 +449,17 @@ namespace AutoCAD_PIK_Manager.Model
             }
             else
             {
-               nameVar += ";" + value;
+               nameVar = getOnlyExistsPaths(nameVar?.ToString());
+               if (string.IsNullOrEmpty(nameVar?.ToString()))
+               {
+                  nameVar = value;
+               }
+               else
+               {
+                  nameVar += ";" + value;
+               }               
             }
-            nameVar = getOnlyExistsPaths(nameVar.ToString());
+            nameVar = getOnlyExistsPaths(nameVar?.ToString());
             Log.Info("TRUSTEDPATHS = {0}", nameVar);
          }
          else
