@@ -55,7 +55,7 @@
   <ItemGroup>
     <Reference Include="AcadLib">
       <HintPath>..\..\AcadLib\AcadLib\bin\Release\AcadLib.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AcCoreMgd">
       <HintPath>..\..\ObjectARX\ObjectARX2013\inc\AcCoreMgd.dll</HintPath>
@@ -72,7 +72,7 @@
     <Reference Include="EPPlus, Version=4.0.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Package\Excel\EPPlus.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.2.0\lib\net45\NLog.dll</HintPath>
@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Commands.cs" />
     <Compile Include="Log\Log.cs" />
+    <Compile Include="Log\LogAddin.cs" />
     <Compile Include="Model\Env.cs" />
     <Compile Include="Model\LoadDll.cs" />
     <Compile Include="Model\Profile.cs" />
