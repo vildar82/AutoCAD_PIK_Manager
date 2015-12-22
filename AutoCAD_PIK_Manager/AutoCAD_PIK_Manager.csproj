@@ -48,6 +48,11 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>bin\Release\AutoCAD_PIK_Manager.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>None.None.DayOfYearStamp.Increment</AssemblyFileVersionSettings>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
