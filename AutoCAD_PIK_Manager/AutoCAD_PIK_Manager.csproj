@@ -101,6 +101,7 @@
     <Compile Include="Model\Profile.cs" />
     <Compile Include="Model\ToolPaletteReplacePath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\LoadService.cs" />
     <Compile Include="Settings\FlexBrics.cs" />
     <Compile Include="Settings\Group.cs" />
     <Compile Include="Settings\PathVariable.cs" />
