@@ -8,7 +8,7 @@ namespace AutoCAD_PIK_Manager
 
       public LogAddin(string plugin)
       {
-         _plugin = plugin;            
+         _plugin = "Plugin " + plugin;            
       }
 
       /// <summary>
