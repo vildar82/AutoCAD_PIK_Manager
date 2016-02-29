@@ -89,18 +89,7 @@ namespace AutoCAD_PIK_Manager
             {
                Log.Error(ex, "Ошибка настройки профиля SetProfile().");
                _err += ex.Message;
-            }
-
-            // Загрузка библиотек
-            try
-            {
-               LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
-            }
-            catch (System.Exception ex)
-            {
-               Log.Error(ex, "Ошибка загрузки библиотеки.");
-               _err += ex.Message;
-            }
+            }            
          }
          catch (System.Exception ex)
          {
@@ -108,6 +97,17 @@ namespace AutoCAD_PIK_Manager
             Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
             Log.Info("Версия автокада - {0}", Application.Version.ToString());
             Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+            _err += ex.Message;
+         }
+
+         // Загрузка библиотек
+         try
+         {
+            LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
+         }
+         catch (System.Exception ex)
+         {
+            Log.Error(ex, "Ошибка загрузки библиотеки.");
             _err += ex.Message;
          }
       }
