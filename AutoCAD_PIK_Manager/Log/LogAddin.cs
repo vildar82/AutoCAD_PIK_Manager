@@ -108,7 +108,7 @@ namespace AutoCAD_PIK_Manager
 
       public void StartCommand(string message)
       {
-         Log.Info(_plugin + " Start command: " + message);
+         Log.Info(_plugin + "Start command: " + message);
       }
    }
 }
