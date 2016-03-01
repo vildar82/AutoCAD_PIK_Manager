@@ -17,17 +17,17 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public void Debug(string message)
       {
-         AutoCAD_PIK_Manager.Log.Debug(_plugin + message);
+         Log.Debug(_plugin + message);
       }
 
       public void Debug(string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Debug(_plugin + message, args);
+         Log.Debug(_plugin + message, args);
       }
 
       public void Debug(Exception ex, string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Debug(ex, _plugin + message, args);
+         Log.Debug(ex, _plugin + message, args);
       }
 
       /// <summary>
@@ -36,17 +36,17 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public void Error(string message)
       {
-         AutoCAD_PIK_Manager.Log.Error(_plugin + message);
+         Log.Error(_plugin + message);
       }
 
       public void Error(Exception ex, string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Error(ex, _plugin + message, args);
+         Log.Error(ex, _plugin + message, args);
       }
 
       public void Error(string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Error(_plugin + message, args);
+         Log.Error(_plugin + message, args);
       }
 
       /// <summary>
@@ -55,17 +55,17 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public void Fatal(string message)
       {
-         AutoCAD_PIK_Manager.Log.Fatal(_plugin + message);
+         Log.Fatal(_plugin + message);
       }
 
       public void Fatal(Exception ex, string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Fatal(ex, _plugin + message, args);
+         Log.Fatal(ex, _plugin + message, args);
       }
 
       public void Fatal(string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Fatal(_plugin + message, args);
+         Log.Fatal(_plugin + message, args);
       }
 
       /// <summary>
@@ -74,17 +74,17 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public void Info(string message)
       {
-         AutoCAD_PIK_Manager.Log.Info(_plugin + message);
+         Log.Info(_plugin + message);
       }
 
       public void Info(string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Info(_plugin + message, args);
+         Log.Info(_plugin + message, args);
       }
 
       public void Info(Exception ex, string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Info(ex, _plugin + message, args);
+         Log.Info(ex, _plugin + message, args);
       }
 
       /// <summary>
@@ -93,17 +93,22 @@ namespace AutoCAD_PIK_Manager
       /// <param name="message"></param>
       public void Warn(string message)
       {
-         AutoCAD_PIK_Manager.Log.Warn(_plugin + message);
+         Log.Warn(_plugin + message);
       }
 
       public void Warn(string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Warn(_plugin + message, args);
+         Log.Warn(_plugin + message, args);
       }
 
       public void Warn(Exception ex, string message, params object[] args)
       {
-         AutoCAD_PIK_Manager.Log.Warn(ex, _plugin + message, args);
+         Log.Warn(ex, _plugin + message, args);
+      }
+
+      public void StartCommand(string message)
+      {
+         Log.Info(_plugin + " Start command: " + message);
       }
    }
 }
