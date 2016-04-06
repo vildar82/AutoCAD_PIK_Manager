@@ -89,8 +89,9 @@ namespace AutoCAD_PIK_Manager
                     }
                     else
                     {
-                        // Загрузка сбороки ГП
-                        AcadLib.LoadService.LoadGP();
+                        // Загрузка сбороки ГП                        
+                        string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
+                        LoadDll.Load(gpdll);                        
                     }
                 }
                 catch (System.Exception ex)
