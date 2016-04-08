@@ -82,7 +82,7 @@ namespace AutoCAD_PIK_Manager
                 mailTarget.From = "KhisyametdinovVT@pik.ru";
                 mailTarget.Subject = string.Format("Error у {0}, AutoCAD_PIK_Manager.Log", Environment.UserName);
                 mailTarget.SmtpServer = "ex20pik.picompany.ru";
-                mailTarget.Body = "${longdate} ${message} ${newline} ${exception:format=ToString,StackTrace}";                
+                mailTarget.Body = "${longdate} ${message} ${exception:format=ToString,StackTrace}";                
 
                 //config.AddTarget("mail", mailTarget);
                 //rule = new LoggingRule("*", LogLevel.Error, mailTarget);
