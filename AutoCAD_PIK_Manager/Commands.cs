@@ -50,6 +50,7 @@ namespace AutoCAD_PIK_Manager
                 Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
                 Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
                 Log.Info("Версия автокада - {0}", Application.Version.ToString());
+                Log.Info($"Версия среды .NET Framework - {Environment.Version}");
 
                 // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
                 if (!IsProcessAny())
