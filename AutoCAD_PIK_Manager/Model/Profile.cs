@@ -30,7 +30,7 @@ namespace AutoCAD_PIK_Manager.Model
 
         public Profile()
         {
-            _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK" }; // у BystrovDS теперь другой комп
+            _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK", "kozlovsb" }; // у BystrovDS теперь другой комп
             _settPikFile = PikSettings.PikFileSettings;
             _profileName = _settPikFile.ProfileName;
             _settGroupFile = PikSettings.GroupFileSettings;
