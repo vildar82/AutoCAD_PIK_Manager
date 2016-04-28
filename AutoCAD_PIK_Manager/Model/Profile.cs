@@ -109,11 +109,15 @@ namespace AutoCAD_PIK_Manager.Model
             // PrinterConfigPaths         
             try
             {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths), preference.Files.PrinterConfigPath, "");
+                var varsPath = GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths);
+                path = GetPathVariable(varsPath, preference.Files.PrinterConfigPath, "");
+                //Log.Warn("PrinterConfigPaths. Before - path=" + path);
+                path = ExcludePikPaths(path, varsPath);
+                //Log.Warn("PrinterConfigPaths. After - path=" +path);
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (cuVer < v2015)
-                    {
+                    //if (cuVer < v2015)
+                    //{
                         // Глючит печать в 2013-2014 версии.
                         // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
                         if (_settPikFile.PathVariables.PrinterConfigPaths.Count > 0)
@@ -121,16 +125,16 @@ namespace AutoCAD_PIK_Manager.Model
                             string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);
                             string pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
                             CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
-                            // Исключить наши папки из путей принтеров
-                            string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
-                            if (path != pathEx)
-                                Env.SetEnv("PrinterConfigDir", pathEx);
+                            //// Исключить наши папки из путей принтеров
+                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
+                            //if (path != pathEx)
+                            //    Env.SetEnv("PrinterConfigDir", pathEx);
                         }
-                    }
-                    else
-                    {
+                    //}
+                    //else
+                    //{
                         preference.Files.PrinterConfigPath = path;
-                    }
+                    //}
                 }
                 Log.Info("PrinterConfigPath={0}", path);
             }
@@ -142,11 +146,13 @@ namespace AutoCAD_PIK_Manager.Model
             // PrinterDescPaths         
             try
             {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths), preference.Files.PrinterDescPath, "");
+                var varsPath = GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths);
+                path = GetPathVariable(varsPath, preference.Files.PrinterDescPath, "");
+                path = ExcludePikPaths(path, varsPath);
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (cuVer < v2015)
-                    {
+                    //if (cuVer < v2015)
+                    //{
                         // Глючит печать в 2013-2014 версии.
                         // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
                         if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
@@ -154,16 +160,16 @@ namespace AutoCAD_PIK_Manager.Model
                             string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
                             string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
                             CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
-                            // Исключить наши папки из путей принтеров
-                            string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                            if (path != pathEx)
-                                Env.SetEnv("PrinterDescDir", pathEx);
+                            //// Исключить наши папки из путей принтеров
+                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
+                            //if (path != pathEx)
+                            //    Env.SetEnv("PrinterDescDir", pathEx);
                         }
-                    }
-                    else
-                    {
+                    //}
+                    //else
+                    //{
                         preference.Files.PrinterDescPath = path;
-                    }
+                    //}
                 }
                 Log.Info("PrinterDescDir={0}", path);
             }
@@ -175,11 +181,13 @@ namespace AutoCAD_PIK_Manager.Model
             // PrinterPlotStylePaths         
             try
             {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths), preference.Files.PrinterStyleSheetPath, "");
+                var varsPath = GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths);
+                path = GetPathVariable(varsPath, preference.Files.PrinterStyleSheetPath, "");
+                path = ExcludePikPaths(path, varsPath);
                 if (!string.IsNullOrEmpty(path))
                 {
-                    if (cuVer < v2015)
-                    {
+                    //if (cuVer < v2015)
+                    //{
                         // Глючит печать в 2013-2014 версии.
                         // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
                         if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
@@ -187,16 +195,16 @@ namespace AutoCAD_PIK_Manager.Model
                             string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
                             string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
                             CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
-                            // Исключить наши папки из путей pathCurProfilePlotStyle
-                            string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
-                            if (path != pathEx)
-                                Env.SetEnv("PrinterStyleSheetDir", pathEx);
+                            //// Исключить наши папки из путей pathCurProfilePlotStyle
+                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
+                            //if (path != pathEx)
+                            //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
                         }
-                    }
-                    else
-                    {
+                    //}
+                    //else
+                    //{
                         preference.Files.PrinterStyleSheetPath = path;
-                    }
+                    //}
                 }
                 Log.Info("PrinterStyleSheetDir={0}", path);
             }
@@ -309,6 +317,19 @@ namespace AutoCAD_PIK_Manager.Model
                     Log.Error(ex, "FlexBrics.Setup()");
                 }
             }
+        }
+
+        private string ExcludePikPaths(string path, List<Variable> vars)
+        {
+            path = path.ToLower();
+            foreach (var variable in vars)
+            {
+                var varPath = (Path.Combine(_localSettingsFolder, variable.Value) + ";").ToLower();                
+                //Log.Warn($"varPath = {varPath}");
+                path = path.Replace(varPath, "");
+                //Log.Warn($"Remove variable {variable.Value} - path = {path}");
+            }
+            return path;
         }
 
         private string getPathWithoutOurPlotters(string path, List<Variable> vars)
