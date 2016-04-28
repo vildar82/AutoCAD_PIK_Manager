@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
-namespace AutoCAD_PIK_Manager.Model
+namespace AutoCAD_PIK_Manager
 { 
    public static class Env
    {

@@ -133,7 +133,15 @@ namespace AutoCAD_PIK_Manager.Model
                     //}
                     //else
                     //{
+                    try
+                    {
                         preference.Files.PrinterConfigPath = path;
+                    }
+                    catch 
+                    {
+                        Env.SetEnv("PrinterConfigDir", path);
+                    }
+                        
                     //}
                 }
                 Log.Info("PrinterConfigPath={0}", path);
@@ -168,7 +176,14 @@ namespace AutoCAD_PIK_Manager.Model
                     //}
                     //else
                     //{
+                    try
+                    {
                         preference.Files.PrinterDescPath = path;
+                    }
+                    catch
+                    {
+                        Env.SetEnv("PrinterDescDir", path);
+                    }
                     //}
                 }
                 Log.Info("PrinterDescDir={0}", path);
@@ -203,7 +218,14 @@ namespace AutoCAD_PIK_Manager.Model
                     //}
                     //else
                     //{
+                    try
+                    {
                         preference.Files.PrinterStyleSheetPath = path;
+                    }
+                    catch
+                    {
+                        Env.SetEnv("PrinterStyleSheetDir", path);
+                    }
                     //}
                 }
                 Log.Info("PrinterStyleSheetDir={0}", path);
