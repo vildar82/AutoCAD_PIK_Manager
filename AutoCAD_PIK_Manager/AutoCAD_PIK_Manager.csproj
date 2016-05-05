@@ -58,6 +58,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AcadLib">
+      <HintPath>..\..\AcadLib\AcadLib\bin\Release\AcadLib.dll</HintPath>
+    </Reference>
     <Reference Include="AcCoreMgd, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoCAD.NET.Core.20.0.0\lib\45\AcCoreMgd.dll</HintPath>
       <Private>False</Private>
