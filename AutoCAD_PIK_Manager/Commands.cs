@@ -15,6 +15,7 @@ namespace AutoCAD_PIK_Manager
 {
     public class Commands : IExtensionApplication
     {
+        public const string Group = "PIK";
         private static string _about;
         private static string _err = string.Empty;
 
@@ -29,7 +30,7 @@ namespace AutoCAD_PIK_Manager
             }
         }
 
-        [CommandMethod("PIK", "PIK_Manager_About", CommandFlags.Modal)]
+        [CommandMethod(Group, "PIK_Manager_About", CommandFlags.Modal)]
         public static void AboutCommand()
         {
             Document doc = Application.DocumentManager.MdiActiveDocument;
@@ -88,12 +89,12 @@ namespace AutoCAD_PIK_Manager
                         profile.SetProfile();
                         Log.Info("Профиль ПИК установлен.");
                     }
-                    else
-                    {
-                        // Загрузка сбороки ГП                        
-                        string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
-                        LoadDll.Load(gpdll);                        
-                    }
+                    //else
+                    //{
+                        //// Загрузка сбороки ГП                        
+                        //string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
+                        //LoadDll.Load(gpdll);                        
+                    //}
                 }
                 catch (System.Exception ex)
                 {
