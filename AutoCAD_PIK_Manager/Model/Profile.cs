@@ -17,18 +17,23 @@ namespace AutoCAD_PIK_Manager.Model
     {
         #region Private Fields
 
-        private string _localSettingsFolder;
-        private string _profileName;
-        private SettingsGroupFile _settGroupFile;
-        private SettingsPikFile _settPikFile;
-        private string _userGroup;
-        private List<string> _usersComError;
+        private static string _localSettingsFolder;
+        private static string _profileName;
+        private static SettingsGroupFile _settGroupFile;
+        private static SettingsPikFile _settPikFile;
+        private static string _userGroup;
+        private static List<string> _usersComError;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         public Profile()
+        {
+            Init();
+        }
+
+        public static void Init()
         {
             _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK", "kozlovsb" }; // у BystrovDS теперь другой комп
             _settPikFile = PikSettings.PikFileSettings;
@@ -93,19 +98,8 @@ namespace AutoCAD_PIK_Manager.Model
             Version cuVer = new Version(Application.Version.Major, Application.Version.Minor);
 
             // SupportPaths    
-            try
-            {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    preference.Files.SupportPath = path;
-                }
-                Log.Info("SupportPath={0}", path);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "preference.Files.SupportPath = {0}", path);
-            }
+            SetupSupportPath();
+
             // PrinterConfigPaths         
             try
             {
@@ -118,18 +112,18 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     //if (cuVer < v2015)
                     //{
-                        // Глючит печать в 2013-2014 версии.
-                        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-                        if (_settPikFile.PathVariables.PrinterConfigPaths.Count > 0)
-                        {
-                            string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);
-                            string pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
-                            CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
-                            //// Исключить наши папки из путей принтеров
-                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
-                            //if (path != pathEx)
-                            //    Env.SetEnv("PrinterConfigDir", pathEx);
-                        }
+                    // Глючит печать в 2013-2014 версии.
+                    // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+                    if (_settPikFile.PathVariables.PrinterConfigPaths.Count > 0)
+                    {
+                        string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);
+                        string pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
+                        CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
+                        //// Исключить наши папки из путей принтеров
+                        //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
+                        //if (path != pathEx)
+                        //    Env.SetEnv("PrinterConfigDir", pathEx);
+                    }
                     //}
                     //else
                     //{
@@ -137,11 +131,11 @@ namespace AutoCAD_PIK_Manager.Model
                     {
                         preference.Files.PrinterConfigPath = path;
                     }
-                    catch 
+                    catch
                     {
                         Env.SetEnv("PrinterConfigDir", path);
                     }
-                        
+
                     //}
                 }
                 Log.Info("PrinterConfigPath={0}", path);
@@ -161,18 +155,18 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     //if (cuVer < v2015)
                     //{
-                        // Глючит печать в 2013-2014 версии.
-                        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-                        if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
-                        {
-                            string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
-                            string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
-                            CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
-                            //// Исключить наши папки из путей принтеров
-                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                            //if (path != pathEx)
-                            //    Env.SetEnv("PrinterDescDir", pathEx);
-                        }
+                    // Глючит печать в 2013-2014 версии.
+                    // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+                    if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
+                    {
+                        string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
+                        string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
+                        CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
+                        //// Исключить наши папки из путей принтеров
+                        //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
+                        //if (path != pathEx)
+                        //    Env.SetEnv("PrinterDescDir", pathEx);
+                    }
                     //}
                     //else
                     //{
@@ -203,18 +197,18 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     //if (cuVer < v2015)
                     //{
-                        // Глючит печать в 2013-2014 версии.
-                        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-                        if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
-                        {
-                            string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
-                            string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
-                            CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
-                            //// Исключить наши папки из путей pathCurProfilePlotStyle
-                            //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
-                            //if (path != pathEx)
-                            //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
-                        }
+                    // Глючит печать в 2013-2014 версии.
+                    // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+                    if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
+                    {
+                        string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
+                        string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
+                        CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
+                        //// Исключить наши папки из путей pathCurProfilePlotStyle
+                        //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
+                        //if (path != pathEx)
+                        //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
+                    }
                     //}
                     //else
                     //{
@@ -341,6 +335,27 @@ namespace AutoCAD_PIK_Manager.Model
             }
         }
 
+        /// <summary>
+        /// Добавление путей доступа определенных в файле settingsPik и settingsGroup
+        /// </summary>
+        public static void SetupSupportPath()
+        {
+            dynamic preference = AutoCadApp.Preferences;
+            try
+            {
+                var path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    preference.Files.SupportPath = path;
+                }
+                Log.Info("SupportPath={0}", path);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "preference.Files.SupportPath");
+            }            
+        }
+
         private string ExcludePikPaths(string path, List<Variable> vars)
         {
             path = path.ToLower();
@@ -390,7 +405,7 @@ namespace AutoCAD_PIK_Manager.Model
             }
         }
 
-        private List<Variable> GetPaths(List<Variable> pathVars1, List<Variable> pathVars2)
+        private static List<Variable> GetPaths(List<Variable> pathVars1, List<Variable> pathVars2)
         {
             var resList = new List<Variable>(pathVars1);
             var values1 = resList.Select(v => v.Value);
@@ -407,7 +422,7 @@ namespace AutoCAD_PIK_Manager.Model
             return resList;
         }
 
-        private string GetPathVariable(List<Variable> settings, string path, string group)
+        private static string GetPathVariable(List<Variable> settings, string path, string group)
         {
             string fullPath = string.Empty;
             try
@@ -438,7 +453,7 @@ namespace AutoCAD_PIK_Manager.Model
         }
 
         // Удаление несуществующих путей.
-        private string getOnlyExistsPaths(string fullPath)
+        private static string getOnlyExistsPaths(string fullPath)
         {
             Dictionary<string, string> existsPath = new Dictionary<string, string>();
             string pathUpper;
