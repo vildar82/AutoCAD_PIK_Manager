@@ -14,9 +14,7 @@ namespace AutoCAD_PIK_Manager.Model
     /// Настройка профиля ПИК в автокаде.
     /// </summary>
     internal class Profile
-    {
-        #region Private Fields
-
+    {     
         private static string _localSettingsFolder;
         private static string _profileName;
         private static SettingsGroupFile _settGroupFile;
@@ -24,28 +22,26 @@ namespace AutoCAD_PIK_Manager.Model
         private static string _userGroup;
         private static List<string> _usersComError;
 
-        #endregion Private Fields
-
-        #region Public Constructors
+        public bool SetProfilePIK { get; set; } = true;
+        public bool SetToolPalette { get; set; } = true;
+        public bool SetTemplate { get; set; } = true;
+        public List<SystemVariable> SetSysVars { get; set; }
 
         public Profile()
         {
             Init();
+            SetSysVars = _settPikFile.SystemVariables;
         }
 
         public static void Init()
-        {
-            _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK", "kozlovsb" }; // у BystrovDS теперь другой комп
+        {            
+            _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK", "kozlovsb" };
             _settPikFile = PikSettings.PikFileSettings;
             _profileName = _settPikFile.ProfileName;
             _settGroupFile = PikSettings.GroupFileSettings;
             _userGroup = PikSettings.UserGroup;
-            _localSettingsFolder = PikSettings.LocalSettingsFolder;
-        }
-
-        #endregion Public Constructors
-
-        #region Public Methods
+            _localSettingsFolder = PikSettings.LocalSettingsFolder;            
+        }        
 
         /// <summary>
         /// Настройка профиля ПИК в автокаде
@@ -54,7 +50,7 @@ namespace AutoCAD_PIK_Manager.Model
         {
             try
             {
-                if (!_usersComError.Exists(u => string.Equals(u, Environment.UserName, StringComparison.OrdinalIgnoreCase)))
+                if (SetProfilePIK || !_usersComError.Exists(u => string.Equals(u, Environment.UserName, StringComparison.OrdinalIgnoreCase)))
                 {
                     dynamic preferences = AutoCadApp.Preferences;
                     object profiles = null;
@@ -82,11 +78,7 @@ namespace AutoCAD_PIK_Manager.Model
             }
             // Но настройки все равно настраиваем, даже в текущем профиле не ПИК.
             ApplySetting();
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
+        }        
 
         // Настройка профиля
         private void ApplySetting()
@@ -230,67 +222,74 @@ namespace AutoCAD_PIK_Manager.Model
             }
 
             // ToolPalettePath
-            try
+            if (SetToolPalette)
             {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
-                if (!string.IsNullOrEmpty(path))
+                try
                 {
-                    preference.Files.ToolPalettePath = path;
+                    path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        preference.Files.ToolPalettePath = path;
+                    }
+                    Log.Info("ToolPalettePath={0}", path);
                 }
-                Log.Info("ToolPalettePath={0}", path);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "preference.Files.ToolPalettePath = {0}", path);
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "preference.Files.ToolPalettePath = {0}", path);
+                }
             }
 
             //TemplatePath
-            try
+            if (SetTemplate)
             {
-                path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
-                if (Directory.Exists(path))
+                try
                 {
-                    if (!string.IsNullOrEmpty(path))
+                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
+                    if (Directory.Exists(path))
                     {
-                        Env.SetEnv("TemplatePath", path);
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            Env.SetEnv("TemplatePath", path);
+                        }
+                        Log.Info("TemplatePath={0}", path);
                     }
-                    Log.Info("TemplatePath={0}", path);
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Env.SetEnv(TemplatePath = {0}", path);
-            }
-
-            //PageSetupOverridesTemplateFile
-            try
-            {
-                path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
-                if (File.Exists(path))
+                catch (Exception ex)
                 {
-                    Env.SetEnv("QnewTemplate", path);
-                    Log.Info("QnewTemplate={0}", path);
-                    preference.Files.PageSetupOverridesTemplateFile = path;
+                    Log.Error(ex, "Env.SetEnv(TemplatePath = {0}", path);
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Env.SetEnv(QnewTemplate = {0}", path);
-            }
 
-            //SheetSetTemplatePath
-            try
-            {
-                path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
-                if (Directory.Exists(path))
+
+                //PageSetupOverridesTemplateFile
+                try
                 {
-                    Env.SetEnv("SheetSetTemplatePath", path);
-                    Log.Info("SheetSetTemplatePath={0}", path);
+                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
+                    if (File.Exists(path))
+                    {
+                        Env.SetEnv("QnewTemplate", path);
+                        Log.Info("QnewTemplate={0}", path);
+                        preference.Files.PageSetupOverridesTemplateFile = path;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Env.SetEnv(SheetSetTemplatePath = {0}", path);
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Env.SetEnv(QnewTemplate = {0}", path);
+                }
+
+                //SheetSetTemplatePath
+                try
+                {
+                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
+                    if (Directory.Exists(path))
+                    {
+                        Env.SetEnv("SheetSetTemplatePath", path);
+                        Log.Info("SheetSetTemplatePath={0}", path);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Env.SetEnv(SheetSetTemplatePath = {0}", path);
+                }
             }
 
             // ColorBookLocation
@@ -309,16 +308,19 @@ namespace AutoCAD_PIK_Manager.Model
             }
 
             // Системные переменные
-            foreach (var sysVar in _settPikFile.SystemVariables)
+            if (SetSysVars != null)
             {
-                try
+                foreach (var sysVar in SetSysVars)
                 {
-                    SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-                    Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "Уст сис перем {0} = {1}", sysVar.Name, sysVar.Value);
+                    try
+                    {
+                        SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+                        Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Уст сис перем {0} = {1}", sysVar.Name, sysVar.Value);
+                    }
                 }
             }
 
@@ -569,9 +571,7 @@ namespace AutoCAD_PIK_Manager.Model
                     Log.Error(ex, "SetSystemVariable {0}", name);
                 }
             }
-        }
-
-        #endregion Private Methods
+        }       
 
         ///// <summary>
         ///// Дефолтные настройки профиля.

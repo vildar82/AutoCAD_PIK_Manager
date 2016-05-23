@@ -86,18 +86,18 @@ namespace AutoCAD_PIK_Manager
                     // Настройка профиля ПИК в автокаде
                     if (PikSettings.UserGroup == "ГП")
                     {
-                        Profile.SetupSupportPath();
+                        profile.SetProfilePIK = false;
+                        profile.SetTemplate = false;
+                        profile.SetToolPalette = false;
+                        profile.SetSysVars = PikSettings.GroupFileSettings?.SystemVariables;
                     }
-                    else
-                    {
-                        profile.SetProfile();
-                        Log.Info("Профиль ПИК установлен.");
-                    }
+                    profile.SetProfile();
+                    Log.Info("Профиль настроен.");
                     //else
                     //{
-                        //// Загрузка сбороки ГП                        
-                        //string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
-                        //LoadDll.Load(gpdll);                        
+                    //// Загрузка сбороки ГП                        
+                    //string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
+                    //LoadDll.Load(gpdll);                        
                     //}
                 }
                 catch (System.Exception ex)
