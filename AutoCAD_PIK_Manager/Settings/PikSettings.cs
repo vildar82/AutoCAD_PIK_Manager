@@ -41,11 +41,11 @@ namespace AutoCAD_PIK_Manager.Settings
 
       public static List<string> UserGroups { get { return _userGroups; } }
 
-      internal static string CurDllLocation { get { return _curDllLocation; } }
+      public static string CurDllLocation { get { return _curDllLocation; } }
 
-      internal static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }
+        public static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }
 
-      internal static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }
+        public static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }
 
       internal static void LoadSettings()
       {
