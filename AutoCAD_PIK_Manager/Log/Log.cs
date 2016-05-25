@@ -63,7 +63,7 @@ namespace AutoCAD_PIK_Manager
                 LogManager.Configuration = config;
 
                 // Серверный лог
-                string serverLogPath = PikSettings.GetExistServersettingsPath(
+                string serverLogPath = PikSettings.GetExistServerSettingsPath(
                    Path.Combine(PikSettings.PikFileSettings?.ServerShareSettings, @"AutoCAD_PIK_Manager\Logs") ?? @"z:\AutoCAD_server\ShareSettings\AutoCAD_PIK_Manager\Logs");
                 var fileServerTarget = new FileTarget();
                 fileServerTarget.FileName = string.Format(@"{0}\{1}-{2}.log", serverLogPath, Environment.UserName, Environment.MachineName);

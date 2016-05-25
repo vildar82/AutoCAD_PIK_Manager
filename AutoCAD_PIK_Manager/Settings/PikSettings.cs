@@ -54,8 +54,8 @@ namespace AutoCAD_PIK_Manager.Settings
          _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
          _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
          if (_settingsPikFile == null) return;
-         _serverSettingsFolder = GetExistServersettingsPath (_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
-         _serverShareSettingsFolder = GetExistServersettingsPath(_settingsPikFile.ServerShareSettings);
+         _serverSettingsFolder = GetExistServerSettingsPath (_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
+         _serverShareSettingsFolder = GetExistServerSettingsPath(_settingsPikFile.ServerShareSettings);
          _userGroup = getUserGroup(GetExistServerUserListFile(_settingsPikFile.PathToUserList));
          _userGroups = getUserGroups();
          _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
@@ -80,7 +80,7 @@ namespace AutoCAD_PIK_Manager.Settings
          return res;
       }
 
-      internal static string GetExistServersettingsPath(string serverSettingsPath)
+      internal static string GetExistServerSettingsPath(string serverSettingsPath)
       {
          string res = serverSettingsPath;
          if (!Directory.Exists(res))
