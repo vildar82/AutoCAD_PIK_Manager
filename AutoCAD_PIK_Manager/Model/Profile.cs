@@ -50,7 +50,7 @@ namespace AutoCAD_PIK_Manager.Model
         {
             try
             {
-                if (SetProfilePIK || !_usersComError.Exists(u => string.Equals(u, Environment.UserName, StringComparison.OrdinalIgnoreCase)))
+                if (SetProfilePIK && !_usersComError.Exists(u => string.Equals(u, Environment.UserName, StringComparison.OrdinalIgnoreCase)))
                 {
                     dynamic preferences = AutoCadApp.Preferences;
                     object profiles = null;
@@ -68,7 +68,7 @@ namespace AutoCAD_PIK_Manager.Model
                     {
                         preferences.Profiles.CopyProfile(preferences.Profiles.ActiveProfile, _profileName);
                         preferences.Profiles.ActiveProfile = _profileName;
-                        Log.Info("Профиль {0} создан", _profileName);
+                        Log.Info($"Профиль {_profileName} создан");
                     }
                 }
             }
@@ -130,11 +130,11 @@ namespace AutoCAD_PIK_Manager.Model
 
                     //}
                 }
-                Log.Info("PrinterConfigPath={0}", path);
+                Log.Info($"PrinterConfigPath={path}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "preference.Files.PrinterConfigPath = {0}", path);
+                Log.Error(ex, $"preference.Files.PrinterConfigPath = {path}");
             }
 
             // PrinterDescPaths         
@@ -172,11 +172,11 @@ namespace AutoCAD_PIK_Manager.Model
                     }
                     //}
                 }
-                Log.Info("PrinterDescDir={0}", path);
+                Log.Info($"PrinterDescDir={path}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "preference.Files.PrinterDescDir = {0}", path);
+                Log.Error(ex, $"preference.Files.PrinterDescDir = {path}");
             }
 
             // PrinterPlotStylePaths         
@@ -214,11 +214,11 @@ namespace AutoCAD_PIK_Manager.Model
                     }
                     //}
                 }
-                Log.Info("PrinterStyleSheetDir={0}", path);
+                Log.Info($"PrinterStyleSheetDir={path}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "preference.Files.PrinterStyleSheetDir = {0}", path);
+                Log.Error(ex, $"preference.Files.PrinterStyleSheetDir = {path}");
             }
 
             // ToolPalettePath
@@ -231,11 +231,11 @@ namespace AutoCAD_PIK_Manager.Model
                     {
                         preference.Files.ToolPalettePath = path;
                     }
-                    Log.Info("ToolPalettePath={0}", path);
+                    Log.Info($"ToolPalettePath={path}");
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "preference.Files.ToolPalettePath = {0}", path);
+                    Log.Error(ex, $"preference.Files.ToolPalettePath = {path}");
                 }
             }
 
@@ -251,12 +251,12 @@ namespace AutoCAD_PIK_Manager.Model
                         {
                             Env.SetEnv("TemplatePath", path);
                         }
-                        Log.Info("TemplatePath={0}", path);
+                        Log.Info($"TemplatePath={path}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Env.SetEnv(TemplatePath = {0}", path);
+                    Log.Error(ex, $"Env.SetEnv(TemplatePath = {path}");
                 }
 
 
@@ -267,13 +267,13 @@ namespace AutoCAD_PIK_Manager.Model
                     if (File.Exists(path))
                     {
                         Env.SetEnv("QnewTemplate", path);
-                        Log.Info("QnewTemplate={0}", path);
+                        Log.Info($"QnewTemplate={path}");
                         preference.Files.PageSetupOverridesTemplateFile = path;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Env.SetEnv(QnewTemplate = {0}", path);
+                    Log.Error(ex, $"Env.SetEnv(QnewTemplate = {path}");
                 }
 
                 //SheetSetTemplatePath
@@ -283,12 +283,12 @@ namespace AutoCAD_PIK_Manager.Model
                     if (Directory.Exists(path))
                     {
                         Env.SetEnv("SheetSetTemplatePath", path);
-                        Log.Info("SheetSetTemplatePath={0}", path);
+                        Log.Info($"SheetSetTemplatePath={path}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Env.SetEnv(SheetSetTemplatePath = {0}", path);
+                    Log.Error(ex, $"Env.SetEnv(SheetSetTemplatePath = {path}");
                 }
             }
 
@@ -300,11 +300,11 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     preference.Files.ColorBookPath = path;
                 }
-                Log.Info("ColorBookPath={0}", path);
+                Log.Info($"ColorBookPath={path}");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "preference.Files.ColorBookPath = {0}", path);
+                Log.Error(ex, $"preference.Files.ColorBookPath = {path}");
             }
 
             // Системные переменные
@@ -315,11 +315,11 @@ namespace AutoCAD_PIK_Manager.Model
                     try
                     {
                         SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-                        Log.Info("Установка системной переменной {0}={1}, с перезаписью -{2}", sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+                        Log.Info("Установка системной переменной {sysVar.Name}={sysVar.Value}, с перезаписью -{sysVar.IsReWrite}");
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Уст сис перем {0} = {1}", sysVar.Name, sysVar.Value);
+                        Log.Error(ex, "Уст сис перем {sysVar.Name} = {sysVar.Value}");
                     }
                 }
             }
@@ -350,7 +350,7 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     preference.Files.SupportPath = path;
                 }
-                Log.Info("SupportPath={0}", path);
+                Log.Info($"SupportPath={path}");
             }
             catch (Exception ex)
             {
@@ -568,7 +568,7 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "SetSystemVariable {0}", name);
+                    Log.Error(ex, $"SetSystemVariable {name}");
                 }
             }
         }       
