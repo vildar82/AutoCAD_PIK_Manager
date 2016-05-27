@@ -106,6 +106,11 @@ namespace AutoCAD_PIK_Manager
                     _err += ex.Message;
                 }
             }
+            catch (Settings.Exceptions.NoGroupException)
+            {
+                // Пользователь без группы.
+                return;
+            }
             catch (System.Exception ex)
             {
                 Log.Error(ex, "LoadSettings");
