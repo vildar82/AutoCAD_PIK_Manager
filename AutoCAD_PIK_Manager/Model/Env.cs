@@ -10,7 +10,7 @@ namespace AutoCAD_PIK_Manager
     public static class Env
     {
         public static int Ver = AutoCadApp.Version.Major;
-        public static string CadManLogin { get; } = Settings.PikSettings.PikFileSettings?.LoginCADManager;
+        public static string CadManLogin { get { return Settings.PikSettings.PikFileSettings?.LoginCADManager; } }
 
         // AutoCAD 2007...2012
         [DllImport("acad.exe", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, EntryPoint = "acedGetEnv")]
