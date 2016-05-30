@@ -315,11 +315,11 @@ namespace AutoCAD_PIK_Manager.Model
                     try
                     {
                         SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-                        Log.Info("Установка системной переменной {sysVar.Name}={sysVar.Value}, с перезаписью -{sysVar.IsReWrite}");
+                        Log.Info($"Установка системной переменной {sysVar.Name}={sysVar.Value}, с перезаписью -{sysVar.IsReWrite}");
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, "Уст сис перем {sysVar.Name} = {sysVar.Value}");
+                        Log.Error(ex, $"Уст сис перем {sysVar.Name} = {sysVar.Value}");
                     }
                 }
             }
