@@ -223,8 +223,9 @@ namespace AutoCAD_PIK_Manager.Settings
             }            
             catch (Exception ex)
             {
-                Log.Error(ex, "Не определена рабочая группа (Шифр отдела). {0}", Environment.UserName);
-                throw;
+                Log.Error(ex, @"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
+                // Определение группы по текущим папкам настроек                
+                return getCurrentGroupFromLocal();                
             }
             //if (nameGroup == "")
             //{
@@ -236,6 +237,13 @@ namespace AutoCAD_PIK_Manager.Settings
             //   }
             //}
             return nameGroup;
+        }
+
+        private static string getCurrentGroupFromLocal()
+        {
+            string folderStandart = Path.Combine(LocalSettingsFolder, "Standart");
+            var foldersStandart = Directory.GetDirectories(folderStandart);
+            return Path.GetFileName(foldersStandart.First());
         }
 
         private static string loadUserGroupFromRegistry()
