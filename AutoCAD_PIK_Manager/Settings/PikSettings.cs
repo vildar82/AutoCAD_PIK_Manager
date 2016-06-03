@@ -63,7 +63,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             _userGroups = getUserGroups();
             _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
-            if (_settingsGroupFile != null) Log.Info("Загружены настройки группы {0} из {1}", UserGroup, "SettingsGroup.xml");
+            if (_settingsGroupFile != null) Log.Info($"Загружены настройки группы {UserGroup} из SettingsGroup.xml");
         }
 
         private static string GetExistServerUserListFile(string pathToUserList)
@@ -77,7 +77,7 @@ namespace AutoCAD_PIK_Manager.Settings
                     res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));
                     if (!File.Exists(res))
                     {
-                        Log.Error("Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {0}", pathToUserList);
+                        Log.Error($"Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {pathToUserList}");
                     }
                 }
             }
@@ -95,7 +95,7 @@ namespace AutoCAD_PIK_Manager.Settings
                     res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
                     if (!Directory.Exists(res))
                     {
-                        Log.Error("Сетевой путь к настройкам недоступен - serverSettingsPath: {0}", serverSettingsPath);
+                        Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
                     }
                 }
             }
@@ -119,7 +119,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             else
             {
-                Log.Error("Недоступна папка настроек на сервере {0}", ServerSettingsFolder);
+                Log.Error($"Недоступна папка настроек на сервере {ServerSettingsFolder}");
             }
         }
 
@@ -207,7 +207,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 }
                 if (string.IsNullOrEmpty(nameGroup))
                 {
-                    Log.Error("Не определена группа по файлу UserGroup2.xlsx. {0}", pathToList);
+                    Log.Error($"Не определена группа по файлу UserGroup2.xlsx. {pathToList}");
                     // проверка была ли группа сохранена ранее в реестре
                     nameGroup = loadUserGroupFromRegistry();
                 }
@@ -219,11 +219,11 @@ namespace AutoCAD_PIK_Manager.Settings
                 {
                     throw new Exception("IsNullOrEmpty(nameGroup)");
                 }                          
-                Log.Info("{0} Группа - {1}", Environment.UserName, nameGroup);
+                Log.Info($"{Environment.UserName} Группа - {nameGroup}" );
             }            
             catch (Exception ex)
             {
-                Log.Error(ex, @"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
+                Log.Error(ex, $"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
                 // Определение группы по текущим папкам настроек                
                 return getCurrentGroupFromLocal();                
             }
