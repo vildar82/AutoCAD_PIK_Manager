@@ -48,9 +48,9 @@ namespace AutoCAD_PIK_Manager
             {
                 PikSettings.LoadSettings();
                 // Запись в лог
-                Log.Info("AutoCAD_PIK_Manager загружен. Версия {0}. Настройки загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
-                Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
-                Log.Info("Версия автокада - {0}", Application.Version.ToString());
+                Log.Info($"AutoCAD_PIK_Manager загружен. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки загружены из {PikSettings.CurDllLocation}");
+                Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
+                Log.Info($"Версия автокада - {Application.Version.ToString()}");
                 Log.Info($"Версия среды .NET Framework - {Environment.Version}");
 
                 // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
@@ -114,9 +114,9 @@ namespace AutoCAD_PIK_Manager
             catch (System.Exception ex)
             {
                 Log.Error(ex, "LoadSettings");
-                Log.Info("AutoCAD_PIK_Manager загружен с ошибками. Версия {0}. Настройки не загружены из {1}", Assembly.GetExecutingAssembly().GetName().Version, PikSettings.CurDllLocation);
-                Log.Info("Версия автокада - {0}", Application.Version.ToString());
-                Log.Info("Путь к сетевой папке настроек - {0}", PikSettings.ServerSettingsFolder ?? "нет");
+                Log.Info($"AutoCAD_PIK_Manager загружен с ошибками. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки не загружены из {PikSettings.CurDllLocation}");
+                Log.Info($"Версия автокада - {Application.Version.ToString()}");
+                Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
                 _err += ex.Message;
             }
 

@@ -71,14 +71,21 @@ namespace AutoCAD_PIK_Manager.Settings
             string res = pathToUserList;
             if (!File.Exists(res))
             {
-                res = Path.Combine(@"\\ab4\CAD_Settings", pathToUserList.Substring(3));
-                if (!File.Exists(res))
+                try
                 {
-                    res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));
+                    res = Path.Combine(@"\\ab4\CAD_Settings", pathToUserList.Substring(3));
                     if (!File.Exists(res))
                     {
-                        Log.Error($"Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {pathToUserList}");
+                        res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));
+                        if (!File.Exists(res))
+                        {
+                            Log.Error($"Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {pathToUserList}");
+                        }
                     }
+                }
+                catch 
+                {
+                    Log.Error($"Не определен путь к файлу списка пользователей UserList - {pathToUserList}.");
                 }
             }
             return res;
@@ -86,17 +93,24 @@ namespace AutoCAD_PIK_Manager.Settings
 
         internal static string GetExistServerSettingsPath(string serverSettingsPath)
         {
-            string res = serverSettingsPath;
+            string res = serverSettingsPath = string.Empty;
             if (!Directory.Exists(res))
             {
-                res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", serverSettingsPath.Substring(3));
-                if (!Directory.Exists(res))
+                try
                 {
-                    res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
+                    res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", serverSettingsPath.Substring(3));
                     if (!Directory.Exists(res))
                     {
-                        Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
+                        res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
+                        if (!Directory.Exists(res))
+                        {
+                            Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
+                        }
                     }
+                }
+                catch
+                {
+                    Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");
                 }
             }
             return res;
@@ -224,8 +238,12 @@ namespace AutoCAD_PIK_Manager.Settings
             catch (Exception ex)
             {
                 Log.Error(ex, $"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
-                // Определение группы по текущим папкам настроек                
-                return getCurrentGroupFromLocal();                
+                // Определение группы по текущим папкам настроек  
+                nameGroup = getCurrentGroupFromLocal();
+                if (string.IsNullOrEmpty(nameGroup))
+                {
+                    throw new Exception("IsNullOrEmpty(nameGroup)");
+                }
             }
             //if (nameGroup == "")
             //{
@@ -269,8 +287,14 @@ namespace AutoCAD_PIK_Manager.Settings
 
         private static List<string> getUserGroups()
         {
-            var dirStandart = new DirectoryInfo(Path.Combine(ServerSettingsFolder, "Standart"));
-            return dirStandart.GetDirectories().Select(d => d.Name).ToList();
+            List<string> res = new List<string>();
+            try
+            {
+                var dirStandart = new DirectoryInfo(Path.Combine(ServerSettingsFolder, "Standart"));
+                res = dirStandart.GetDirectories().Select(d => d.Name).ToList();
+            }
+            catch { }
+            return res;
         }
 
         private static bool isOtherGroupFolder(string name)
