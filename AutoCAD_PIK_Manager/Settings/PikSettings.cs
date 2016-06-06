@@ -93,7 +93,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
         internal static string GetExistServerSettingsPath(string serverSettingsPath)
         {
-            string res = serverSettingsPath = string.Empty;
+            string res = serverSettingsPath;
             if (!Directory.Exists(res))
             {
                 try
