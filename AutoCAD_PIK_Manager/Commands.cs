@@ -136,8 +136,24 @@ namespace AutoCAD_PIK_Manager
         {
             // Обновление программы (копирование AutoCAD_PIK_Manager.dll)
             string updater = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "UpdatePIKManager.exe");
-            string sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
-            string destDllPikManager = Path.Combine(PikSettings.LocalSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
+            string sourceDllPikManager = string.Empty;
+            string destDllPikManager = string.Empty;
+            try
+            {
+                sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
+            }
+            catch
+            {
+                sourceDllPikManager = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll";
+            }
+            try
+            {
+                destDllPikManager = Path.Combine(PikSettings.LocalSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
+            }
+            catch
+            {
+                destDllPikManager = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
+            }
             string roamableFolder = Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });
             string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);
             Log.Info("Запущена программа обновления UpdatePIKManager с аргументом: {0}", arg);

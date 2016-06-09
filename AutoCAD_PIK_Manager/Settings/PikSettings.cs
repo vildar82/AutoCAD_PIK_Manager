@@ -104,13 +104,21 @@ namespace AutoCAD_PIK_Manager.Settings
                         res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
                         if (!Directory.Exists(res))
                         {
-                            Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
+                            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация";
+                            if (!Directory.Exists(res))
+                            {
+                                Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
+                            }
                         }
                     }
                 }
                 catch
-                {
-                    Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");
+                {                    
+                    res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация";
+                    if (!Directory.Exists(res))
+                    {
+                        Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");
+                    }
                 }
             }
             return res;
