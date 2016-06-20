@@ -135,7 +135,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 // Копирование настроек с сервера
                 var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
                 localSettDir.Create();
-                copyFilesRecursively(serverSettDir, localSettDir);
+                CopyFilesRecursively(serverSettDir, localSettDir);
                 // Копирование flexBrics если нужно
                 FlexBrics.Copy();
             }
@@ -148,14 +148,14 @@ namespace AutoCAD_PIK_Manager.Settings
         /// <summary>
         /// Копирование файлов настроек с сервера
         /// </summary>
-        private static void copyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
         {
             // копрование всех папок из источника
             foreach (DirectoryInfo dir in source.GetDirectories())
             {
                 // Если это папка с именем другого отдело, то не копировать ее
                 if (isOtherGroupFolder(dir.Name)) continue;
-                copyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
+                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
             }
             // копирование всех файлов из папки источника
             foreach (FileInfo f in source.GetFiles())
