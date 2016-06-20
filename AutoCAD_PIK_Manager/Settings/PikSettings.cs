@@ -229,7 +229,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 }
                 if (string.IsNullOrEmpty(nameGroup))
                 {
-                    Log.Error($"Не определена группа по файлу UserGroup2.xlsx. {pathToList}");
+                    Log.Error($"Не определена рабочая группа по файлу UserGroup2.xlsx. {pathToList}");
                     // проверка была ли группа сохранена ранее в реестре
                     nameGroup = loadUserGroupFromRegistry();
                 }
@@ -267,9 +267,16 @@ namespace AutoCAD_PIK_Manager.Settings
 
         private static string getCurrentGroupFromLocal()
         {
-            string folderStandart = Path.Combine(LocalSettingsFolder, "Standart");
-            var foldersStandart = Directory.GetDirectories(folderStandart);
-            return Path.GetFileName(foldersStandart.First());
+            try
+            {
+                string folderStandart = Path.Combine(LocalSettingsFolder, "Standart");
+                var foldersStandart = Directory.GetDirectories(folderStandart);
+                return Path.GetFileName(foldersStandart.First());
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static string loadUserGroupFromRegistry()

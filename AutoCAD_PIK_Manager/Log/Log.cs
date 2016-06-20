@@ -89,12 +89,12 @@ namespace AutoCAD_PIK_Manager
                 //config.LoggingRules.Add(rule);       
 
                 // Set up asynchronous database logging assuming dbTarget is your existing target
-                AsyncTargetWrapper asyncWrapper = new AsyncTargetWrapper(mailTarget);
-                asyncWrapper.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
-                asyncWrapper.QueueLimit = 100;
-                config.AddTarget("async", asyncWrapper);
+                AsyncTargetWrapper asyncWrapperMail = new AsyncTargetWrapper(mailTarget);
+                asyncWrapperMail.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
+                asyncWrapperMail.QueueLimit = 100;
+                config.AddTarget("async", asyncWrapperMail);
                 // Define rules
-                LoggingRule ruleAsync = new LoggingRule("*", LogLevel.Error, asyncWrapper);
+                LoggingRule ruleAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperMail);
                 config.LoggingRules.Add(ruleAsync);
 
                 LogManager.Configuration = config;
