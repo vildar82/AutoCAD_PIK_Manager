@@ -212,8 +212,13 @@ namespace AutoCAD_PIK_Manager.Settings
             string nameGroup = "";
             try
             {
-                using (var xlPackage = new ExcelPackage(new FileInfo(pathToList)))
+                using (var xlPackage = new ExcelPackage())
                 {
+                    using (var stream = File.OpenRead(pathToList))
+                    {
+                        xlPackage.Load(stream);
+                    }
+
                     var worksheet = xlPackage.Workbook.Worksheets[1];
 
                     int numberRow = 2;
