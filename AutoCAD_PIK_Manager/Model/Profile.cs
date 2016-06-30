@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace AutoCAD_PIK_Manager.Model
@@ -96,12 +97,19 @@ namespace AutoCAD_PIK_Manager.Model
             try
             {
                 var varsPath = GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths);
-                path = GetPathVariable(varsPath, preference.Files.PrinterConfigPath, "");
+                //path = GetPathVariable(varsPath, preference.Files.PrinterConfigPath, "");
+                var curPlottersPaths = preference.Files.PrinterConfigPath;
                 //Log.Warn("PrinterConfigPaths. Before - path=" + path);
-                path = ExcludePikPaths(path, varsPath);
+                path = ExcludePikPaths(curPlottersPaths, varsPath);
                 //Log.Warn("PrinterConfigPaths. After - path=" +path);
-                if (!string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                 {
+                    // Добавить стандартный путь к плоттерам     
+                    Log.Error($"Не определен стандартный путь к плоттерам!!.");
+                }
+                else
+                {
+
                     //if (cuVer < v2015)
                     //{
                     // Глючит печать в 2013-2014 версии.
@@ -109,15 +117,19 @@ namespace AutoCAD_PIK_Manager.Model
                     if (_settPikFile.PathVariables.PrinterConfigPaths.Count > 0)
                     {
                         string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);
-                        string pathCurProfilePlotters;
-                        try
-                        {
-                            pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
-                        }
-                        catch
-                        {
-                            pathCurProfilePlotters = path.Split(new char[] { ';' }).First();
-                        }
+                        string pathCurProfilePlotters=path.Split(';').First();
+                        //try
+                        //{
+                        //    pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
+                        //}
+                        //catch
+                        //{
+                        //    pathCurProfilePlotters = path.Split(';').First();
+                        //    if (string.IsNullOrEmpty(pathCurProfilePlotters))
+                        //    {
+                        //        // Стандартный путь к плоттерам
+                        //    }
+                        //}
                         CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
                         Log.Info($"Скопированы плоттеры из папки {pathPikPlotters}, в папку {pathCurProfilePlotters}.");
                         //// Исключить наши папки из путей принтеров
@@ -125,19 +137,18 @@ namespace AutoCAD_PIK_Manager.Model
                         //if (path != pathEx)
                         //    Env.SetEnv("PrinterConfigDir", pathEx);
                     }
-                    //}
-                    //else
-                    //{
-                    try
-                    {
-                        preference.Files.PrinterConfigPath = path;
-                    }
-                    catch
-                    {
-                        Env.SetEnv("PrinterConfigDir", path);
-                    }
 
-                    //}
+                    if (path != curPlottersPaths)
+                    {
+                        try
+                        {
+                            preference.Files.PrinterConfigPath = path;
+                        }
+                        catch
+                        {
+                            Env.SetEnv("PrinterConfigDir", path);
+                        }
+                    }                   
                 }
                 Log.Info($"PrinterConfigPath={path}");
             }
@@ -147,95 +158,95 @@ namespace AutoCAD_PIK_Manager.Model
             }
 
             // PrinterDescPaths         
-            try
-            {
-                var varsPath = GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths);
-                path = GetPathVariable(varsPath, preference.Files.PrinterDescPath, "");
-                path = ExcludePikPaths(path, varsPath);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    //if (cuVer < v2015)
-                    //{
-                    // Глючит печать в 2013-2014 версии.
-                    // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-                    //if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
-                    //{
-                    //    string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
-                    //    string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
-                    //    CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
-                    //    //// Исключить наши папки из путей принтеров
-                    //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-                    //    //if (path != pathEx)
-                    //    //    Env.SetEnv("PrinterDescDir", pathEx);
-                    //}
-                    //}
-                    //else
-                    //{
-                    try
-                    {
-                        preference.Files.PrinterDescPath = path;
-                    }
-                    catch
-                    {
-                        Env.SetEnv("PrinterDescDir", path);
-                    }
-                    //}
-                }
-                Log.Info($"PrinterDescDir={path}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"preference.Files.PrinterDescDir = {path}");
-            }
+            //try
+            //{
+            //    var varsPath = GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths);
+            //    path = GetPathVariable(varsPath, preference.Files.PrinterDescPath, "");
+            //    path = ExcludePikPaths(path, varsPath);
+            //    if (!string.IsNullOrEmpty(path))
+            //    {
+            //        //if (cuVer < v2015)
+            //        //{
+            //        // Глючит печать в 2013-2014 версии.
+            //        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+            //        //if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
+            //        //{
+            //        //    string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
+            //        //    string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
+            //        //    CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
+            //        //    //// Исключить наши папки из путей принтеров
+            //        //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
+            //        //    //if (path != pathEx)
+            //        //    //    Env.SetEnv("PrinterDescDir", pathEx);
+            //        //}
+            //        //}
+            //        //else
+            //        //{
+            //        try
+            //        {
+            //            preference.Files.PrinterDescPath = path;
+            //        }
+            //        catch
+            //        {
+            //            Env.SetEnv("PrinterDescDir", path);
+            //        }
+            //        //}
+            //    }
+            //    Log.Info($"PrinterDescDir={path}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, $"preference.Files.PrinterDescDir = {path}");
+            //}
 
-            // PrinterPlotStylePaths         
-            try
-            {
-                var varsPath = GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths);
-                path = GetPathVariable(varsPath, preference.Files.PrinterStyleSheetPath, "");
-                path = ExcludePikPaths(path, varsPath);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    //if (cuVer < v2015)
-                    //{
-                    // Глючит печать в 2013-2014 версии.
-                    // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-                    //if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
-                    //{
-                    //    string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
-                    //    string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
-                    //    CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
-                    //    //// Исключить наши папки из путей pathCurProfilePlotStyle
-                    //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
-                    //    //if (path != pathEx)
-                    //    //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
-                    //}
-                    //}
-                    //else
-                    //{
-                    try
-                    {
-                        preference.Files.PrinterStyleSheetPath = path;
-                    }
-                    catch
-                    {
-                        Env.SetEnv("PrinterStyleSheetDir", path);
-                    }
-                    //}
-                }
-                Log.Info($"PrinterStyleSheetDir={path}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, $"preference.Files.PrinterStyleSheetDir = {path}");
-            }
+            //// PrinterPlotStylePaths         
+            //try
+            //{
+            //    var varsPath = GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths);
+            //    path = GetPathVariable(varsPath, preference.Files.PrinterStyleSheetPath, "");
+            //    path = ExcludePikPaths(path, varsPath);
+            //    if (!string.IsNullOrEmpty(path))
+            //    {
+            //        //if (cuVer < v2015)
+            //        //{
+            //        // Глючит печать в 2013-2014 версии.
+            //        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
+            //        //if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
+            //        //{
+            //        //    string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
+            //        //    string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
+            //        //    CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
+            //        //    //// Исключить наши папки из путей pathCurProfilePlotStyle
+            //        //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
+            //        //    //if (path != pathEx)
+            //        //    //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
+            //        //}
+            //        //}
+            //        //else
+            //        //{
+            //        try
+            //        {
+            //            preference.Files.PrinterStyleSheetPath = path;
+            //        }
+            //        catch
+            //        {
+            //            Env.SetEnv("PrinterStyleSheetDir", path);
+            //        }
+            //        //}
+            //    }
+            //    Log.Info($"PrinterStyleSheetDir={path}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, $"preference.Files.PrinterStyleSheetDir = {path}");
+            //}
 
             // ToolPalettePath
             if (SetToolPalette)
             {
                 try
                 {
-                    path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup);
+                    path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup, "ToolPalettePath");
                     if (!string.IsNullOrEmpty(path))
                     {
                         preference.Files.ToolPalettePath = path;
@@ -304,7 +315,7 @@ namespace AutoCAD_PIK_Manager.Model
             // ColorBookLocation
             try
             {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ColorBookPaths, _settGroupFile?.PathVariables?.ColorBookPaths), preference.Files.ColorBookPath, "");
+                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ColorBookPaths, _settGroupFile?.PathVariables?.ColorBookPaths), preference.Files.ColorBookPath, "", "ColorBookPath");
                 if (!string.IsNullOrEmpty(path))
                 {
                     preference.Files.ColorBookPath = path;
@@ -354,7 +365,13 @@ namespace AutoCAD_PIK_Manager.Model
             try
             {
                 dynamic preference = AutoCadApp.Preferences;
-                var path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "");
+                var path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "", "SupportPath");
+
+                // Копирование файов из папки Support в папку appdata/roamable Support пользователя
+                var supportPikPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.Supports.First(s=>s.Value == "Support").Value);
+                var roamPath = Path.Combine(HostApplicationServices.Current.RoamableRootFolder, "Support");
+                PikSettings.CopyFilesRecursively(new DirectoryInfo(supportPikPath),new DirectoryInfo ( roamPath));                
+
                 if (!string.IsNullOrEmpty(path))
                 {
                     preference.Files.SupportPath = path;
@@ -437,7 +454,7 @@ namespace AutoCAD_PIK_Manager.Model
             return resList;
         }
 
-        private static string GetPathVariable(List<Variable> settings, string path, string group)
+        private static string GetPathVariable(List<Variable> settings, string path, string group, string namePathsForLog)
         {
             string fullPath = string.Empty;
             try
@@ -462,14 +479,15 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch { }
 
-            fullPath = getOnlyExistsPaths(fullPath);
+            fullPath = getOnlyExistsPaths(fullPath, namePathsForLog);
 
             return fullPath;
         }
 
         // Удаление несуществующих путей.
-        private static string getOnlyExistsPaths(string fullPath)
+        private static string getOnlyExistsPaths(string fullPath, string namePathsForLog)
         {
+            List<string> deletedPath = new List<string>  ();
             Dictionary<string, string> existsPath = new Dictionary<string, string>();
             string pathUpper;
             var paths = fullPath.Split(';');
@@ -490,12 +508,14 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 try
                 {
+                    bool isAdded = false;
                     FileAttributes attr = File.GetAttributes(path);
                     if (attr.HasFlag(FileAttributes.Directory))
                     {
                         if (Directory.Exists(path))
                         {
                             existsPath.Add(pathUpper, path);
+                            isAdded = true;
                         }
                     }
                     else
@@ -503,7 +523,12 @@ namespace AutoCAD_PIK_Manager.Model
                         if (File.Exists(path))
                         {
                             existsPath.Add(pathUpper, path);
+                            isAdded = true;
                         }
+                    }
+                    if (!isAdded)
+                    {
+                        deletedPath.Add(path);
                     }
                 }
                 catch
@@ -511,6 +536,10 @@ namespace AutoCAD_PIK_Manager.Model
                     // Это не путь
                     continue;
                 }
+            }
+            if (deletedPath.Count != 0)
+            {
+                Log.Error($"Удаленные пути из {namePathsForLog}: {string.Join(";", deletedPath)}");
             }
             return string.Join(";", existsPath.Values.ToArray()) + (existsPath.Count > 1 ? ";" : "");
         }
@@ -537,7 +566,7 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 else
                 {
-                    nameVar = getOnlyExistsPaths(nameVar?.ToString());
+                    nameVar = getOnlyExistsPaths(nameVar?.ToString(), "TRUSTEDPATHS");
                     if (string.IsNullOrEmpty(nameVar?.ToString()))
                     {
                         nameVar = value;
@@ -547,7 +576,7 @@ namespace AutoCAD_PIK_Manager.Model
                         nameVar += ";" + value;
                     }
                 }
-                nameVar = getOnlyExistsPaths(nameVar?.ToString());
+                nameVar = getOnlyExistsPaths(nameVar?.ToString(), "TRUSTEDPATHS");
                 Log.Info("TRUSTEDPATHS = {0}", nameVar);
             }
             else
