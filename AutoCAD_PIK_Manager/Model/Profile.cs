@@ -367,10 +367,10 @@ namespace AutoCAD_PIK_Manager.Model
                 dynamic preference = AutoCadApp.Preferences;
                 var path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "", "SupportPath");
 
-                // Копирование файов из папки Support в папку appdata/roamable Support пользователя
-                var supportPikPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.Supports.First(s=>s.Value == "Support").Value);
-                var roamPath = Path.Combine(HostApplicationServices.Current.RoamableRootFolder, "Support");
-                PikSettings.CopyFilesRecursively(new DirectoryInfo(supportPikPath),new DirectoryInfo ( roamPath));                
+                //// Копирование файов из папки Support в папку appdata/roamable Support пользователя
+                //var supportPikPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.Supports.First(s=>s.Value == "Support").Value);
+                //var roamPath = Path.Combine(HostApplicationServices.Current.RoamableRootFolder, "Support");
+                //PikSettings.CopyFilesRecursively(new DirectoryInfo(supportPikPath),new DirectoryInfo ( roamPath));                
 
                 if (!string.IsNullOrEmpty(path))
                 {
