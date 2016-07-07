@@ -15,14 +15,25 @@ namespace AutoCAD_PIK_Manager
         // AutoCAD 2007...2012
         [DllImport("acad.exe", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, EntryPoint = "acedGetEnv")]
         extern static private Int32 acedGetEnv12(string var, StringBuilder val);
-        // AutoCAD 2013...
+        // AutoCAD 2013,2014
         [DllImport("accore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, EntryPoint = "acedGetEnv")]
         extern static private Int32 acedGetEnv13(string var, StringBuilder val);
+        // AutoCAD 2015...
+        [DllImport("accore.dll", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode, EntryPoint = "acedGetEnv")]
+        extern static private Int32 acedGetEnv15 (string var, StringBuilder val, UIntPtr valLen);
 
         static public string GetEnv(string var)
         {
             StringBuilder val = new StringBuilder(16536);
-            if (Ver <= 18) acedGetEnv12(var, val); else acedGetEnv13(var, val);
+            //if (Ver <= 18) acedGetEnv12(var, val); else acedGetEnv13(var, val);
+            //return val.ToString();
+                        
+            if (Ver <= 18)
+                acedGetEnv12(var, val);
+            else if (Ver <= 19)
+                acedGetEnv13(var, val);
+            else
+                acedGetEnv15(var, val, new UIntPtr(16536));
             return val.ToString();
         }
 
