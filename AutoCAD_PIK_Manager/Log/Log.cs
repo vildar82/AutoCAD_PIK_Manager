@@ -79,7 +79,7 @@ namespace AutoCAD_PIK_Manager
                 // mail
                 var mailTarget = new MailTarget();
                 mailTarget.To = "vildar82@gmail.com";
-                mailTarget.From = "KhisyametdinovVT@pik.ru";
+                mailTarget.From = Environment.UserName + "@pik.ru";
                 mailTarget.Subject = string.Format("Сообщение от {0}, AutoCAD_PIK_Manager", Environment.UserName);
                 mailTarget.SmtpServer = "ex20pik.picompany.ru";
                 mailTarget.Body = "${longdate} ${message} ${exception:format=ToString,StackTrace}";                
