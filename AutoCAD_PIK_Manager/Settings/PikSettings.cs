@@ -12,6 +12,12 @@ namespace AutoCAD_PIK_Manager.Settings
     /// </summary>
     public static class PikSettings
     {
+        readonly static List<string> pathesServerCadSettings = new List<string> {
+            @"\\picompany.ru\root\ecp_sapr_exchange\01_Публикация\05_Temp\AutoCAD_server\Адаптация",
+            @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация",
+            @"\\ab5\CAD_Settings\AutoCAD_server\Адаптация"
+        };
+
         private static string _curDllLocation;
         private static string _localSettingsFolder;
         private static string _serverSettingsFolder;
@@ -54,9 +60,9 @@ namespace AutoCAD_PIK_Manager.Settings
             _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
             _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
             if (_settingsPikFile == null) return;
-            _serverSettingsFolder = GetExistServerSettingsPath(_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
-            _serverShareSettingsFolder = GetExistServerSettingsPath(_settingsPikFile.ServerShareSettings);
-            _userGroup = getUserGroup(GetExistServerUserListFile(_settingsPikFile.PathToUserList));
+            _serverSettingsFolder = GetServerSettingsPath(_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
+            _serverShareSettingsFolder = GetServerShareLibPath();
+            _userGroup = getUserGroup(GetServerUserListFile());
             if (_userGroup == "Нет")
             {
                 throw new Exceptions.NoGroupException();
@@ -66,60 +72,31 @@ namespace AutoCAD_PIK_Manager.Settings
             if (_settingsGroupFile != null) Log.Info($"Загружены настройки группы {UserGroup} из SettingsGroup.xml");
         }
 
-        private static string GetExistServerUserListFile(string pathToUserList)
+        private static string GetServerShareLibPath ()
         {
-            string res = pathToUserList;
-            if (!File.Exists(res))
-            {
-                try
-                {
-                    res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));                    
-                    if (!File.Exists(res))
-                    {
-                        res = Path.Combine(@"\\ab5\CAD_Settings", pathToUserList.Substring(3));
-                        if (!File.Exists(res))
-                        {
-                            Log.Error($"Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {pathToUserList}");
-                        }
-                    }
-                }
-                catch 
-                {
-                    Log.Error($"Не определен путь к файлу списка пользователей UserList - {pathToUserList}.");
-                }
-            }
+            var res =  Path.GetFullPath(Path.Combine(ServerSettingsFolder, @"..\ShareSettings"));            
             return res;
         }
 
-        internal static string GetExistServerSettingsPath(string serverSettingsPath)
+        private static string GetServerUserListFile()
+        {            
+            var res = Path.GetFullPath(Path.Combine(ServerSettingsFolder, @"..\users\userlist2.xlsx"));            
+            return res;
+        }
+
+        internal static string GetServerSettingsPath(string serverSettingsPath)
         {
             string res = serverSettingsPath;
             if (!Directory.Exists(res))
-            {
-                try
+            {                
+                foreach (var itemServerSettPath in pathesServerCadSettings)
                 {
-                    res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", serverSettingsPath.Substring(3));
-                    if (!Directory.Exists(res))
+                    if (Directory.Exists(itemServerSettPath))
                     {
-                        res = Path.Combine(@"\\ab5\CAD_Settings", serverSettingsPath.Substring(3));
-                        if (!Directory.Exists(res))
-                        {
-                            res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация";
-                            if (!Directory.Exists(res))
-                            {
-                                Log.Error($"Сетевой путь к настройкам недоступен - serverSettingsPath: {serverSettingsPath}");
-                            }
-                        }
+                        return itemServerSettPath;                        
                     }
                 }
-                catch
-                {                    
-                    res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация";
-                    if (!Directory.Exists(res))
-                    {
-                        Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");
-                    }
-                }
+                Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");                
             }
             return res;
         }
@@ -257,16 +234,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 {
                     throw new Exception("IsNullOrEmpty(nameGroup)");
                 }
-            }
-            //if (nameGroup == "")
-            //{
-            //   if (MessageBox.Show(
-            //       "Ваша рабочая группа не определена!\nОбратиться за помощью к " + _settingsPikFile.NameCADManager + "?",
-            //       "Внимание!", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
-            //   {
-            //      System.Diagnostics.Process.Start("mailto:" + _settingsPikFile.MailCADManager + "?subject=" + _settingsPikFile.SubjectMail + "&body=" + _settingsPikFile.BodyMail + Environment.UserName);
-            //   }
-            //}
+            }            
             return nameGroup;
         }
 

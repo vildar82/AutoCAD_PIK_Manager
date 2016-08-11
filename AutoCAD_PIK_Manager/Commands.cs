@@ -25,7 +25,8 @@ namespace AutoCAD_PIK_Manager
             {
                 if (_about == null)
                     _about = "\nПрограмма настройки AutoCAD_Pik_Manager, версия: " + Assembly.GetExecutingAssembly().GetName().Version +
-                      "\nПользоватль: " + Environment.UserName + ", Группа: " + PikSettings.UserGroup;
+                      "\nПользоватль: " + Environment.UserName + ", Группа: " + PikSettings.UserGroup + 
+                      $"\nПуть к серверу настроек = {PikSettings.ServerSettingsFolder}";
                 return _about;
             }
         }
