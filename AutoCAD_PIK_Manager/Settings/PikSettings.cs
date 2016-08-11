@@ -73,10 +73,10 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 try
                 {
-                    res = Path.Combine(@"\\ab4\CAD_Settings", pathToUserList.Substring(3));
+                    res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));                    
                     if (!File.Exists(res))
                     {
-                        res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", pathToUserList.Substring(3));
+                        res = Path.Combine(@"\\ab5\CAD_Settings", pathToUserList.Substring(3));
                         if (!File.Exists(res))
                         {
                             Log.Error($"Сетевой путь к файлу списка пользователей UserList2.xlsx недоступен - pathToUserList: {pathToUserList}");
@@ -101,7 +101,7 @@ namespace AutoCAD_PIK_Manager.Settings
                     res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", serverSettingsPath.Substring(3));
                     if (!Directory.Exists(res))
                     {
-                        res = Path.Combine(@"\\ab4\CAD_Settings", serverSettingsPath.Substring(3));
+                        res = Path.Combine(@"\\ab5\CAD_Settings", serverSettingsPath.Substring(3));
                         if (!Directory.Exists(res))
                         {
                             res = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация";
