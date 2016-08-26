@@ -35,8 +35,8 @@ namespace AutoCAD_PIK_Manager.Model
         }
 
         public static void Init()
-        {            
-            _usersComError = new List<string> { "LilyuevAA", "PodnebesnovVK", "kozlovsb", "tishchenkoag" };
+        {
+            _usersComError = new List<string>();// { "LilyuevAA", "PodnebesnovVK", "kozlovsb", "tishchenkoag" };
             _settPikFile = PikSettings.PikFileSettings;
             _profileName = _settPikFile.ProfileName;
             _settGroupFile = PikSettings.GroupFileSettings;

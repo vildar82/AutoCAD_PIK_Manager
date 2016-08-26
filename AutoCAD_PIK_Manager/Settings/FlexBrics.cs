@@ -14,7 +14,7 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 try
                 {
-                    var sourceFB = new DirectoryInfo(GetExistsFlexBricsServerFolder(PikSettings.GroupFileSettings.FlexBricsFolder));
+                    var sourceFB = new DirectoryInfo(GetServerFlexBricsServerFolder());
                     _fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
                     var targetFB = new DirectoryInfo(_fbLocalDir);
                     CopyAll(sourceFB, targetFB);
@@ -26,25 +26,11 @@ namespace AutoCAD_PIK_Manager.Settings
             }
         }
 
-        private static string GetExistsFlexBricsServerFolder (string flexBricsFolder)
+        private static string GetServerFlexBricsServerFolder ()
         {
-            string res = flexBricsFolder;
-            if (!Directory.Exists(res))
-            {
-                res = Path.Combine(@"\\dsk2.picompany.ru\project\CAD_Settings", flexBricsFolder.Substring(3));
-
-                if (!Directory.Exists(res))
-                {
-                    res = Path.Combine(@"\\ab5\CAD_Settings", flexBricsFolder.Substring(3));
-
-                    if (!Directory.Exists(res))
-                    {
-                        Log.Error("Сетевой путь к настройкам недоступен - flexBricsFolder: {0}", flexBricsFolder);
-                    }
-                }
-            }
+            var res = Path.GetFullPath(Path.Combine(PikSettings.ServerSettingsFolder, @"..\flexBrics"));
             return res;
-        }
+        }        
 
         public static void Setup ()
         {
@@ -55,7 +41,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 if (isAcadVerLater2013())
                 {
                     string trustedPath = AutoCadApp.GetSystemVariable("TRUSTEDPATHS").ToString();
-                    trustedPath += ";" + _fbLocalDir + "...";
+                    trustedPath += ";" + _fbLocalDir + @"\...";
                     AutoCadApp.SetSystemVariable("TRUSTEDPATHS", trustedPath);
                     Log.Info("FlexBrics.Setup. trustedPath ={0}", trustedPath);
                 }

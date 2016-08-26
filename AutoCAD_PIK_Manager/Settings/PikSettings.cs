@@ -14,7 +14,8 @@ namespace AutoCAD_PIK_Manager.Settings
     {
         readonly static List<string> pathesServerCadSettings = new List<string> {            
             @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация",
-            @"\\ab7\CAD_Settings\AutoCAD_server\Адаптация"
+            @"\\ab7\CAD_Settings\AutoCAD_server\Адаптация",
+            @"\\ab5\CAD_Settings\AutoCAD_server\Адаптация"
         };
 
         private static string _curDllLocation;
