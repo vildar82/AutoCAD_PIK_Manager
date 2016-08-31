@@ -269,7 +269,14 @@ namespace AutoCAD_PIK_Manager.Model
                     {
                         if (!string.IsNullOrEmpty(path))
                         {
-                            Env.SetEnv("TemplatePath", path);
+                            try
+                            {
+                                Env.SetEnv("TemplatePath", path);
+                            }
+                            catch
+                            {
+                                preference.Files.TemplateDwgPath = path;
+                            }
                         }
                         Log.Info($"TemplatePath={path}");
                     }
@@ -278,7 +285,6 @@ namespace AutoCAD_PIK_Manager.Model
                 {
                     Log.Error(ex, $"Env.SetEnv(TemplatePath = {path}");
                 }
-
 
                 //PageSetupOverridesTemplateFile
                 try
