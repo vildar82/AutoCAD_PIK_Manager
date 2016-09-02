@@ -22,7 +22,6 @@ namespace AutoCAD_PIK_Manager.Model
         private static SettingsPikFile _settPikFile;
         private static string _userGroup;
         private static List<string> _usersComError;
-
         public bool SetProfilePIK { get; set; } = true;
         public bool SetToolPalette { get; set; } = true;
         public bool SetTemplate { get; set; } = true;

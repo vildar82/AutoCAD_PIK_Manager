@@ -187,17 +187,15 @@ namespace AutoCAD_PIK_Manager.Settings
         private static string getUserGroup(string pathToList)
         {
             string nameGroup = "";
+            // Определение группы по файлк списка пользователей на сервере
             try
             {
-                using (var xlPackage = new ExcelPackage())
+                // Копирование файла списка пользователей
+                string fileTemp = Path.GetTempFileName();
+                File.Copy(pathToList, fileTemp, true);
+                using (var xlPackage = new ExcelPackage(new FileInfo(fileTemp)))
                 {
-                    using (var stream = File.OpenRead(pathToList))
-                    {
-                        xlPackage.Load(stream);
-                    }
-
                     var worksheet = xlPackage.Workbook.Worksheets[1];
-
                     int numberRow = 2;
                     while (worksheet.Cells[numberRow, 2].Text.Trim() != "")
                     {
@@ -209,32 +207,33 @@ namespace AutoCAD_PIK_Manager.Settings
                         numberRow++;
                     }
                 }
-                if (string.IsNullOrEmpty(nameGroup))
-                {
-                    Log.Error($"Не определена рабочая группа по файлу UserGroup2.xlsx. {pathToList}");
-                    // проверка была ли группа сохранена ранее в реестре
-                    nameGroup = loadUserGroupFromRegistry();
-                }
-                else
-                {
-                    saveUserGroupToRegistry(nameGroup);
-                }
-                if (string.IsNullOrEmpty(nameGroup))
-                {
-                    throw new Exception("IsNullOrEmpty(nameGroup)");
-                }                          
-                Log.Info($"{Environment.UserName} Группа - {nameGroup}" );
-            }            
+            }
             catch (Exception ex)
             {
-                Log.Error(ex, $"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
-                // Определение группы по текущим папкам настроек  
-                nameGroup = getCurrentGroupFromLocal();
+                Log.Error(ex, $"Ошибка определена рабочей группы по файлу '{pathToList}'.");
+            }
+
+            if (string.IsNullOrEmpty(nameGroup))
+            {
+                Log.Error($"Не определена рабочая группа по файлу UserGroup2.xlsx. {pathToList}");
+                // проверка была ли группа сохранена ранее в реестре
+                nameGroup = loadUserGroupFromRegistry();                
                 if (string.IsNullOrEmpty(nameGroup))
                 {
-                    throw new Exception("IsNullOrEmpty(nameGroup)");
+                    // Определение группы по текущим папкам настроек  
+                    nameGroup = getCurrentGroupFromLocal();
+                    if (string.IsNullOrEmpty(nameGroup))
+                    {
+                        Log.Error($"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
+                        throw new Exception("IsNullOrEmpty(nameGroup)");
+                    }
                 }
+            }
+            else
+            {
+                saveUserGroupToRegistry(nameGroup);
             }            
+            Log.Info($"{Environment.UserName} Группа - {nameGroup}");            
             return nameGroup;
         }
 
