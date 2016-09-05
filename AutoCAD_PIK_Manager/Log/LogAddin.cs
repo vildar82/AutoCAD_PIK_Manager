@@ -6,9 +6,18 @@ namespace AutoCAD_PIK_Manager
     {
         private string _plugin = string.Empty;
 
+        [Obsolete("Use LogAddin()")]
         public LogAddin(string plugin)
         {
             _plugin = "Plugin " + plugin + "; ";
+        }
+
+        /// <summary>
+        /// Лог плагина - по группе
+        /// </summary>
+        public LogAddin ()
+        {
+            _plugin = "Plugin " + Settings.PikSettings.UserGroup + "; ";
         }
 
         /// <summary>
