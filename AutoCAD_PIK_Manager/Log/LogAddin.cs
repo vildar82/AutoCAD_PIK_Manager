@@ -106,6 +106,7 @@ namespace AutoCAD_PIK_Manager
             Log.Warn(ex, _plugin + message, args);
         }
 
+        [Obsolete("Use AcadLib.Logger.Log.StartCommand (CommandStart command)")]
         public void StartCommand(string name)
         {
             Log.Info(_plugin + "Start command: " + name + "; ");            
