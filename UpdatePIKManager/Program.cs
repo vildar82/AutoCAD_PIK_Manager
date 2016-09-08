@@ -28,7 +28,7 @@ namespace UpdatePIKManager
                 // Сброс сортировки кнопок в инструментальных палитрах.            
                 if (args.Length >= 4)
                 {
-                    SortingToolPalette sortPalette = new SortingToolPalette(args[2], args[3]);
+                    SortingToolPalette sortPalette = new SortingToolPalette(args[2], args[3]);                    
                     sortPalette.ResetSorting();
                     Trace.WriteLine("Сортировка кнопок в палитрах сброшена");
                 }
