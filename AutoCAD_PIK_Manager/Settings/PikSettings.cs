@@ -12,11 +12,7 @@ namespace AutoCAD_PIK_Manager.Settings
     /// </summary>
     public static class PikSettings
     {
-        readonly static List<string> pathesServerCadSettings = new List<string> {            
-            @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация",
-            @"\\ab7\CAD_Settings\AutoCAD_server\Адаптация",
-            @"\\ab5\CAD_Settings\AutoCAD_server\Адаптация"
-        };
+        readonly static List<string> pathesServerCadSettings = new List<string>();
 
         private static string _curDllLocation;
         private static string _localSettingsFolder;
@@ -80,7 +76,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
         private static string GetServerUserListFile()
         {            
-            var res = Path.GetFullPath(Path.Combine(ServerSettingsFolder, @"..\users\userlist2.xlsx"));            
+            var res = Path.GetFullPath(Path.Combine(ServerSettingsFolder, @"..\users\userlist.xlsx"));            
             return res;
         }
 
@@ -215,7 +211,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
             if (string.IsNullOrEmpty(nameGroup))
             {
-                Log.Error($"Не определена рабочая группа по файлу UserGroup2.xlsx. {pathToList}");
+                Log.Error($"Не определена рабочая группа по файлу UserGroup.xlsx. {pathToList}");
                 // проверка была ли группа сохранена ранее в реестре
                 nameGroup = loadUserGroupFromRegistry();                
                 if (string.IsNullOrEmpty(nameGroup))
@@ -224,8 +220,9 @@ namespace AutoCAD_PIK_Manager.Settings
                     nameGroup = getCurrentGroupFromLocal();
                     if (string.IsNullOrEmpty(nameGroup))
                     {
+                        nameGroup = "ГП";
                         Log.Error($"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
-                        throw new Exception("IsNullOrEmpty(nameGroup)");
+                        //throw new Exception("IsNullOrEmpty(nameGroup)");
                     }
                 }
             }

@@ -142,26 +142,21 @@ namespace AutoCAD_PIK_Manager
             try
             {
                 sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
-            }
-            catch
-            {
-                sourceDllPikManager = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll";
-            }
-            try
-            {
                 destDllPikManager = Path.Combine(PikSettings.LocalSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
+
+                string roamableFolder = Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });
+                string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);
+                Log.Info("Запущена программа обновления UpdatePIKManager с аргументом: {0}", arg);
+                ProcessStartInfo startInfo = new ProcessStartInfo(updater);
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.Arguments = arg;
+                Process.Start(startInfo);
             }
-            catch
+            catch (System.Exception ex)
             {
-                destDllPikManager = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
-            }
-            string roamableFolder = Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });
-            string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);
-            Log.Info("Запущена программа обновления UpdatePIKManager с аргументом: {0}", arg);
-            ProcessStartInfo startInfo = new ProcessStartInfo(updater);
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = arg;
-            Process.Start(startInfo);
+                Log.Error(ex, "Ошибка запуска программы обновления UpdatePIKManager.exe.");
+            }            
+            
         }
 
         private static bool IsProcessAny()

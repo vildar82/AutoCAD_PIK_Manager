@@ -18,7 +18,11 @@
 
 using System;
 using System.IO;
+using System.Net.Mail;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
 using AutoCAD_PIK_Manager.Settings;
 using NLog;
 using NLog.Config;
@@ -43,6 +47,8 @@ namespace AutoCAD_PIK_Manager
         #endregion Private Fields
 
         #region Public Constructors
+
+        public static readonly string Pwd;        
 
         static Log()
         {
@@ -73,29 +79,6 @@ namespace AutoCAD_PIK_Manager
                 config.AddTarget("serverFile", fileServerTarget);
                 rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
                 config.LoggingRules.Add(rule);
-                LogManager.Configuration = config;
-
-                // mail
-                var mailTarget = new MailTarget();
-                mailTarget.To = "vildar82@gmail.com; khisyametdinovvt@pik.ru";                
-                mailTarget.From = Environment.UserName + "@pik.ru";
-                mailTarget.Subject = string.Format("Сообщение от {0}, AutoCAD_PIK_Manager", Environment.UserName);
-                mailTarget.SmtpServer = "ex20pik.picompany.ru";
-                mailTarget.Body = "${longdate} ${message} ${exception:format=ToString,StackTrace}";                
-
-                //config.AddTarget("mail", mailTarget);
-                //rule = new LoggingRule("*", LogLevel.Error, mailTarget);
-                //config.LoggingRules.Add(rule);       
-
-                // Set up asynchronous database logging assuming dbTarget is your existing target
-                AsyncTargetWrapper asyncWrapperMail = new AsyncTargetWrapper(mailTarget);
-                asyncWrapperMail.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
-                asyncWrapperMail.QueueLimit = 100;
-                config.AddTarget("async", asyncWrapperMail);
-                // Define rules
-                LoggingRule ruleAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperMail);
-                config.LoggingRules.Add(ruleAsync);
-
                 LogManager.Configuration = config;
             }
             catch
@@ -133,16 +116,19 @@ namespace AutoCAD_PIK_Manager
         public static void Error(string message)
         {
             _logger.Error(message);
+            SendMail("#Error", message);
         }
 
         public static void Error(Exception ex, string message, params object[] args)
         {
             _logger.Error(ex, message, args);
+            SendMail("#Error", message + "\n\r" + ex.ToString());
         }
 
         public static void Error(string message, params object[] args)
         {
             _logger.Error(message, args);
+            SendMail("#Error", message);
         }
 
         /// <summary>
@@ -152,16 +138,19 @@ namespace AutoCAD_PIK_Manager
         public static void Fatal(string message)
         {
             _logger.Fatal(message);
+            SendMail("#Fatal", message);
         }
 
         public static void Fatal(Exception ex, string message, params object[] args)
         {
             _logger.Fatal(ex, message, args);
+            SendMail("#Fatal", message + "\n\r" + ex.ToString());
         }
 
         public static void Fatal(string message, params object[] args)
         {
             _logger.Fatal(message, args);
+            SendMail("#Fatal", message);
         }
 
         /// <summary>
@@ -190,16 +179,19 @@ namespace AutoCAD_PIK_Manager
         public static void Warn(string message)
         {
             _logger.Warn(message);
+            SendMail("#Warn", message);
         }
 
         public static void Warn(string message, params object[] args)
         {
             _logger.Warn(message, args);
+            SendMail("#Warn", message);
         }
 
         public static void Warn(Exception ex, string message, params object[] args)
         {
             _logger.Warn(ex, message, args);
+            SendMail("#Warn", message + "\n\r" + ex.ToString());
         }
 
         #endregion Public Methods
@@ -221,5 +213,64 @@ namespace AutoCAD_PIK_Manager
         //}
 
         #endregion Private Methods
+
+        public static void SendMail (string title, string body)
+        {
+            try
+            {
+                //MailMessage mail = new MailMessage("vildar82@gmail.com", "vildar82@gmail.com");
+                //mail.Subject = $"#Novoros {title} Сообщение от {Environment.UserName}, AutoCAD_PIK_Manager";
+                //mail.Body = body;
+                //using (SmtpClient client = new SmtpClient())
+                //{
+                //    client.Port = 25;
+                //    client.UseDefaultCredentials = true;
+                //    //client.Host = "smtp.gmail.com";
+                //    //client.EnableSsl = true;                    
+                //    //client.Credentials = new System.Net.NetworkCredential("vildar82@gmail.com", Pwd);                                        
+                //    client.SendMailAsync(mail);
+                //}
+            }
+            catch { }
+        }
+
+        //дешифрование
+        public static string Decrypt (string cipherText, string password,
+               string salt = "Kosher", string hashAlgorithm = "SHA1",
+               int passwordIterations = 2, string initialVector = "OFRna73m*aze01xY",
+               int keySize = 256)
+        {
+            if (string.IsNullOrEmpty(cipherText))
+                return "";
+
+            byte[] initialVectorBytes = Encoding.ASCII.GetBytes(initialVector);
+            byte[] saltValueBytes = Encoding.ASCII.GetBytes(salt);
+            byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
+
+            PasswordDeriveBytes derivedPassword = new PasswordDeriveBytes(password, saltValueBytes, hashAlgorithm, passwordIterations);
+            byte[] keyBytes = derivedPassword.GetBytes(keySize / 8);
+
+            RijndaelManaged symmetricKey = new RijndaelManaged();
+            symmetricKey.Mode = CipherMode.CBC;
+
+            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
+            int byteCount = 0;
+
+            using (ICryptoTransform decryptor = symmetricKey.CreateDecryptor(keyBytes, initialVectorBytes))
+            {
+                using (MemoryStream memStream = new MemoryStream(cipherTextBytes))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(memStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        byteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
+                        memStream.Close();
+                        cryptoStream.Close();
+                    }
+                }
+            }
+
+            symmetricKey.Clear();
+            return Encoding.UTF8.GetString(plainTextBytes, 0, byteCount);
+        }
     }
 }
