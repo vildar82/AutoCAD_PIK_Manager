@@ -19,6 +19,8 @@ namespace AutoCAD_PIK_Manager
         private static string _about;
         private static string _err = string.Empty;
 
+        public static readonly string SystemDriveName = Path.GetPathRoot(Environment.SystemDirectory);
+
         private static string About
         {
             get
@@ -153,7 +155,7 @@ namespace AutoCAD_PIK_Manager
             }
             catch
             {
-                destDllPikManager = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
+                destDllPikManager = Path.Combine(SystemDriveName, @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
             }
             string roamableFolder = Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });
             string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);

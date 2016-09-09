@@ -108,7 +108,10 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 // Удаление локальной папки настроек
                 var localSettDir = new DirectoryInfo(LocalSettingsFolder);
-                deleteFilesRecursively(localSettDir);
+                if (localSettDir.Name == "Settings" && localSettDir.Exists)
+                {                    
+                    deleteFilesRecursively(localSettDir);
+                }
                 // Копирование настроек с сервера
                 var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
                 localSettDir.Create();
@@ -151,29 +154,44 @@ namespace AutoCAD_PIK_Manager.Settings
         /// <summary>
         /// Удаление папки локальных настроек
         /// </summary>
-        private static void deleteFilesRecursively(DirectoryInfo target)
-        {
-            if (target.Name == "Settings" && target.Exists)
+        private static void deleteFilesRecursively (DirectoryInfo target)
+        {            
+            if (target.Name.Equals(Commands.SystemDriveName, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var files = target.GetFiles();
+            foreach (var item in files)
             {
-                var dirs = target.GetDirectories();
-                foreach (var item in dirs)
+                try
                 {
-                    try
-                    {
-                        item.Delete(true);
-                    }
-                    catch { }
+                    item.Delete();
                 }
-                var files = target.GetFiles();
-                foreach (var item in files)
+                catch
                 {
-                    try
+                    if (item.Attributes.HasFlag(FileAttributes.ReadOnly))
                     {
-                        item.Delete();
+                        item.Attributes = FileAttributes.Normal;
+                        try
+                        {
+                            item.Delete();
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
+
+            var dirs = target.GetDirectories();
+            foreach (var item in dirs)
+            {
+                try
+                {
+                    item.Delete(true);
+                }
+                catch
+                {
+                    deleteFilesRecursively(item);
+                }                
+            }            
         }
 
         private static T getSettings<T>(string file)

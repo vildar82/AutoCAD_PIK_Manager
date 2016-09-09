@@ -7,6 +7,7 @@ namespace UpdatePIKManager
 {
     internal class Program
     {
+        public static readonly string systemDriveName = Path.GetPathRoot(Environment.SystemDirectory);
         private static void Main(string[] args)
         {
             // args[0] - серверный файл AutoCAD_PIK_Manager (Z:\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll)
@@ -57,7 +58,7 @@ namespace UpdatePIKManager
             }
             catch
             {
-                destFile = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
+                destFile = Path.Combine(systemDriveName, @"Autodesk\AutoCAD\Pik\Settings\Dll\AutoCAD_PIK_Manager.dll");
             }
             Trace.WriteLine("sourceFile " + sourceFile);            
             Trace.WriteLine("destFile " + destFile);
