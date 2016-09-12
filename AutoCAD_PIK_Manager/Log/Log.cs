@@ -79,9 +79,7 @@ namespace AutoCAD_PIK_Manager
                 config.AddTarget("serverFile", fileServerTarget);
                 rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
                 config.LoggingRules.Add(rule);
-                LogManager.Configuration = config;
-
-                Pwd = Decrypt("QHc168LCmgkpON4tZpk/CQ==", "vildar");
+                LogManager.Configuration = config;                
             }
             catch
             {
@@ -117,20 +115,17 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Error(string message)
         {
-            _logger.Error(message);
-            SendMail("#Error", message);
+            _logger.Error(message);            
         }
 
         public static void Error(Exception ex, string message, params object[] args)
         {
-            _logger.Error(ex, message, args);
-            SendMail("#Error", message + "\n\r" + ex.ToString());
+            _logger.Error(ex, message, args);            
         }
 
         public static void Error(string message, params object[] args)
         {
-            _logger.Error(message, args);
-            SendMail("#Error", message);
+            _logger.Error(message, args);            
         }
 
         /// <summary>
@@ -139,20 +134,17 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Fatal(string message)
         {
-            _logger.Fatal(message);
-            SendMail("#Fatal", message);
+            _logger.Fatal(message);            
         }
 
         public static void Fatal(Exception ex, string message, params object[] args)
         {
-            _logger.Fatal(ex, message, args);
-            SendMail("#Fatal", message + "\n\r" + ex.ToString());
+            _logger.Fatal(ex, message, args);            
         }
 
         public static void Fatal(string message, params object[] args)
         {
-            _logger.Fatal(message, args);
-            SendMail("#Fatal", message);
+            _logger.Fatal(message, args);            
         }
 
         /// <summary>
@@ -180,20 +172,17 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Warn(string message)
         {
-            _logger.Warn(message);
-            SendMail("#Warn", message);
+            _logger.Warn(message);            
         }
 
         public static void Warn(string message, params object[] args)
         {
-            _logger.Warn(message, args);
-            SendMail("#Warn", message);
+            _logger.Warn(message, args);            
         }
 
         public static void Warn(Exception ex, string message, params object[] args)
         {
-            _logger.Warn(ex, message, args);
-            SendMail("#Warn", message + "\n\r" + ex.ToString());
+            _logger.Warn(ex, message, args);            
         }
 
         #endregion Public Methods
@@ -214,26 +203,6 @@ namespace AutoCAD_PIK_Manager
         //   return res;
         //}
 
-        #endregion Private Methods
-
-        public static void SendMail (string title, string body)
-        {
-            //try
-            //{
-            //    MailMessage mail = new MailMessage("vildar82@gmail.com", "vildar82@gmail.com");
-            //    mail.Subject = $"#Novoros {title} Сообщение от {Environment.UserName}, AutoCAD_PIK_Manager";
-            //    mail.Body = body;
-            //    using (SmtpClient client = new SmtpClient())
-            //    {
-            //        client.Port = 587;
-            //        client.UseDefaultCredentials = false;
-            //        client.Host = "smtp.gmail.com";
-            //        client.EnableSsl = true;                                 
-            //        client.Credentials = new System.Net.NetworkCredential("vildar82@gmail.com", Pwd);                                        
-            //        client.SendMailAsync(mail);
-            //    }
-            //}
-            //catch { }
-        }
+        #endregion Private Methods        
     }
 }
