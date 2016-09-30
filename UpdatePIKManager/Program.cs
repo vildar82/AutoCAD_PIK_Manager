@@ -98,11 +98,13 @@ namespace UpdatePIKManager
                 try
                 {
                     var attrs = File.GetAttributes(fileEpplus);
-                    if ((attrs & FileAttributes.Hidden) == FileAttributes.Hidden)
+                    if (attrs.HasFlag(FileAttributes.Hidden) || 
+                        attrs.HasFlag(FileAttributes.ReadOnly) || 
+                        attrs.HasFlag(FileAttributes.System))
                     {
                         Trace.WriteLine("Epplus скрытый");
                         File.SetAttributes(fileEpplus, FileAttributes.Normal);
-                    }
+                    }                    
                     Trace.WriteLine("Удаление Epplus");
                     File.Delete(fileEpplus);
                 }

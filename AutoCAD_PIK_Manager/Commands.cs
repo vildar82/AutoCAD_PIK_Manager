@@ -130,7 +130,7 @@ namespace AutoCAD_PIK_Manager
             }
             catch (System.Exception ex)
             {
-                Log.Error(ex, "Ошибка загрузки библиотеки.");
+                Log.Error(ex, "Ошибка загрузки библиотеки AcadLib.");
                 _err += ex.Message;
             }
         }
