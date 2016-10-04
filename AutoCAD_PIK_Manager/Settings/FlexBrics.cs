@@ -43,7 +43,11 @@ namespace AutoCAD_PIK_Manager.Settings
                     string trustedPath = AutoCadApp.GetSystemVariable("TRUSTEDPATHS").ToString();
                     trustedPath += ";" + _fbLocalDir + @"\...";
                     AutoCadApp.SetSystemVariable("TRUSTEDPATHS", trustedPath);
-                    Log.Info("FlexBrics.Setup. trustedPath ={0}", trustedPath);
+                    try
+                    {
+                        Log.Info("FlexBrics.Setup. trustedPath ={0}", trustedPath);
+                    }
+                    catch { }
                 }
 
                 // 2. Добавить в пути поиска
@@ -52,7 +56,11 @@ namespace AutoCAD_PIK_Manager.Settings
                 supPath = AddPath(_fbLocalDir, supPath);//Папка flexBrics
                 supPath = AddPath(Path.Combine(_fbLocalDir, "dwg"), supPath);//папка dwg
                 preference.Files.SupportPath = supPath;
-                Log.Info("FlexBrics.Setup. SupportPath ={0}", supPath);
+                try
+                {
+                    Log.Info("FlexBrics.Setup. SupportPath ={0}", supPath);
+                }
+                catch { }
             }
         }
 

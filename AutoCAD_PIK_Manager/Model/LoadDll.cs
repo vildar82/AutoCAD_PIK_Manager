@@ -17,5 +17,12 @@ namespace AutoCAD_PIK_Manager.Model
             //AcadLib.Comparers.StringsNumberComparer comparer = new AcadLib.Comparers.StringsNumberComparer ();
          }
       }
-   }
+
+        public static void LoadRefs ()
+        {
+            var curDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Load(Path.Combine(curDllLocation, "NLog.dll"));
+            Load(Path.Combine(curDllLocation, "EPPlus.dll"));
+        }
+    }
 }

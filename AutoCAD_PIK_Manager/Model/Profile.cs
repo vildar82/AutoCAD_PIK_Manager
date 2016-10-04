@@ -74,7 +74,11 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Ошибка управления профилями.");
+                try
+                {
+                    Log.Error(ex, "Ошибка управления профилями.");
+                }
+                catch { }
             }
             // Но настройки все равно настраиваем, даже в текущем профиле не ПИК.
             ApplySetting();
@@ -103,8 +107,12 @@ namespace AutoCAD_PIK_Manager.Model
                 //Log.Warn("PrinterConfigPaths. After - path=" +path);
                 if (string.IsNullOrEmpty(path))
                 {
-                    // Добавить стандартный путь к плоттерам     
-                    Log.Error($"Не определен стандартный путь к плоттерам!!.");
+                    // Добавить стандартный путь к плоттерам  
+                    try
+                    {
+                        Log.Error($"Не определен стандартный путь к плоттерам!!.");
+                    }
+                    catch { }
                 }
                 else
                 {
@@ -130,7 +138,10 @@ namespace AutoCAD_PIK_Manager.Model
                         //    }
                         //}
                         CopyFilesToFisrtPathInCurProfile(pathPikPlotters, pathCurProfilePlotters);
-                        Log.Info($"Скопированы плоттеры из папки {pathPikPlotters}, в папку {pathCurProfilePlotters}.");
+                        try
+                        {
+                            Log.Info($"Скопированы плоттеры из папки {pathPikPlotters}, в папку {pathCurProfilePlotters}.");
+                        }                        catch { }
                         //// Исключить наши папки из путей принтеров
                         //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
                         //if (path != pathEx)
@@ -149,11 +160,19 @@ namespace AutoCAD_PIK_Manager.Model
                         }
                     }                   
                 }
-                Log.Info($"PrinterConfigPath={path}");
+                try
+                {
+                    Log.Info($"PrinterConfigPath={path}");
+                }
+                catch { }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"preference.Files.PrinterConfigPath = {path}");
+                try
+                {
+                    Log.Error(ex, $"preference.Files.PrinterConfigPath = {path}");
+                }
+                catch { }
             }
 
             // PrinterDescPaths         
@@ -254,7 +273,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"preference.Files.ToolPalettePath = {path}");
+                    try
+                    {
+                        Log.Error(ex, $"preference.Files.ToolPalettePath = {path}");
+                    }
+                    catch { }
                 }
             }
 
@@ -282,7 +305,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Env.SetEnv(TemplatePath = {path}");
+                    try
+                    {
+                        Log.Error(ex, $"Env.SetEnv(TemplatePath = {path}");
+                    }
+                    catch { }
                 }
 
                 //PageSetupOverridesTemplateFile
@@ -298,7 +325,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Env.SetEnv(QnewTemplate = {path}");
+                    try
+                    {
+                        Log.Error(ex, $"Env.SetEnv(QnewTemplate = {path}");
+                    }
+                    catch { }
                 }
 
                 //SheetSetTemplatePath
@@ -313,7 +344,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"Env.SetEnv(SheetSetTemplatePath = {path}");
+                    try
+                    {
+                        Log.Error(ex, $"Env.SetEnv(SheetSetTemplatePath = {path}");
+                    }
+                    catch { }
                 }
             }
 
@@ -329,7 +364,11 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-                Log.Error(ex, $"preference.Files.ColorBookPath = {path}");
+                try
+                {
+                    Log.Error(ex, $"preference.Files.ColorBookPath = {path}");
+                }
+                catch { }
             }
 
             // Системные переменные
@@ -344,7 +383,11 @@ namespace AutoCAD_PIK_Manager.Model
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(ex, $"Уст сис перем {sysVar.Name} = {sysVar.Value}");
+                        try
+                        {
+                            Log.Error(ex, $"Уст сис перем {sysVar.Name} = {sysVar.Value}");
+                        }
+                        catch { }
                     }
                 }
             }
@@ -357,7 +400,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "FlexBrics.Setup()");
+                    try
+                    {
+                        Log.Error(ex, "FlexBrics.Setup()");
+                    }
+                    catch { }
                 }
             }
         }
@@ -385,7 +432,11 @@ namespace AutoCAD_PIK_Manager.Model
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "preference.Files.SupportPath");
+                try
+                {
+                    Log.Error(ex, "preference.Files.SupportPath");
+                }
+                catch { }
             }            
         }
 
@@ -544,7 +595,11 @@ namespace AutoCAD_PIK_Manager.Model
             }
             if (deletedPath.Count != 0)
             {
-                Log.Error($"Удаленные пути из {namePathsForLog}: {string.Join(";", deletedPath)}");
+                try
+                {
+                    Log.Error($"Удаленные пути из {namePathsForLog}: {string.Join(";", deletedPath)}");
+                }
+                catch { }
             }
             return string.Join(";", existsPath.Values.ToArray()) + (existsPath.Count > 1 ? ";" : "");
         }
@@ -582,7 +637,11 @@ namespace AutoCAD_PIK_Manager.Model
                     }
                 }
                 nameVar = getOnlyExistsPaths(nameVar?.ToString(), "TRUSTEDPATHS");
-                Log.Info("TRUSTEDPATHS = {0}", nameVar);
+                try
+                {
+                    Log.Info("TRUSTEDPATHS = {0}", nameVar);
+                }
+                catch { }
             }
             else
             {
@@ -615,7 +674,11 @@ namespace AutoCAD_PIK_Manager.Model
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"SetSystemVariable {name}");
+                    try
+                    {
+                        Log.Error(ex, $"SetSystemVariable {name}");
+                    }
+                    catch { }
                 }
             }
         }       

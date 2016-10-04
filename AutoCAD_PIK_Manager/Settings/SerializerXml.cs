@@ -33,7 +33,7 @@ namespace AutoCAD_PIK_Manager.Settings
                return (T)ser.Deserialize(reader);
             }
             catch (Exception ex)
-            {
+            {                    
                Log.Error(ex, "DeserializeXmlFile {0}", _settingsFile);
                throw;
             }

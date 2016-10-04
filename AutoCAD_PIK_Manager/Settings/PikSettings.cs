@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AutoCAD_PIK_Manager.Model;
 using OfficeOpenXml;
 
 namespace AutoCAD_PIK_Manager.Settings
@@ -59,17 +60,35 @@ namespace AutoCAD_PIK_Manager.Settings
             //Путь до папки Settings на локальном компьютере.
             _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
             _settingsPikFile = getSettings<SettingsPikFile>(Path.Combine(_curDllLocation, "SettingsPIK.xml"));
-            if (_settingsPikFile == null) return;
-            _serverSettingsFolder = GetServerSettingsPath(_settingsPikFile.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
+            if (_settingsPikFile == null)
+            {
+                _settingsPikFile = SettingsPikFile.Default();
+            }
+            _serverSettingsFolder = GetServerSettingsPath(_settingsPikFile?.ServerSettingsPath);// TODO: Можно проверить доступность серверного пути, и если он недоступен, попробовать другой.
             _serverShareSettingsFolder = GetServerShareLibPath();
-            _userGroup = getUserGroup(GetServerUserListFile());
+            try
+            {
+                // Загрузка группы юзера из файла UsersLisr2
+                _userGroup = getUserGroupFromServer(GetServerUserListFile());
+            }
+            catch
+            {
+                _userGroup = getUserGroupFromLocalSide(GetServerUserListFile());
+            }
             if (_userGroup == "Нет")
             {
                 throw new Exceptions.NoGroupException();
             }
             _userGroups = getUserGroups();
             _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
-            if (_settingsGroupFile != null) Log.Info($"Загружены настройки группы {UserGroup} из SettingsGroup.xml");
+            if (_settingsGroupFile != null)
+            {
+                try
+                {
+                    Log.Info($"Загружены настройки группы {UserGroup} из SettingsGroup.xml");
+                }
+                catch { }
+            }
         }
 
         private static string GetServerShareLibPath ()
@@ -96,7 +115,11 @@ namespace AutoCAD_PIK_Manager.Settings
                         return itemServerSettPath;                        
                     }
                 }
-                Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");                
+                try
+                {
+                    Log.Error($"Не определен путь к сетевой папке настроек - '{serverSettingsPath}'.");
+                }
+                catch { }
             }
             return res;
         }
@@ -109,8 +132,19 @@ namespace AutoCAD_PIK_Manager.Settings
                 // Удаление локальной папки настроек
                 var localSettDir = new DirectoryInfo(LocalSettingsFolder);
                 if (localSettDir.Name == "Settings" && localSettDir.Exists)
-                {                    
-                    deleteFilesRecursively(localSettDir);
+                {
+                    try
+                    {
+                        deleteFilesRecursively(localSettDir);
+                    }
+                    catch(Exception ex)
+                    {
+                        try
+                        {
+                            Log.Error(ex, "deleteFilesRecursively");
+                        }
+                        catch { }
+                    }
                 }
                 // Копирование настроек с сервера
                 var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
@@ -121,7 +155,11 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             else
             {
-                Log.Error($"Недоступна папка настроек на сервере {ServerSettingsFolder}");
+                try
+                {
+                    Log.Error($"Недоступна папка настроек на сервере {ServerSettingsFolder}");
+                }
+                catch { }
             }
         }
 
@@ -202,12 +240,14 @@ namespace AutoCAD_PIK_Manager.Settings
         }
 
         // группа пользователя из списка сотрудников (Шифр_отдела: АР, КР-МН, КР-СБ, ВК, ОВ, и т.д.)
-        private static string getUserGroup(string pathToList)
+        private static string getUserGroupFromServer(string pathToList)
         {
             string nameGroup = "";
-            // Определение группы по файлк списка пользователей на сервере
+            // Определение группы по файлу списка пользователей на сервере
             try
             {
+                var epplusDll = Path.Combine(_curDllLocation, "EPPlus.dll");
+                LoadDll.Load(epplusDll);
                 // Копирование файла списка пользователей
                 string fileTemp = Path.GetTempFileName();
                 File.Copy(pathToList, fileTemp, true);
@@ -252,6 +292,28 @@ namespace AutoCAD_PIK_Manager.Settings
                 saveUserGroupToRegistry(nameGroup);
             }            
             Log.Info($"{Environment.UserName} Группа - {nameGroup}");            
+            return nameGroup;
+        }
+
+        private static string getUserGroupFromLocalSide (string pathToList)
+        {
+            string nameGroup = "";
+            // проверка была ли группа сохранена ранее в реестре
+            nameGroup = loadUserGroupFromRegistry();
+            if (string.IsNullOrEmpty(nameGroup))
+            {
+                // Определение группы по текущим папкам настроек  
+                nameGroup = getCurrentGroupFromLocal();
+                if (string.IsNullOrEmpty(nameGroup))
+                {
+                    try
+                    {
+                        Log.Error($"Не определена рабочая группа (Шифр отдела). {Environment.UserName}");
+                    }
+                    catch { }
+                    throw new Exception("IsNullOrEmpty(nameGroup)");
+                }
+            }
             return nameGroup;
         }
 

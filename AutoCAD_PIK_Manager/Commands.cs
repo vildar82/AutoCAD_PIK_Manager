@@ -49,12 +49,20 @@ namespace AutoCAD_PIK_Manager
             // Исключения в Initialize проглотит автокад, без выдачи сообщений. При этом сборка не будет загружена!!!.         
             try
             {
-                PikSettings.LoadSettings();
+                try
+                {
+                    PikSettings.LoadSettings();
+                }
+                catch { }
                 // Запись в лог
-                Log.Info($"AutoCAD_PIK_Manager загружен. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки загружены из {PikSettings.CurDllLocation}");
-                Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
-                Log.Info($"Версия автокада - {Application.Version.ToString()}");
-                Log.Info($"Версия среды .NET Framework - {Environment.Version}");
+                try
+                {
+                    Log.Info($"AutoCAD_PIK_Manager загружен. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки загружены из {PikSettings.CurDllLocation}");
+                    Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
+                    Log.Info($"Версия автокада - {Application.Version.ToString()}");
+                    Log.Info($"Версия среды .NET Framework - {Environment.Version}");
+                }
+                catch { }
 
                 // Если есть другие запущеннык автокады, то пропускаем копирование файлов с сервера, т.к. многие файлы уже заняты другим процессом автокада.
                 if (!IsProcessAny())
@@ -67,8 +75,14 @@ namespace AutoCAD_PIK_Manager
                     }
                     catch (System.Exception ex)
                     {
-                        Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
+                        try
+                        {
+                            Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
+                        } catch { }
                         _err += ex.Message;
+
+                        // Попытка загрузки библиотек
+                        LoadDll.LoadRefs();
                     }
                     try
                     {
@@ -79,7 +93,10 @@ namespace AutoCAD_PIK_Manager
                     }
                     catch (System.Exception ex)
                     {
-                        Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
+                        try
+                        {
+                            Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
+                        } catch { }
                         _err += ex.Message;
                     }
                 }
@@ -105,7 +122,11 @@ namespace AutoCAD_PIK_Manager
                 }
                 catch (System.Exception ex)
                 {
-                    Log.Error(ex, "Ошибка настройки профиля SetProfile().");
+                    try
+                    {
+                        Log.Error(ex, "Ошибка настройки профиля SetProfile().");
+                    }
+                    catch { }
                     _err += ex.Message;
                 }
             }
@@ -116,10 +137,13 @@ namespace AutoCAD_PIK_Manager
             }
             catch (System.Exception ex)
             {
-                Log.Error(ex, "LoadSettings");
-                Log.Info($"AutoCAD_PIK_Manager загружен с ошибками. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки не загружены из {PikSettings.CurDllLocation}");
-                Log.Info($"Версия автокада - {Application.Version.ToString()}");
-                Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
+                try
+                {
+                    Log.Error(ex, "LoadSettings");
+                    Log.Info($"AutoCAD_PIK_Manager загружен с ошибками. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки не загружены из {PikSettings.CurDllLocation}");
+                    Log.Info($"Версия автокада - {Application.Version.ToString()}");
+                    Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
+                }                catch { }
                 _err += ex.Message;
             }
 
@@ -130,7 +154,10 @@ namespace AutoCAD_PIK_Manager
             }
             catch (System.Exception ex)
             {
-                Log.Error(ex, "Ошибка загрузки библиотеки AcadLib.");
+                try
+                {
+                    Log.Error(ex, "Ошибка загрузки библиотеки AcadLib.");
+                }                catch { }
                 _err += ex.Message;
             }
         }
