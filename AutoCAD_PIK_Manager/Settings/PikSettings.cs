@@ -131,21 +131,21 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 // Удаление локальной папки настроек
                 var localSettDir = new DirectoryInfo(LocalSettingsFolder);
-                if (localSettDir.Name == "Settings" && localSettDir.Exists)
-                {
-                    try
-                    {
-                        deleteFilesRecursively(localSettDir);
-                    }
-                    catch(Exception ex)
-                    {
-                        try
-                        {
-                            Log.Error(ex, "deleteFilesRecursively");
-                        }
-                        catch { }
-                    }
-                }
+                //if (localSettDir.Name == "Settings" && localSettDir.Exists)
+                //{
+                //    try
+                //    {
+                //        deleteFilesRecursively(localSettDir);
+                //    }
+                //    catch(Exception ex)
+                //    {
+                //        try
+                //        {
+                //            Log.Error(ex, "deleteFilesRecursively");
+                //        }
+                //        catch { }
+                //    }
+                //}
                 // Копирование настроек с сервера
                 var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
                 localSettDir.Create();
