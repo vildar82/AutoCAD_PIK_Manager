@@ -33,8 +33,10 @@ namespace AutoCAD_PIK_Manager.Settings
                             new Variable { Name= "SupportPaths", Value = "Support" } },
                     ToolPalettePaths = new List<Variable> { new Variable { Name = "ToolPalettePaths", Value = "ToolPalette", IsReWrite = true } },
                     TemplatePath = new Variable { Name = "TemplatePath", Value = "Template", IsReWrite = true },
-                    QNewTemplateFile= new Variable { Name = "QNewTemplateFile", Value = "Template", IsReWrite = true },
-                }
+                    QNewTemplateFile = new Variable { Name = "QNewTemplateFile", Value = "Template", IsReWrite = true },
+                },
+                LoginCADManager = "KhisyametdinovVT",
+                MailCADManager = "KhisyametdinovVT@pik.ru"                
             };
             return res;
         }
