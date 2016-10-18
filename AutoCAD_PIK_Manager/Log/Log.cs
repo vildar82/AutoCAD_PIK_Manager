@@ -58,6 +58,7 @@ namespace AutoCAD_PIK_Manager
                 fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
                 fileLocalTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=ToString,StackTrace}";
                 fileLocalTarget.ArchiveAboveSize = 200000;
+                fileLocalTarget.maxLogFilenames = 1;
                 config.AddTarget("localFile", fileLocalTarget);
                 var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
                 config.LoggingRules.Add(rule);
