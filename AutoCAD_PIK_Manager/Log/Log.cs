@@ -53,16 +53,16 @@ namespace AutoCAD_PIK_Manager
                 string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var config = new LoggingConfiguration();
 
-                // Локальный лог
-                var fileLocalTarget = new FileTarget();
-                fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
-                fileLocalTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=ToString,StackTrace}";
-                fileLocalTarget.ArchiveAboveSize = 200000;
-                fileLocalTarget.MaxArchiveFiles = 1;                
-                config.AddTarget("localFile", fileLocalTarget);
-                var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
-                config.LoggingRules.Add(rule);
-                LogManager.Configuration = config;
+                //// Локальный лог
+                //var fileLocalTarget = new FileTarget();
+                //fileLocalTarget.FileName = Path.Combine(assemblyFolder, "Log.txt");
+                //fileLocalTarget.Layout = "${longdate}_${level}:  ${message} ${exception:format=ToString,StackTrace}";
+                //fileLocalTarget.ArchiveAboveSize = 200000;
+                //fileLocalTarget.MaxArchiveFiles = 1;                
+                //config.AddTarget("localFile", fileLocalTarget);
+                //var rule = new LoggingRule("*", LogLevel.Debug, fileLocalTarget);
+                //config.LoggingRules.Add(rule);
+                //LogManager.Configuration = config;
 
                 // Серверный лог
                 string serverLogPath = Path.Combine(PikSettings.ServerShareSettingsFolder, @"AutoCAD_PIK_Manager\Logs");
@@ -73,7 +73,7 @@ namespace AutoCAD_PIK_Manager
                 fileServerTarget.MaxArchiveFiles = 1;
                 fileServerTarget.ArchiveNumbering = ArchiveNumberingMode.Rolling;
                 config.AddTarget("serverFile", fileServerTarget);
-                rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
+                var rule = new LoggingRule("*", LogLevel.Debug, fileServerTarget);
                 config.LoggingRules.Add(rule);
                 LogManager.Configuration = config;
 
