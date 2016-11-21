@@ -77,6 +77,14 @@ namespace AutoCAD_PIK_Manager
                 config.LoggingRules.Add(rule);
                 LogManager.Configuration = config;
 
+                AsyncTargetWrapper asyncWrapperSrvLog = new AsyncTargetWrapper(fileServerTarget);
+                asyncWrapperSrvLog.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
+                asyncWrapperSrvLog.QueueLimit = 100;
+                config.AddTarget("LogAsync", asyncWrapperSrvLog);
+                // Define rules
+                LoggingRule ruleSrvLogAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperSrvLog);
+                config.LoggingRules.Add(ruleSrvLogAsync);
+
                 // mail
                 var mailTarget = new MailTarget();
                 mailTarget.To = "vildar82@gmail.com; " + PikSettings.PikFileSettings.MailCADManager;
@@ -93,7 +101,7 @@ namespace AutoCAD_PIK_Manager
                 AsyncTargetWrapper asyncWrapperMail = new AsyncTargetWrapper(mailTarget);
                 asyncWrapperMail.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
                 asyncWrapperMail.QueueLimit = 100;
-                config.AddTarget("async", asyncWrapperMail);
+                config.AddTarget("MailAsync", asyncWrapperMail);
                 // Define rules
                 LoggingRule ruleAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperMail);
                 config.LoggingRules.Add(ruleAsync);
