@@ -26,6 +26,7 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public void Debug(string message)
         {
+            
             Log.Debug(_plugin + message);
         }
 

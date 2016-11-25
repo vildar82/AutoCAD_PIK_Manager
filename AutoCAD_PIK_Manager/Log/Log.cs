@@ -24,6 +24,7 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
+using System.Threading.Tasks;
 
 namespace AutoCAD_PIK_Manager
 {
@@ -77,13 +78,13 @@ namespace AutoCAD_PIK_Manager
                 config.LoggingRules.Add(rule);
                 LogManager.Configuration = config;
 
-                AsyncTargetWrapper asyncWrapperSrvLog = new AsyncTargetWrapper(fileServerTarget);
-                asyncWrapperSrvLog.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
-                asyncWrapperSrvLog.QueueLimit = 100;
-                config.AddTarget("LogAsync", asyncWrapperSrvLog);
-                // Define rules
-                LoggingRule ruleSrvLogAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperSrvLog);
-                config.LoggingRules.Add(ruleSrvLogAsync);
+                //AsyncTargetWrapper asyncWrapperSrvLog = new AsyncTargetWrapper(fileServerTarget);
+                //asyncWrapperSrvLog.OverflowAction = AsyncTargetWrapperOverflowAction.Discard;
+                //asyncWrapperSrvLog.QueueLimit = 100;
+                //config.AddTarget("LogAsync", asyncWrapperSrvLog);
+                //// Define rules
+                //LoggingRule ruleSrvLogAsync = new LoggingRule("*", LogLevel.Error, asyncWrapperSrvLog);
+                //config.LoggingRules.Add(ruleSrvLogAsync);
 
                 // mail
                 var mailTarget = new MailTarget();
@@ -123,17 +124,26 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Debug (string message)
         {
-            _logger.Debug(message);
+            Task.Run(() =>
+            {
+                _logger.Debug(message);
+            });
         }
 
         public static void Debug (string message, params object[] args)
         {
-            _logger.Debug(message, args);
+            Task.Run(() =>
+            {
+                _logger.Debug(message, args);
+            });            
         }
 
         public static void Debug (Exception ex, string message, params object[] args)
-        {
-            _logger.Debug(ex, message, args);
+        {            
+            Task.Run(() =>
+            {
+                _logger.Debug(ex, message, args);
+            });
         }
 
         /// <summary>
@@ -142,17 +152,26 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Error (string message)
         {
-            _logger.Error(message);
+            Task.Run(() =>
+            {
+                _logger.Error(message);
+            });            
         }
 
         public static void Error (Exception ex, string message, params object[] args)
         {
-            _logger.Error(ex, message, args);
+            Task.Run(() =>
+            {
+                _logger.Error(message);
+            });            
         }
 
         public static void Error (string message, params object[] args)
         {
-            _logger.Error(message, args);
+            Task.Run(() =>
+            {
+                _logger.Error(message, args);
+            });            
         }
 
         /// <summary>
@@ -161,17 +180,26 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Fatal (string message)
         {
-            _logger.Fatal(message);
+            Task.Run(() =>
+            {
+                _logger.Fatal(message);
+            });            
         }
 
         public static void Fatal (Exception ex, string message, params object[] args)
         {
-            _logger.Fatal(ex, message, args);
+            Task.Run(() =>
+            {
+                _logger.Fatal(ex, message, args);
+            });            
         }
 
         public static void Fatal (string message, params object[] args)
         {
-            _logger.Fatal(message, args);
+            Task.Run(() =>
+            {
+                _logger.Fatal(message, args);
+            });            
         }
 
         /// <summary>
@@ -180,17 +208,26 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Info (string message)
         {
-            _logger.Info(message);
+            Task.Run(() =>
+            {
+                _logger.Info(message);
+            });            
         }
 
         public static void Info (string message, params object[] args)
         {
-            _logger.Info(message, args);
+            Task.Run(() =>
+            {
+                _logger.Info(message, args);
+            });            
         }
 
         public static void Info (Exception ex, string message, params object[] args)
         {
-            _logger.Info(ex, message, args);
+            Task.Run(() =>
+            {
+                _logger.Info(ex, message, args);
+            });            
         }
 
         /// <summary>
@@ -199,17 +236,26 @@ namespace AutoCAD_PIK_Manager
         /// <param name="message"></param>
         public static void Warn (string message)
         {
-            _logger.Warn(message);
+            Task.Run(() =>
+            {
+                _logger.Warn(message);
+            });                       
         }
 
         public static void Warn (string message, params object[] args)
         {
-            _logger.Warn(message, args);
+            Task.Run(() =>
+            {
+                _logger.Warn(message, args);
+            });            
         }
 
         public static void Warn (Exception ex, string message, params object[] args)
         {
-            _logger.Warn(ex, message, args);
+            Task.Run(() =>
+            {
+                _logger.Warn(ex, message, args);
+            });                       
         }
 
         #endregion Public Methods
