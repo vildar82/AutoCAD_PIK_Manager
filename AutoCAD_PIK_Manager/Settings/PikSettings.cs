@@ -52,7 +52,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
         public static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }
 
-        public static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }
+        public static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }        
 
         internal static void LoadSettings()
         {
