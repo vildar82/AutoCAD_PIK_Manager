@@ -9,20 +9,31 @@ namespace AutoCAD_PIK_Manager.Model
 {
    public class LoadDll
    {
-      public static void Load(string file)
+      public static void LoadTry(string file)
       {
-         if (File.Exists(file))
-         {            
-            Assembly.LoadFrom(file);
-            //AcadLib.Comparers.StringsNumberComparer comparer = new AcadLib.Comparers.StringsNumberComparer ();
-         }
-      }
+            try
+            {
+                if (File.Exists(file))
+                {
+                    Assembly.LoadFrom(file);
+                    //AcadLib.Comparers.StringsNumberComparer comparer = new AcadLib.Comparers.StringsNumberComparer ();
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"Ошибка загрузки файла {file}");
+                }
+                catch { }                
+            }
+        }
 
         public static void LoadRefs ()
         {
             var curDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            Load(Path.Combine(curDllLocation, "NLog.dll"));
-            Load(Path.Combine(curDllLocation, "EPPlus.dll"));
+            LoadTry(Path.Combine(curDllLocation, "NLog.dll"));
+            LoadTry(Path.Combine(curDllLocation, "EPPlus.dll"));
         }
     }
 }

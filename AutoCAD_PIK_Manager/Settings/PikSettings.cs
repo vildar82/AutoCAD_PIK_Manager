@@ -247,7 +247,7 @@ namespace AutoCAD_PIK_Manager.Settings
             try
             {
                 var epplusDll = Path.Combine(_curDllLocation, "EPPlus.dll");
-                LoadDll.Load(epplusDll);
+                LoadDll.LoadTry(epplusDll);
                 // Копирование файла списка пользователей
                 string fileTemp = Path.GetTempFileName();
                 File.Copy(pathToList, fileTemp, true);

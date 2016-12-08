@@ -78,7 +78,8 @@ namespace AutoCAD_PIK_Manager
                         try
                         {
                             Log.Error(ex, "Ошибка обновления настроек PikSettings.UpdateSettings();");
-                        } catch { }
+                        }
+                        catch { }
                         _err += ex.Message;
 
                         // Попытка загрузки библиотек
@@ -96,7 +97,8 @@ namespace AutoCAD_PIK_Manager
                         try
                         {
                             Log.Error(ex, "Ошибка загрузки настроек PikSettings.LoadSettings();");
-                        } catch { }
+                        }
+                        catch { }
                         _err += ex.Message;
                     }
                 }
@@ -143,23 +145,17 @@ namespace AutoCAD_PIK_Manager
                     Log.Info($"AutoCAD_PIK_Manager загружен с ошибками. Версия {Assembly.GetExecutingAssembly().GetName().Version}. Настройки не загружены из {PikSettings.CurDllLocation}");
                     Log.Info($"Версия автокада - {Application.Version.ToString()}");
                     Log.Info($"Путь к сетевой папке настроек - {PikSettings.ServerSettingsFolder}");
-                }                catch { }
+                }
+                catch { }
                 _err += ex.Message;
             }
 
-            // Загрузка библиотек
-            try
-            {
-                LoadDll.Load(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
-            }
-            catch (System.Exception ex)
-            {
-                try
-                {
-                    Log.Error(ex, "Ошибка загрузки библиотеки AcadLib.");
-                }                catch { }
-                _err += ex.Message;
-            }
+            // Загрузка библиотек            
+            LoadDll.LoadTry(Path.Combine(PikSettings.CurDllLocation, "AcadLib.dll"));
+
+            //// Конекторы к базе MDM
+            //LoadDll.LoadTry(Path.GetFullPath(Path.Combine(PikSettings.CurDllLocation, @"..\Script\NET\MDM_Connector.dll")));
+            //LoadDll.LoadTry(Path.GetFullPath(Path.Combine(PikSettings.CurDllLocation, @"..\Script\NET\MDBCToLISP.dll")));
         }
 
         public void Terminate()
