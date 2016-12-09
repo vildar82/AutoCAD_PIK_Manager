@@ -162,7 +162,7 @@ namespace AutoCAD_PIK_Manager
         {
             Task.Run(() =>
             {
-                _logger.Error(message);
+                _logger.Error(ex, message, args);
             });            
         }
 
