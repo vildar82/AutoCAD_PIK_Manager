@@ -39,7 +39,7 @@ namespace AutoCAD_PIK_Manager.Model
             _settPikFile = PikSettings.PikFileSettings;
             _profileName = _settPikFile.ProfileName;
             _settGroupFile = PikSettings.GroupFileSettings;
-            _userGroup = PikSettings.UserGroup;
+            _userGroup = PikSettings.UserGroupsCombined.First();
             _localSettingsFolder = PikSettings.LocalSettingsFolder;            
         }        
 
@@ -87,23 +87,205 @@ namespace AutoCAD_PIK_Manager.Model
         // Настройка профиля
         private void ApplySetting()
         {
-            dynamic preference = AutoCadApp.Preferences;
-            //IConfigurationSection con = AutoCadApp.UserConfigurationManager.OpenCurrentProfile();
-            string path = string.Empty;
-            Version v2015 = new Version(20, 0);
-            Version cuVer = new Version(Application.Version.Major, Application.Version.Minor);
+            //dynamic preference = AutoCadApp.Preferences;            
+            //Version v2015 = new Version(20, 0);
+            //Version cuVer = new Version(Application.Version.Major, Application.Version.Minor);
 
-            // SupportPaths    
             SetupSupportPath();
+            PrinterConfigPaths();
+            ToolPalettePath();
 
-            // PrinterConfigPaths         
+            //TemplatePath
+            if (SetTemplate)
+            {
+                TemplatePath();
+                PageSetupOverridesTemplateFile();
+                SheetSetTemplatePath();
+            }
+
+            // ColorBookLocation
+            ColorBookLocation();
+
+            // Системные переменные
+            SetSystemVariables();
+            // Установка флексбрикс если задано
+            FlexBrics();
+        }
+
+        private static void FlexBrics()
+        {
+            if (_settGroupFile?.FlexBricsSetup == true)
+            {
+                try
+                {
+                    Settings.FlexBrics.Setup();
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        Log.Error(ex, "FlexBrics.Setup()");
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        private void SetSystemVariables()
+        {
+            if (SetSysVars == null) return;
+            foreach (var sysVar in SetSysVars)
+            {
+                try
+                {
+                    SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
+                    Log.Info($"Установка системной переменной {sysVar.Name}={sysVar.Value}, с перезаписью -{sysVar.IsReWrite}");
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        Log.Error(ex, $"Уст сис перем {sysVar.Name} = {sysVar.Value}");
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        private void ColorBookLocation()
+        {
             try
             {
+                dynamic preference = AutoCadApp.Preferences;
+                string path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ColorBookPaths, 
+                    _settGroupFile?.PathVariables?.ColorBookPaths), preference.Files.ColorBookPath, "ColorBookPath", false);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    preference.Files.ColorBookPath = path;
+                }
+                Log.Info($"ColorBookPath={path}");
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"preference.Files.ColorBookPath");
+                }
+                catch { }
+            }            
+        }
+
+        private void SheetSetTemplatePath()
+        {
+            try
+            {
+                dynamic preference = AutoCadApp.Preferences;
+                string path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
+                if (Directory.Exists(path))
+                {
+                    Env.SetEnv("SheetSetTemplatePath", path);
+                    Log.Info($"SheetSetTemplatePath={path}");
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"Env.SetEnv(SheetSetTemplatePath)");
+                }
+                catch { }
+            }            
+        }
+
+        private void PageSetupOverridesTemplateFile()
+        {
+            try
+            {
+                dynamic preference = AutoCadApp.Preferences;
+                string path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
+                if (File.Exists(path))
+                {
+                    Env.SetEnv("QnewTemplate", path);
+                    Log.Info($"QnewTemplate={path}");
+                    preference.Files.PageSetupOverridesTemplateFile = path;
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"Env.SetEnv(QnewTemplate)");
+                }
+                catch { }
+            }
+        }
+
+        private void TemplatePath()
+        {
+            try
+            {
+                dynamic preference = AutoCadApp.Preferences;
+                string path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
+                if (Directory.Exists(path))
+                {
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        try
+                        {
+                            Env.SetEnv("TemplatePath", path);
+                        }
+                        catch
+                        {
+                            preference.Files.TemplateDwgPath = path;
+                        }
+                    }
+                    Log.Info($"TemplatePath={path}");
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"Env.SetEnv(TemplatePath)");
+                }
+                catch { }
+            }            
+        }
+
+        private void ToolPalettePath()
+        {
+            if (!SetToolPalette) return;
+            try
+            {
+                dynamic preference = AutoCadApp.Preferences;
+                string path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, 
+                    _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, "ToolPalettePath", true);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    preference.Files.ToolPalettePath = path;
+                }
+                Log.Info($"ToolPalettePath={path}");
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    Log.Error(ex, $"preference.Files.ToolPalettePath");
+                }
+                catch { }
+            }
+        }
+
+        private void PrinterConfigPaths()
+        {
+            try
+            {
+                dynamic preference = AutoCadApp.Preferences;
                 var varsPath = GetPaths(_settPikFile.PathVariables.PrinterConfigPaths, _settGroupFile?.PathVariables?.PrinterConfigPaths);
                 //path = GetPathVariable(varsPath, preference.Files.PrinterConfigPath, "");
                 var curPlottersPaths = preference.Files.PrinterConfigPath;
                 //Log.Warn("PrinterConfigPaths. Before - path=" + path);
-                path = ExcludePikPaths(curPlottersPaths, varsPath);
+                string path = ExcludePikPaths(curPlottersPaths, varsPath);
                 //Log.Warn("PrinterConfigPaths. After - path=" +path);
                 if (string.IsNullOrEmpty(path))
                 {
@@ -123,8 +305,8 @@ namespace AutoCAD_PIK_Manager.Model
                     // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
                     if (_settPikFile.PathVariables.PrinterConfigPaths.Count > 0)
                     {
-                        string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);
-                        string pathCurProfilePlotters=path.Split(';').First();
+                        string pathPikPlotters = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterConfigPaths[0].Value);                        
+                        string pathCurProfilePlotters = path.Split(';').First();                        
                         //try
                         //{
                         //    pathCurProfilePlotters = Env.GetEnv("PrinterConfigDir").Split(';').First();
@@ -141,7 +323,8 @@ namespace AutoCAD_PIK_Manager.Model
                         try
                         {
                             Log.Info($"Скопированы плоттеры из папки {pathPikPlotters}, в папку {pathCurProfilePlotters}.");
-                        }                        catch { }
+                        }
+                        catch { }
                         //// Исключить наши папки из путей принтеров
                         //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterConfigPaths);
                         //if (path != pathEx)
@@ -158,7 +341,7 @@ namespace AutoCAD_PIK_Manager.Model
                         {
                             Env.SetEnv("PrinterConfigDir", path);
                         }
-                    }                   
+                    }
                 }
                 try
                 {
@@ -170,243 +353,10 @@ namespace AutoCAD_PIK_Manager.Model
             {
                 try
                 {
-                    Log.Error(ex, $"preference.Files.PrinterConfigPath = {path}");
+                    Log.Error(ex, $"preference.Files.PrinterConfigPath.");
                 }
                 catch { }
-            }
-
-            // PrinterDescPaths         
-            //try
-            //{
-            //    var varsPath = GetPaths(_settPikFile.PathVariables.PrinterDescPaths, _settGroupFile?.PathVariables?.PrinterDescPaths);
-            //    path = GetPathVariable(varsPath, preference.Files.PrinterDescPath, "");
-            //    path = ExcludePikPaths(path, varsPath);
-            //    if (!string.IsNullOrEmpty(path))
-            //    {
-            //        //if (cuVer < v2015)
-            //        //{
-            //        // Глючит печать в 2013-2014 версии.
-            //        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-            //        //if (_settPikFile.PathVariables.PrinterDescPaths.Count > 0)
-            //        //{
-            //        //    string pathPikPrinterDesc = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterDescPaths[0].Value);
-            //        //    string pathCurProfilePrinterDesc = Env.GetEnv("PrinterDescDir").Split(';').First();
-            //        //    CopyFilesToFisrtPathInCurProfile(pathPikPrinterDesc, pathCurProfilePrinterDesc);
-            //        //    //// Исключить наши папки из путей принтеров
-            //        //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterDescPaths);
-            //        //    //if (path != pathEx)
-            //        //    //    Env.SetEnv("PrinterDescDir", pathEx);
-            //        //}
-            //        //}
-            //        //else
-            //        //{
-            //        try
-            //        {
-            //            preference.Files.PrinterDescPath = path;
-            //        }
-            //        catch
-            //        {
-            //            Env.SetEnv("PrinterDescDir", path);
-            //        }
-            //        //}
-            //    }
-            //    Log.Info($"PrinterDescDir={path}");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error(ex, $"preference.Files.PrinterDescDir = {path}");
-            //}
-
-            //// PrinterPlotStylePaths         
-            //try
-            //{
-            //    var varsPath = GetPaths(_settPikFile.PathVariables.PrinterPlotStylePaths, _settGroupFile?.PathVariables?.PrinterPlotStylePaths);
-            //    path = GetPathVariable(varsPath, preference.Files.PrinterStyleSheetPath, "");
-            //    path = ExcludePikPaths(path, varsPath);
-            //    if (!string.IsNullOrEmpty(path))
-            //    {
-            //        //if (cuVer < v2015)
-            //        //{
-            //        // Глючит печать в 2013-2014 версии.
-            //        // Скопировать файлы из нашей папки в первую папку из списка путей к принтерам.
-            //        //if (_settPikFile.PathVariables.PrinterPlotStylePaths.Count > 0)
-            //        //{
-            //        //    string pathPikPlotStyle = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.PrinterPlotStylePaths[0].Value);
-            //        //    string pathCurProfilePlotStyle = Env.GetEnv("PrinterStyleSheetDir").Split(';').First();
-            //        //    CopyFilesToFisrtPathInCurProfile(pathPikPlotStyle, pathCurProfilePlotStyle);
-            //        //    //// Исключить наши папки из путей pathCurProfilePlotStyle
-            //        //    //string pathEx = getPathWithoutOurPlotters(path, _settPikFile.PathVariables.PrinterPlotStylePaths);
-            //        //    //if (path != pathEx)
-            //        //    //    Env.SetEnv("PrinterStyleSheetDir", pathEx);
-            //        //}
-            //        //}
-            //        //else
-            //        //{
-            //        try
-            //        {
-            //            preference.Files.PrinterStyleSheetPath = path;
-            //        }
-            //        catch
-            //        {
-            //            Env.SetEnv("PrinterStyleSheetDir", path);
-            //        }
-            //        //}
-            //    }
-            //    Log.Info($"PrinterStyleSheetDir={path}");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error(ex, $"preference.Files.PrinterStyleSheetDir = {path}");
-            //}
-
-            // ToolPalettePath
-            if (SetToolPalette)
-            {
-                try
-                {
-                    path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ToolPalettePaths, _settGroupFile?.PathVariables?.ToolPalettePaths), preference.Files.ToolPalettePath, _userGroup, "ToolPalettePath");
-                    if (!string.IsNullOrEmpty(path))
-                    {
-                        preference.Files.ToolPalettePath = path;
-                    }
-                    Log.Info($"ToolPalettePath={path}");
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Log.Error(ex, $"preference.Files.ToolPalettePath = {path}");
-                    }
-                    catch { }
-                }
-            }
-
-            //TemplatePath
-            if (SetTemplate)
-            {
-                try
-                {
-                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.TemplatePath.Value, _userGroup);
-                    if (Directory.Exists(path))
-                    {
-                        if (!string.IsNullOrEmpty(path))
-                        {
-                            try
-                            {
-                                Env.SetEnv("TemplatePath", path);
-                            }
-                            catch
-                            {
-                                preference.Files.TemplateDwgPath = path;
-                            }
-                        }
-                        Log.Info($"TemplatePath={path}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Log.Error(ex, $"Env.SetEnv(TemplatePath = {path}");
-                    }
-                    catch { }
-                }
-
-                //PageSetupOverridesTemplateFile
-                try
-                {
-                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.QNewTemplateFile.Value, _userGroup, _userGroup + ".dwt");
-                    if (File.Exists(path))
-                    {
-                        Env.SetEnv("QnewTemplate", path);
-                        Log.Info($"QnewTemplate={path}");
-                        preference.Files.PageSetupOverridesTemplateFile = path;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Log.Error(ex, $"Env.SetEnv(QnewTemplate = {path}");
-                    }
-                    catch { }
-                }
-
-                //SheetSetTemplatePath
-                try
-                {
-                    path = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.SheetSetTemplatePath.Value, _userGroup);
-                    if (Directory.Exists(path))
-                    {
-                        Env.SetEnv("SheetSetTemplatePath", path);
-                        Log.Info($"SheetSetTemplatePath={path}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Log.Error(ex, $"Env.SetEnv(SheetSetTemplatePath = {path}");
-                    }
-                    catch { }
-                }
-            }
-
-            // ColorBookLocation
-            try
-            {
-                path = GetPathVariable(GetPaths(_settPikFile.PathVariables.ColorBookPaths, _settGroupFile?.PathVariables?.ColorBookPaths), preference.Files.ColorBookPath, "", "ColorBookPath");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    preference.Files.ColorBookPath = path;
-                }
-                Log.Info($"ColorBookPath={path}");
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    Log.Error(ex, $"preference.Files.ColorBookPath = {path}");
-                }
-                catch { }
-            }
-
-            // Системные переменные
-            if (SetSysVars != null)
-            {
-                foreach (var sysVar in SetSysVars)
-                {
-                    try
-                    {
-                        SetSystemVariable(sysVar.Name, sysVar.Value, sysVar.IsReWrite);
-                        Log.Info($"Установка системной переменной {sysVar.Name}={sysVar.Value}, с перезаписью -{sysVar.IsReWrite}");
-                    }
-                    catch (Exception ex)
-                    {
-                        try
-                        {
-                            Log.Error(ex, $"Уст сис перем {sysVar.Name} = {sysVar.Value}");
-                        }
-                        catch { }
-                    }
-                }
-            }
-
-            if (_settGroupFile?.FlexBricsSetup == true)
-            {
-                try
-                {
-                    FlexBrics.Setup();
-                }
-                catch (Exception ex)
-                {
-                    try
-                    {
-                        Log.Error(ex, "FlexBrics.Setup()");
-                    }
-                    catch { }
-                }
-            }
+            }            
         }
 
         /// <summary>
@@ -417,7 +367,8 @@ namespace AutoCAD_PIK_Manager.Model
             try
             {
                 dynamic preference = AutoCadApp.Preferences;
-                var path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "", "SupportPath");
+                string path = GetPathVariable(GetPaths(_settPikFile.PathVariables.Supports, 
+                    _settGroupFile?.PathVariables?.Supports), preference.Files.SupportPath, "SupportPath", false);
 
                 //// Копирование файов из папки Support в папку appdata/roamable Support пользователя
                 //var supportPikPath = Path.Combine(_localSettingsFolder, _settPikFile.PathVariables.Supports.First(s=>s.Value == "Support").Value);
@@ -510,23 +461,44 @@ namespace AutoCAD_PIK_Manager.Model
             return resList;
         }
 
-        private static string GetPathVariable(List<Variable> settings, string path, string group, string namePathsForLog)
+        private static string GetPathVariable(List<Variable> settings, string path, string namePathsForLog, bool withGroup)
         {
             string fullPath = string.Empty;
             try
             {
                 bool isWrite = false;
                 foreach (var setting in settings)
-                {
-                    string valuePath = Path.Combine(_localSettingsFolder, setting.Value, group);
-                    if (Directory.Exists(valuePath))
+                {                    
+                    if (withGroup)
                     {
-                        isWrite = setting.IsReWrite;
-                        if ((!path.ToUpper().Contains(valuePath.ToUpper())) || (isWrite))
+                        if (setting.IsReWrite)
                         {
-                            fullPath += valuePath + ";";
+                            path = "";
                         }
+                        foreach (var group in PikSettings.UserGroupsCombined)
+                        {
+                            var valuePath = Path.Combine(_localSettingsFolder, setting.Value, group);
+                            if (Directory.Exists(valuePath))
+                            {                                
+                                if (!path.ToUpper().Contains(valuePath.ToUpper()))
+                                {
+                                    fullPath += valuePath + ";";
+                                }
+                            }
+                        }                        
                     }
+                    else
+                    {
+                        var valuePath = Path.Combine(_localSettingsFolder, setting.Value);
+                        if (Directory.Exists(valuePath))
+                        {
+                            isWrite = setting.IsReWrite;
+                            if ((!path.ToUpper().Contains(valuePath.ToUpper())) || (isWrite))
+                            {
+                                fullPath += valuePath + ";";
+                            }
+                        }
+                    }                    
                 }
                 if (!isWrite)
                 {

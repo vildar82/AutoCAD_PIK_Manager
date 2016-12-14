@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AutoCAD_PIK_Manager.Settings
 {
@@ -14,5 +15,18 @@ namespace AutoCAD_PIK_Manager.Settings
         public Variable SheetSetTemplatePath { get; set; }        
         public Variable QNewTemplateFile { get; set; }
         public Variable PageSetupOverridesTemplateFile { get; set; }
+
+        /// <summary>
+        /// Объединение настроек
+        /// </summary>        
+        public static PathVariable Merge(PathVariable vars1, PathVariable vars2)
+        {
+            if (vars1 == null) return vars2;
+            if (vars2 == null) return vars1;
+
+            vars1.Supports.AddRange(vars2.Supports);
+            vars1.ToolPalettePaths.AddRange(vars2.ToolPalettePaths);
+            return vars1;
+        }
     }
 }

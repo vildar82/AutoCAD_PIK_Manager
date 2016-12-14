@@ -41,8 +41,11 @@ namespace AutoCAD_PIK_Manager.Settings
                 if (isAcadVerLater2013())
                 {
                     string trustedPath = AutoCadApp.GetSystemVariable("TRUSTEDPATHS").ToString();
-                    trustedPath += ";" + _fbLocalDir + @"\...";
-                    AutoCadApp.SetSystemVariable("TRUSTEDPATHS", trustedPath);
+                    if (!trustedPath.ToLower().Contains(_fbLocalDir.ToLower()))
+                    {
+                        trustedPath += ";" + _fbLocalDir + @"\...";
+                        AutoCadApp.SetSystemVariable("TRUSTEDPATHS", trustedPath);
+                    }
                     try
                     {
                         Log.Info("FlexBrics.Setup. trustedPath ={0}", trustedPath);

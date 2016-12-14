@@ -43,14 +43,22 @@ namespace AutoCAD_PIK_Manager.Settings
         /// Путь к папке с настройками программ общими для всех пользователей (share).
         /// </summary>
         public static string ServerShareSettingsFolder { get { return _serverShareSettingsFolder; } }
-
+        /// <summary>
+        /// Группа пользователя. Допускается указывать несколько через запятую
+        /// </summary>
         public static string UserGroup { get { return _userGroup; } }
-
+        /// <summary>
+        /// Комбинация групп пользователя - например КР-МН и КР-СБ
+        /// </summary>
+        public static List<string> UserGroupsCombined { get; private set; }
+        /// <summary>
+        /// Группы пользователей определенные по папкам в папке Standart на сервере
+        /// </summary>
         public static List<string> UserGroups { get { return _userGroups; } }
 
         public static string CurDllLocation { get { return _curDllLocation; } }
 
-        public static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }
+        public static SettingsGroupFile GroupFileSettings { get { return _settingsGroupFile; } }        
 
         public static SettingsPikFile PikFileSettings { get { return _settingsPikFile; } }        
 
@@ -79,16 +87,28 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 throw new Exceptions.NoGroupException();
             }
+            UserGroupsCombined = GetUserCombinedGroups();
             _userGroups = getUserGroups();
-            _settingsGroupFile = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, UserGroup, "SettingsGroup.xml"));
-            if (_settingsGroupFile != null)
+            _settingsGroupFile = LoadSettingsGroupFiles();            
+        }
+
+        private static SettingsGroupFile LoadSettingsGroupFiles()
+        {
+            var sgfs = new List<SettingsGroupFile>();
+            foreach (var usergroup in UserGroupsCombined)
             {
-                try
+                var sgf = getSettings<SettingsGroupFile>(Path.Combine(_curDllLocation, usergroup, "SettingsGroup.xml"));
+                if (sgf != null)
                 {
-                    Log.Info($"Загружены настройки группы {UserGroup} из SettingsGroup.xml");
+                    sgfs.Add(sgf);
+                    try
+                    {
+                        Log.Info($"Загружены настройки группы {usergroup} из SettingsGroup.xml");
+                    }
+                    catch { }
                 }
-                catch { }
             }
+            return SettingsGroupFile.Merge(sgfs);
         }
 
         private static string GetServerShareLibPath ()
@@ -172,7 +192,7 @@ namespace AutoCAD_PIK_Manager.Settings
             foreach (DirectoryInfo dir in source.GetDirectories())
             {
                 // Если это папка с именем другого отдело, то не копировать ее
-                if (isOtherGroupFolder(dir.Name)) continue;
+                if (IsOtherGroupFolder(dir.Name)) continue;
                 CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
             }
             // копирование всех файлов из папки источника
@@ -364,13 +384,21 @@ namespace AutoCAD_PIK_Manager.Settings
             return res;
         }
 
-        private static bool isOtherGroupFolder(string name)
+        private static bool IsOtherGroupFolder(string name)
         {
-            if (UserGroup.Equals(name, StringComparison.OrdinalIgnoreCase))
+            if (UserGroupsCombined.Any(g=>g.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
                 return false;
             }
             return _userGroups.Contains(name, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Определение комбинации групп пользователя. группы могут быть перечислены через запятую - КР-МН, КР-СБ
+        /// </summary>        
+        private static List<string> GetUserCombinedGroups()
+        {
+            return UserGroup.Split(',').Select(s => s.Trim()).ToList();
         }
     }
 }
