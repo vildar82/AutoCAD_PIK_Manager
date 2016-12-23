@@ -483,26 +483,26 @@ namespace AutoCAD_PIK_Manager.Model
                         foreach (var group in PikSettings.UserGroupsCombined)
                         {
                             var valuePath = Path.Combine(_localSettingsFolder, setting.Value, group);
-                            if (Directory.Exists(valuePath))
-                            {                                
+                            //if (Directory.Exists(valuePath))
+                            //{                                
                                 if (!path.ToUpper().Contains(valuePath.ToUpper()))
                                 {
                                     fullPath += valuePath + ";";
                                 }
-                            }
+                            //}
                         }                        
                     }
                     else
                     {
                         var valuePath = Path.Combine(_localSettingsFolder, setting.Value);
-                        if (Directory.Exists(valuePath))
-                        {
+                        //if (Directory.Exists(valuePath))
+                        //{
                             isWrite = setting.IsReWrite;
                             if ((!path.ToUpper().Contains(valuePath.ToUpper())) || (isWrite))
                             {
                                 fullPath += valuePath + ";";
                             }
-                        }
+                        //}
                     }                    
                 }
                 if (!isWrite)
@@ -545,19 +545,19 @@ namespace AutoCAD_PIK_Manager.Model
                     FileAttributes attr = File.GetAttributes(path);
                     if (attr.HasFlag(FileAttributes.Directory))
                     {
-                        if (Directory.Exists(path))
-                        {
+                        //if (Directory.Exists(path))
+                        //{
                             existsPath.Add(pathUpper, path);
                             isAdded = true;
-                        }
+                        //}
                     }
                     else
                     {
-                        if (File.Exists(path))
-                        {
+                        //if (File.Exists(path))
+                        //{
                             existsPath.Add(pathUpper, path);
                             isAdded = true;
-                        }
+                        //}
                     }
                     if (!isAdded)
                     {

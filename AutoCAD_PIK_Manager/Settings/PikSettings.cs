@@ -178,7 +178,7 @@ namespace AutoCAD_PIK_Manager.Settings
                     {
                         CopyFilesRecursively(serverSettDir, localSettDir);
                     });
-                    Thread.Sleep(new TimeSpan(0, 0, 30));
+                    Thread.Sleep(new TimeSpan(0, 0, 5));
                     // Копирование flexBrics если нужно
                     FlexBrics.Copy();
                 }

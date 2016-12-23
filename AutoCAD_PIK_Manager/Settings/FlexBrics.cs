@@ -20,7 +20,7 @@ namespace AutoCAD_PIK_Manager.Settings
                     _fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
                     var targetFB = new DirectoryInfo(_fbLocalDir);
                     Task.Run(() => { CopyAll(sourceFB, targetFB); });
-                    Thread.Sleep(new TimeSpan(0,0,5));
+                    Thread.Sleep(new TimeSpan(0,0,3));
                 }
                 catch (Exception ex)
                 {
