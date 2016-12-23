@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace AutoCAD_PIK_Manager.Settings
@@ -17,7 +19,8 @@ namespace AutoCAD_PIK_Manager.Settings
                     var sourceFB = new DirectoryInfo(GetServerFlexBricsServerFolder());
                     _fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
                     var targetFB = new DirectoryInfo(_fbLocalDir);
-                    CopyAll(sourceFB, targetFB);
+                    Task.Run(() => { CopyAll(sourceFB, targetFB); });
+                    Thread.Sleep(new TimeSpan(0,0,5));
                 }
                 catch (Exception ex)
                 {

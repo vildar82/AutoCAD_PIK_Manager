@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using AutoCAD_PIK_Manager.Model;
 using OfficeOpenXml;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AutoCAD_PIK_Manager.Settings
 {
@@ -169,9 +171,18 @@ namespace AutoCAD_PIK_Manager.Settings
                 // Копирование настроек с сервера
                 var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
                 localSettDir.Create();
-                CopyFilesRecursively(serverSettDir, localSettDir);
-                // Копирование flexBrics если нужно
-                FlexBrics.Copy();
+
+                try
+                {
+                    var task = Task.Run(() =>
+                    {
+                        CopyFilesRecursively(serverSettDir, localSettDir);
+                    });
+                    Thread.Sleep(new TimeSpan(0, 0, 30));
+                    // Копирование flexBrics если нужно
+                    FlexBrics.Copy();
+                }
+                catch { }                
             }
             else
             {
@@ -190,14 +201,14 @@ namespace AutoCAD_PIK_Manager.Settings
         {
             // копрование всех папок из источника
             foreach (DirectoryInfo dir in source.GetDirectories())
-            {
+            {                
                 // Если это папка с именем другого отдело, то не копировать ее
                 if (IsOtherGroupFolder(dir.Name)) continue;
                 CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
             }
             // копирование всех файлов из папки источника
             foreach (FileInfo f in source.GetFiles())
-            {
+            {                
                 try
                 {
                     f.CopyTo(Path.Combine(target.FullName, f.Name), true);

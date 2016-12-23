@@ -8,6 +8,7 @@ using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
+using System.Threading.Tasks;
 
 namespace AutoCAD_PIK_Manager.Model
 {
@@ -431,7 +432,11 @@ namespace AutoCAD_PIK_Manager.Model
             DirectoryInfo dirSource = new DirectoryInfo(sourceFolderr);
             DirectoryInfo dirDest = new DirectoryInfo(destFolder);
 
-            PikSettings.CopyFilesRecursively(dirSource, dirDest);
+            try
+            {
+                Task.Run(() => { PikSettings.CopyFilesRecursively(dirSource, dirDest); });
+            }
+            catch { }
             
             //var filePlotters = dirSource.GetFiles("*.pc3", SearchOption.TopDirectoryOnly);
             //foreach (var filePlotter in filePlotters)

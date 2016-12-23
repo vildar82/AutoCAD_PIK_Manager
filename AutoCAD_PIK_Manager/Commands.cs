@@ -7,6 +7,8 @@ using AutoCAD_PIK_Manager.Model;
 using AutoCAD_PIK_Manager.Settings;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Runtime;
+using System.Threading.Tasks;
+using System.Threading;
 
 [assembly: ExtensionApplication(typeof(AutoCAD_PIK_Manager.Commands))]
 [assembly: CommandClass(typeof(AutoCAD_PIK_Manager.Commands))]
