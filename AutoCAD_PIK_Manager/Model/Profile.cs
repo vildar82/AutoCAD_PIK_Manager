@@ -9,6 +9,7 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace AutoCAD_PIK_Manager.Model
 {
@@ -434,7 +435,13 @@ namespace AutoCAD_PIK_Manager.Model
 
             try
             {
-                Task.Run(() => { PikSettings.CopyFilesRecursively(dirSource, dirDest); });
+                var token = new CancellationTokenSource();
+                var task = Task.Run(() => { PikSettings.CopyFilesRecursively(dirSource, dirDest, token.Token); });
+                task.Wait(new TimeSpan(0,0,1));
+                if (!task.IsCompleted)
+                {
+                    token.Cancel(true);
+                }
             }
             catch { }
             

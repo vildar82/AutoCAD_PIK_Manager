@@ -174,15 +174,20 @@ namespace AutoCAD_PIK_Manager.Settings
 
                 try
                 {
+                    var token = new CancellationTokenSource();
                     var task = Task.Run(() =>
                     {
-                        CopyFilesRecursively(serverSettDir, localSettDir);
-                    });
-                    Thread.Sleep(new TimeSpan(0, 0, 5));
-                    // Копирование flexBrics если нужно
-                    FlexBrics.Copy();
+                        CopyFilesRecursively(serverSettDir, localSettDir, token.Token);
+                    }, token.Token);
+                    task.Wait(new TimeSpan(0, 1, 0));                    
+                    if (!task.IsCompleted)
+                    {
+                        token.Cancel(true);
+                    }                    
                 }
-                catch { }                
+                catch { }
+                // Копирование flexBrics если нужно
+                FlexBrics.Copy();
             }
             else
             {
@@ -197,18 +202,20 @@ namespace AutoCAD_PIK_Manager.Settings
         /// <summary>
         /// Копирование файлов настроек с сервера
         /// </summary>
-        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target, CancellationToken token)
         {
             // копрование всех папок из источника
             foreach (DirectoryInfo dir in source.GetDirectories())
-            {                
+            {
+                token.ThrowIfCancellationRequested();
                 // Если это папка с именем другого отдело, то не копировать ее
                 if (IsOtherGroupFolder(dir.Name)) continue;
-                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
+                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name), token);
             }
             // копирование всех файлов из папки источника
             foreach (FileInfo f in source.GetFiles())
-            {                
+            {
+                token.ThrowIfCancellationRequested();
                 try
                 {
                     f.CopyTo(Path.Combine(target.FullName, f.Name), true);

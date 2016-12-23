@@ -19,8 +19,13 @@ namespace AutoCAD_PIK_Manager.Settings
                     var sourceFB = new DirectoryInfo(GetServerFlexBricsServerFolder());
                     _fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
                     var targetFB = new DirectoryInfo(_fbLocalDir);
-                    Task.Run(() => { CopyAll(sourceFB, targetFB); });
-                    Thread.Sleep(new TimeSpan(0,0,3));
+                    var token = new CancellationTokenSource();
+                    var task = Task.Run(() => { CopyAll(sourceFB, targetFB, token.Token); });
+                    task.Wait(new TimeSpan(0,0,10));
+                    if (!task.IsCompleted)
+                    { 
+                        token.Cancel(true);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -86,13 +91,14 @@ namespace AutoCAD_PIK_Manager.Settings
             return path;
         }
 
-        private static void CopyAll (DirectoryInfo source, DirectoryInfo target)
+        private static void CopyAll (DirectoryInfo source, DirectoryInfo target, CancellationToken token)
         {
             if (Directory.Exists(target.FullName) == false)
                 Directory.CreateDirectory(target.FullName);
 
             foreach (FileInfo fi in source.GetFiles())
             {
+                token.ThrowIfCancellationRequested();
                 try
                 {
                     fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
@@ -101,8 +107,9 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
             {
+                token.ThrowIfCancellationRequested();
                 var nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
+                CopyAll(diSourceSubDir, nextTargetSubDir, token);
             }
         }
     }
