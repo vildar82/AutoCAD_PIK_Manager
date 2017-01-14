@@ -436,7 +436,11 @@ namespace AutoCAD_PIK_Manager.Model
             try
             {
                 var token = new CancellationTokenSource();
-                var task = Task.Run(() => { Update.CopyFilesRecursively(dirSource, dirDest, token.Token); });
+                var task = Task.Run(() => {
+
+                    var files = Update.GetCopyedFiles(dirSource, dirDest, token.Token);
+                    Update.CopyFiles(files, token.Token);
+                });
                 task.Wait(new TimeSpan(0,0,1));
                 if (!task.IsCompleted)
                 {

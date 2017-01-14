@@ -126,7 +126,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\CompanyInfo.cs" />
     <Compile Include="Settings\Exceptions\NoGroupException.cs" />
-    <Compile Include="Settings\FlexBrics.cs" />
+    <Compile Include="FlexBrics\FlexBrics.cs" />
     <Compile Include="Settings\Group.cs" />
     <Compile Include="Settings\PathVariable.cs" />
     <Compile Include="Settings\SerializerXml.cs" />
@@ -136,6 +136,7 @@
     <Compile Include="Settings\SystemVariable.cs" />
     <Compile Include="Settings\Variable.cs" />
     <Compile Include="Settings\Variables.cs" />
+    <Compile Include="Update\FileNameComparer.cs" />
     <Compile Include="Update\Update.cs" />
   </ItemGroup>
   <ItemGroup>

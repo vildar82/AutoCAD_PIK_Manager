@@ -22,10 +22,18 @@ namespace AutoCAD_PIK_Manager
                     // Проверка доступности сетевых настроек
                     if (Directory.Exists(Settings.PikSettings.ServerSettingsFolder))
                     {
-                        // Копирование общих настроек
-                        CopyCommonFiles(token.Token);
-                        // Копирование настроек отдела
-                        CopyUserGroupFiles(token.Token);
+                        // Копирование общих настроек                        
+                        var filesToCopy = CopyCommonFiles(token.Token);                        
+                        // Копирование настроек отдела                                                
+                        var userFilesToCopy = CopyUserGroupFiles(token.Token);                        
+                        if (userFilesToCopy != null)
+                        {
+                            if (filesToCopy == null)
+                                filesToCopy = userFilesToCopy;
+                            else
+                                filesToCopy.AddRange(userFilesToCopy);
+                        }
+                        CopyFiles(filesToCopy, token.Token);
                     }
                     else
                     {
@@ -47,40 +55,42 @@ namespace AutoCAD_PIK_Manager
             Settings.FlexBrics.Copy();
         }
 
-        private static void CopyUserGroupFiles(CancellationToken token)
+        private static List<Tuple<FileInfo, FileInfo>> CopyUserGroupFiles(CancellationToken token)
         {
+            var copyedFiles = new List<Tuple<FileInfo, FileInfo>>();
             foreach (var group in Settings.PikSettings.UserGroupsCombined)
             {
                 // Проверка версии настроек отдела (UserGroup)
                 if (VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, group + ".ver"),
                     Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{group}\{group}.ver")))
-                    return;
+                    return null;
                 // Копирование настроек с сервера в локальную папку Settings
                 var serverUserGroupDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, group));
                 var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
-                CopyFilesRecursively(serverUserGroupDir, localDir, token);
-            }            
+                copyedFiles.AddRange(GetCopyedFiles(serverUserGroupDir, localDir, token));
+            }
+            return copyedFiles;
         }        
 
         /// <summary>
         /// Копирование общих настроек
         /// </summary>
-        private static void CopyCommonFiles(CancellationToken token)
+        private static List<Tuple<FileInfo, FileInfo>> CopyCommonFiles(CancellationToken token)
         {
             // Проверка версии общих настроек
             if (VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, CommonSettingsName + ".ver"),
                 Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{CommonSettingsName}\{CommonSettingsName}.ver")))
-                return;
+                return null;
             // Копирование общих настроек из папки Общие на сервере в локальную папку Settings
             var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, CommonSettingsName));
             var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
-            CopyFilesRecursively(serverCommonDir, localDir, token);
+            return GetCopyedFiles(serverCommonDir, localDir, token);
         }
 
         /// <summary>
         /// Равны ли версии общих настроек локально и на сервере
         /// </summary>        
-        private static bool VersionsEqal(string localVerFile, string serverVerFile)
+        public static bool VersionsEqal(string localVerFile, string serverVerFile)
         {
             var verServer = GetVersion(serverVerFile);
             if (verServer == null) return false;
@@ -101,28 +111,59 @@ namespace AutoCAD_PIK_Manager
         /// <summary>
         /// Копирование файлов настроек с сервера
         /// </summary>
-        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target, CancellationToken token)
-        {
+        public static List<Tuple<FileInfo, FileInfo>> GetCopyedFiles(DirectoryInfo source, DirectoryInfo target, CancellationToken token)
+        {            
+            if (source == null || !source.Exists) return null;
+
+            var filesToCopy = new List<Tuple<FileInfo, FileInfo>>();
+
             // копрование всех папок из источника
             foreach (DirectoryInfo dir in source.GetDirectories())
             {
                 token.ThrowIfCancellationRequested();
                 // Если это папка с именем другого отдело, то не копировать ее
                 if (IsOtherGroupFolder(dir.Name)) continue;
-                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name), token);
+                var files = GetCopyedFiles(dir, target.CreateSubdirectory(dir.Name), token);
+                if (files != null)
+                {
+                    filesToCopy.AddRange(files);
+                }
             }
-            // копирование всех файлов из папки источника
-            foreach (FileInfo f in source.GetFiles())
+            // Файлы в папке
+            var sourceFiles = source.GetFiles();
+            foreach (var sf in sourceFiles)
+            {                
+                filesToCopy.Add(new Tuple<FileInfo, FileInfo> (sf, new FileInfo (Path.Combine(target.FullName, sf.Name))));
+            }
+            return filesToCopy;
+        }
+
+        public static void CopyFiles (List<Tuple<FileInfo, FileInfo>> filesSourceDest, CancellationToken token)
+        {
+            foreach (var sd in filesSourceDest)
             {
                 token.ThrowIfCancellationRequested();
                 try
                 {
-                    f.CopyTo(Path.Combine(target.FullName, f.Name), true);
+                    sd.Item1.CopyTo(sd.Item2.FullName, true);
                 }
                 catch
                 {
                     //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
-                }
+                }               
+            }
+            // Удаление лишних файлов
+            var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
+            var allLocalFiles = localDir.GetFiles("*.*", SearchOption.AllDirectories);
+            DeleteExcessFiles(allLocalFiles, filesSourceDest.Select(s => s.Item2).ToArray());
+        }
+
+        private static void DeleteExcessFiles(FileInfo[] localFiles, FileInfo[] serverFiles)
+        {
+            var excessFiles = localFiles.Except(serverFiles, new FileNameComparer());
+            foreach (var item in excessFiles)
+            {
+                DeleteFile(item);
             }
         }
 
@@ -137,22 +178,7 @@ namespace AutoCAD_PIK_Manager
             var files = target.GetFiles();
             foreach (var item in files)
             {
-                try
-                {
-                    item.Delete();
-                }
-                catch
-                {
-                    if (item.Attributes.HasFlag(FileAttributes.ReadOnly))
-                    {
-                        item.Attributes = FileAttributes.Normal;
-                        try
-                        {
-                            item.Delete();
-                        }
-                        catch { }
-                    }
-                }
+                DeleteFile(item);
             }
 
             var dirs = target.GetDirectories();
@@ -165,6 +191,26 @@ namespace AutoCAD_PIK_Manager
                 catch
                 {
                     deleteFilesRecursively(item);
+                }
+            }
+        }
+
+        public static void DeleteFile(FileInfo file)
+        {
+            try
+            {
+                file.Delete();
+            }
+            catch
+            {
+                if (file.Attributes.HasFlag(FileAttributes.ReadOnly))
+                {
+                    file.Attributes = FileAttributes.Normal;
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch { }
                 }
             }
         }
