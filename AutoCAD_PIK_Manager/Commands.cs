@@ -72,7 +72,7 @@ namespace AutoCAD_PIK_Manager
                     // Обновление настроек с сервера (удаление и копирование)
                     try
                     {
-                        PikSettings.UpdateSettings();
+                        Update.UpdateSettings();
                         Log.Info("Настройки обновлены.");
                     }
                     catch (System.Exception ex)

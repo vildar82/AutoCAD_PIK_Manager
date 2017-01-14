@@ -146,129 +146,7 @@ namespace AutoCAD_PIK_Manager.Settings
             return res;
         }
 
-        internal static void UpdateSettings()
-        {
-            // Проверка доступности сетевых настроек
-            if (Directory.Exists(ServerSettingsFolder))
-            {
-                // Удаление локальной папки настроек
-                var localSettDir = new DirectoryInfo(LocalSettingsFolder);
-                //if (localSettDir.Name == "Settings" && localSettDir.Exists)
-                //{
-                //    try
-                //    {
-                //        deleteFilesRecursively(localSettDir);
-                //    }
-                //    catch(Exception ex)
-                //    {
-                //        try
-                //        {
-                //            Log.Error(ex, "deleteFilesRecursively");
-                //        }
-                //        catch { }
-                //    }
-                //}
-                // Копирование настроек с сервера
-                var serverSettDir = new DirectoryInfo(ServerSettingsFolder);
-                localSettDir.Create();
-
-                try
-                {
-                    var token = new CancellationTokenSource();
-                    var task = Task.Run(() =>
-                    {
-                        CopyFilesRecursively(serverSettDir, localSettDir, token.Token);
-                    }, token.Token);
-                    task.Wait(new TimeSpan(0, 1, 0));                    
-                    if (!task.IsCompleted)
-                    {
-                        token.Cancel(true);
-                    }                    
-                }
-                catch { }
-                // Копирование flexBrics если нужно
-                FlexBrics.Copy();
-            }
-            else
-            {
-                try
-                {
-                    Log.Error($"Недоступна папка настроек на сервере {ServerSettingsFolder}");
-                }
-                catch { }
-            }
-        }
-
-        /// <summary>
-        /// Копирование файлов настроек с сервера
-        /// </summary>
-        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target, CancellationToken token)
-        {
-            // копрование всех папок из источника
-            foreach (DirectoryInfo dir in source.GetDirectories())
-            {
-                token.ThrowIfCancellationRequested();
-                // Если это папка с именем другого отдело, то не копировать ее
-                if (IsOtherGroupFolder(dir.Name)) continue;
-                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name), token);
-            }
-            // копирование всех файлов из папки источника
-            foreach (FileInfo f in source.GetFiles())
-            {
-                token.ThrowIfCancellationRequested();
-                try
-                {
-                    f.CopyTo(Path.Combine(target.FullName, f.Name), true);
-                }
-                catch
-                {
-                    //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Удаление папки локальных настроек
-        /// </summary>
-        private static void deleteFilesRecursively (DirectoryInfo target)
-        {            
-            if (target.Name.Equals(Commands.SystemDriveName, StringComparison.OrdinalIgnoreCase))
-                return;
-
-            var files = target.GetFiles();
-            foreach (var item in files)
-            {
-                try
-                {
-                    item.Delete();
-                }
-                catch
-                {
-                    if (item.Attributes.HasFlag(FileAttributes.ReadOnly))
-                    {
-                        item.Attributes = FileAttributes.Normal;
-                        try
-                        {
-                            item.Delete();
-                        }
-                        catch { }
-                    }
-                }
-            }
-
-            var dirs = target.GetDirectories();
-            foreach (var item in dirs)
-            {
-                try
-                {
-                    item.Delete(true);
-                }
-                catch
-                {
-                    deleteFilesRecursively(item);
-                }                
-            }            
-        }
+        
 
         private static T getSettings<T>(string file)
         {
@@ -400,16 +278,7 @@ namespace AutoCAD_PIK_Manager.Settings
             }
             catch { }
             return res;
-        }
-
-        private static bool IsOtherGroupFolder(string name)
-        {
-            if (UserGroupsCombined.Any(g=>g.Equals(name, StringComparison.OrdinalIgnoreCase)))
-            {
-                return false;
-            }
-            return _userGroups.Contains(name, StringComparer.OrdinalIgnoreCase);
-        }
+        }        
 
         /// <summary>
         /// Определение комбинации групп пользователя. группы могут быть перечислены через запятую - КР-МН, КР-СБ
