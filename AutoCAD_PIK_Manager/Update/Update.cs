@@ -11,6 +11,7 @@ namespace AutoCAD_PIK_Manager
     public static class Update
     {
         private const string CommonSettingsName = "Общие";
+        private static string updateInfo = string.Empty;        
 
         public static void UpdateSettings()
         {
@@ -44,7 +45,7 @@ namespace AutoCAD_PIK_Manager
                         catch { }
                     }
                 }, token.Token);
-                task.Wait(new TimeSpan(0, 100, 0));
+                task.Wait(new TimeSpan(0, 1, 0));
                 if (!task.IsCompleted)
                 {
                     token.Cancel(true);
@@ -52,7 +53,7 @@ namespace AutoCAD_PIK_Manager
             }
             catch { }
             // Копирование flexBrics если нужно
-            Settings.FlexBrics.Copy();
+            updateInfo += Settings.FlexBrics.Copy();
         }
 
         private static List<Tuple<FileInfo, FileInfo>> CopyUserGroupFiles(CancellationToken token)
@@ -63,14 +64,23 @@ namespace AutoCAD_PIK_Manager
                 // Проверка версии настроек отдела (UserGroup)
                 if (VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, group + ".ver"),
                     Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{group}\{group}.ver")))
+                {
+                    updateInfo += " Версия настроек отдела совпадает с сервером.";
                     return null;
+                }
                 // Копирование настроек с сервера в локальную папку Settings
                 var serverUserGroupDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, group));
                 var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
                 copyedFiles.AddRange(GetCopyedFiles(serverUserGroupDir, localDir, token));
             }
+            updateInfo += " Настройки отдела обновлены.";
             return copyedFiles;
-        }        
+        }
+
+        public static string GetUpdateInfo()
+        {
+            return updateInfo;            
+        }
 
         /// <summary>
         /// Копирование общих настроек
@@ -80,11 +90,16 @@ namespace AutoCAD_PIK_Manager
             // Проверка версии общих настроек
             if (VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, CommonSettingsName + ".ver"),
                 Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{CommonSettingsName}\{CommonSettingsName}.ver")))
+            {
+                updateInfo +=" Версия общих настроек совпадает с сервером.";
                 return null;
+            }
             // Копирование общих настроек из папки Общие на сервере в локальную папку Settings
             var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, CommonSettingsName));
             var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
-            return GetCopyedFiles(serverCommonDir, localDir, token);
+            var res = GetCopyedFiles(serverCommonDir, localDir, token);
+            updateInfo += " Общие настройки обновлены.";
+            return res;
         }
 
         /// <summary>

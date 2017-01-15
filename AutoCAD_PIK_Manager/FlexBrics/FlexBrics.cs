@@ -9,15 +9,16 @@ namespace AutoCAD_PIK_Manager.Settings
     public static class FlexBrics
     {
         private static string fbLocalDir;
-
-        public static void Copy ()
+        private const string fbName = "flexBrics";      
+        public static string Copy ()
         {
+            string info = string.Empty;
             if (PikSettings.GroupFileSettings?.FlexBricsSetup == true)
             {
                 try
-                {                    
+                {   
                     var token = new CancellationTokenSource();
-                    var task = Task.Run(() =>
+                    var task = Task<string>.Run(() =>
                     {
                         var serverFbDir = GetServerFlexBricsServerFolder();
                         var sourceFB = new DirectoryInfo(serverFbDir);
@@ -26,22 +27,24 @@ namespace AutoCAD_PIK_Manager.Settings
 
                         // Проверка версии общих настроек
                         if (Update.VersionsEqal(Path.Combine(fbLocalDir, "fb.ver"),
-                                                Path.Combine(serverFbDir, "fb.ver")))
-                            return;
+                                                Path.Combine(serverFbDir, "fb.ver")))                        
+                            return $" Версия настроек {fbName} совпадает с сервером.";                        
                         CopyAll(sourceFB, targetFB, token.Token);
-
+                        return $"Настройки {fbName} обновлены.";
                     });
                     task.Wait(new TimeSpan(0,0,30));
                     if (!task.IsCompleted)
                     { 
                         token.Cancel(true);
                     }
+                    info = task.Result;
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "FlexBrics не скопирровался.");
                 }
             }
+            return info;
         }
 
         private static string GetServerFlexBricsServerFolder ()

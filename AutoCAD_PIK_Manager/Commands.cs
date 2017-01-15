@@ -73,7 +73,7 @@ namespace AutoCAD_PIK_Manager
                     try
                     {
                         Update.UpdateSettings();
-                        Log.Info("Настройки обновлены.");
+                        Log.Info("Настройки обновлены. " + Update.GetUpdateInfo());                        
                     }
                     catch (System.Exception ex)
                     {
@@ -168,11 +168,11 @@ namespace AutoCAD_PIK_Manager
             string destDllPikManager = string.Empty;
             try
             {
-                sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Dll\\AutoCAD_PIK_Manager.dll");
+                sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Общие\\Dll\\AutoCAD_PIK_Manager.dll");
             }
             catch
             {
-                sourceDllPikManager = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll";
+                sourceDllPikManager = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Общие\Dll\AutoCAD_PIK_Manager.dll";
             }
             try
             {

@@ -50,7 +50,7 @@ namespace UpdatePIKManager
             }
             catch
             {
-                sourceFile = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Dll\AutoCAD_PIK_Manager.dll";
+                sourceFile = @"\\dsk2.picompany.ru\project\CAD_Settings\AutoCAD_server\Адаптация\Общие\Dll\AutoCAD_PIK_Manager.dll";
             }
             try
             {
