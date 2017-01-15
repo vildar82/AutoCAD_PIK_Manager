@@ -7,56 +7,29 @@ using AutoCadApp = Autodesk.AutoCAD.ApplicationServices.Application;
 namespace AutoCAD_PIK_Manager.Settings
 {
     public static class FlexBrics
-    {
-        private static string fbLocalDir;
-        private const string fbName = "flexBrics";      
-        public static string Copy ()
-        {
-            string info = string.Empty;
-            if (PikSettings.GroupFileSettings?.FlexBricsSetup == true)
-            {
-                try
-                {   
-                    var token = new CancellationTokenSource();
-                    var task = Task<string>.Run(() =>
-                    {
-                        var serverFbDir = GetServerFlexBricsServerFolder();
-                        var sourceFB = new DirectoryInfo(serverFbDir);
-                        fbLocalDir = Path.Combine(PikSettings.LocalSettingsFolder, sourceFB.Name);
-                        var targetFB = new DirectoryInfo(fbLocalDir);
+    {        
+        public const string FbName = "flexBrics";        
 
-                        // Проверка версии общих настроек
-                        if (Update.VersionsEqal(Path.Combine(fbLocalDir, "fb.ver"),
-                                                Path.Combine(serverFbDir, "fb.ver")))                        
-                            return $" Версия настроек {fbName} совпадает с сервером.";                        
-                        CopyAll(sourceFB, targetFB, token.Token);
-                        return $"Настройки {fbName} обновлены.";
-                    });
-                    task.Wait(new TimeSpan(0,0,30));
-                    if (!task.IsCompleted)
-                    { 
-                        token.Cancel(true);
-                    }
-                    info = task.Result;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "FlexBrics не скопирровался.");
-                }
-            }
-            return info;
+        public static bool HasFlexBrics()
+        {
+            return PikSettings.GroupFileSettings?.FlexBricsSetup == true;
         }
 
-        private static string GetServerFlexBricsServerFolder ()
+        public static string GetFBLocalDir()
         {
-            var res = Path.GetFullPath(Path.Combine(PikSettings.ServerSettingsFolder, @"..\flexBrics"));
-            return res;
+            return Path.Combine(PikSettings.LocalSettingsFolder, FbName);
+        }
+
+        public static string GetServerFlexBricsServerFolder ()
+        {
+            return Path.GetFullPath(Path.Combine(PikSettings.ServerSettingsFolder, @"..\flexBrics"));            
         }        
 
         public static void Setup ()
         {
             // Установка flexBrics
             // 1. Добавить папку в доверенные
+            var fbLocalDir = GetFBLocalDir();
             if (Directory.Exists(fbLocalDir))
             {
                 if (isAcadVerLater2013())

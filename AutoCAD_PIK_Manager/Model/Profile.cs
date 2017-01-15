@@ -438,10 +438,10 @@ namespace AutoCAD_PIK_Manager.Model
                 var token = new CancellationTokenSource();
                 var task = Task.Run(() => {
 
-                    var files = Update.GetCopyedFiles(dirSource, dirDest, token.Token);
-                    Update.CopyFiles(files, token.Token);
+                    var files = Update.GetCopyedFiles(dirSource, dirDest, token.Token, true);
+                    Update.CopyFiles(files, token.Token, false);
                 });
-                task.Wait(new TimeSpan(0,0,1));
+                task.Wait(new TimeSpan(0,0,3));
                 if (!task.IsCompleted)
                 {
                     token.Cancel(true);

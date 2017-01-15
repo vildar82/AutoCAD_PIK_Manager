@@ -138,6 +138,7 @@
     <Compile Include="Settings\Variables.cs" />
     <Compile Include="Update\FileNameComparer.cs" />
     <Compile Include="Update\Update.cs" />
+    <Compile Include="Update\UpdateFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

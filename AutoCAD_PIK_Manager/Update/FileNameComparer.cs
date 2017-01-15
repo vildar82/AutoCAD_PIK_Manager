@@ -11,12 +11,12 @@ namespace AutoCAD_PIK_Manager
     {
         public bool Equals(FileInfo x, FileInfo y)
         {
-            return string.Equals(x?.Name, y?.Name, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(x?.FullName, y?.FullName, StringComparison.OrdinalIgnoreCase);
         }
 
         public int GetHashCode(FileInfo obj)
         {
-            return obj?.Name.GetHashCode() ?? 0;
+            return obj?.FullName.GetHashCode() ?? 0;
         }
     }
 }
