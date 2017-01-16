@@ -86,7 +86,7 @@ namespace AutoCAD_PIK_Manager
                                     Path.Combine(serverFbDir, "fb.ver"));
             if (!updateRequired)
             {
-                updateInfo = $" Версия настроек {Settings.FlexBrics.FbName} совпадает с сервером.";                
+                updateInfo += $" Версия настроек {Settings.FlexBrics.FbName} совпадает с сервером.";                
             }
             // Файлы FlexBrics
             return GetCopyedFiles(serverFB, localFB, token, updateRequired);
@@ -197,7 +197,7 @@ namespace AutoCAD_PIK_Manager
                     //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
                 }
             }
-            updateInfo = $" Файлов скопировано {copiedFiles}.";
+            updateInfo += $" Файлов скопировано {copiedFiles}.";
             // Удаление лишних файлов
             if (deleteExcessFiles)
             {
