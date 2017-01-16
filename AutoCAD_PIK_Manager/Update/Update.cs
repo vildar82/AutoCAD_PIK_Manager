@@ -184,21 +184,18 @@ namespace AutoCAD_PIK_Manager
         public static void CopyFiles (List<UpdateFile> filesUpdate, CancellationToken token, bool deleteExcessFiles)
         {
             int copiedFiles = 0;
-            foreach (var fileUpdate in filesUpdate)
+            foreach (var fileUpdate in filesUpdate.Where(w => w.UpdateRequired))
             {
                 token.ThrowIfCancellationRequested();
-                if (fileUpdate.UpdateRequired)
+                try
                 {
-                    try
-                    {
-                        fileUpdate.ServerFile.CopyTo(fileUpdate.LocalFile.FullName, true);
-                        copiedFiles++;
-                    }
-                    catch
-                    {
-                        //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
-                    }
-                }              
+                    fileUpdate.ServerFile.CopyTo(fileUpdate.LocalFile.FullName, true);
+                    copiedFiles++;
+                }
+                catch
+                {
+                    //Log.Info(ex, "CopyFilesRecursively {0}",f.FullName);
+                }
             }
             updateInfo = $" Файлов скопировано {copiedFiles}.";
             // Удаление лишних файлов
@@ -216,7 +213,7 @@ namespace AutoCAD_PIK_Manager
             if (allLocalFiles == null || updateFiles == null || allLocalFiles.Length < updateFiles.Length) return;
             var excessFiles = allLocalFiles.Except(updateFiles, new FileNameComparer());
             foreach (var item in excessFiles)
-            {
+            {                
                 DeleteFile(item);
             }
             updateInfo += $" Удалены: " + string.Join(",", excessFiles.Select(s => s.Name)) + ".";
