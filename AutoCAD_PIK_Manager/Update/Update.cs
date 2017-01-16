@@ -145,7 +145,7 @@ namespace AutoCAD_PIK_Manager
         {
             try
             {
-                return File.ReadLines(filePath).First();
+                return File.ReadLines(filePath)?.First()?.Trim();
             }
             catch { }
             return null;
