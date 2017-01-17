@@ -53,6 +53,9 @@ namespace AutoCAD_PIK_Manager
                         }
 
                         CopyFiles(filesToCopy, token.Token, true);
+                        verCommonLocal = verCommonServer;
+                        verUserGroupLocal = verUserGroupServer;
+                        verFBLocal = verFBServer;
                         updateInfo += $" Локальные версии: {CommonSettingsName} '{verCommonLocal}', Отдела '{verUserGroupLocal}'";
                         if (Settings.FlexBrics.HasFlexBrics())
                         {
