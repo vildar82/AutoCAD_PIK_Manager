@@ -11,7 +11,13 @@ namespace AutoCAD_PIK_Manager
     public static class Update
     {
         private const string CommonSettingsName = "Общие";
-        private static string updateInfo = string.Empty;        
+        private static string updateInfo = string.Empty;
+        private static string verCommonLocal;
+        private static string verCommonServer;
+        private static string verUserGroupLocal;
+        private static string verUserGroupServer;
+        private static string verFBLocal;
+        private static string verFBServer;
 
         public static void UpdateSettings()
         {
@@ -47,6 +53,11 @@ namespace AutoCAD_PIK_Manager
                         }
 
                         CopyFiles(filesToCopy, token.Token, true);
+                        updateInfo += $" Локальные версии: {CommonSettingsName} '{verCommonLocal}', Отдела '{verUserGroupLocal}'";
+                        if (Settings.FlexBrics.HasFlexBrics())
+                        {
+                            updateInfo += $", {Settings.FlexBrics.FbName} '{verFBLocal}'";
+                        }
                     }
                     else
                     {
@@ -83,10 +94,11 @@ namespace AutoCAD_PIK_Manager
 
             // Проверка версии общих настроек
             var updateRequired = !VersionsEqal(Path.Combine(localFbDir, "fb.ver"),
-                                    Path.Combine(serverFbDir, "fb.ver"));
+                                    Path.Combine(serverFbDir, "fb.ver"), 
+                                    out verFBLocal, out verFBServer);
             if (!updateRequired)
             {
-                updateInfo += $" Версия настроек {Settings.FlexBrics.FbName} совпадает с сервером.";                
+                updateInfo += $" Версия настроек {Settings.FlexBrics.FbName} совпадает с сервером = '{verFBServer}'.";                
             }
             // Файлы FlexBrics
             return GetCopyedFiles(serverFB, localFB, token, updateRequired);
@@ -99,10 +111,11 @@ namespace AutoCAD_PIK_Manager
             {
                 // Проверка версии настроек отдела (UserGroup)
                 var updateRequired = !VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, group + ".ver"),
-                    Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{group}\{group}.ver"));
+                    Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{group}\{group}.ver"),
+                    out verUserGroupLocal, out verUserGroupServer);
                 if (!updateRequired)
                 {
-                    updateInfo += " Версия настроек отдела совпадает с сервером.";                    
+                    updateInfo += $" Версия настроек отдела совпадает с сервером = '{verUserGroupServer}'.";                    
                 }
                 // Копирование настроек с сервера в локальную папку Settings
                 var serverUserGroupDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, group));
@@ -117,12 +130,13 @@ namespace AutoCAD_PIK_Manager
         /// </summary>
         private static List<UpdateFile> GetCopiedCommonFiles(CancellationToken token)
         {
-            // Проверка версии общих настроек
+            // Проверка версии общих настроек            
             var updateRequired = !VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, CommonSettingsName + ".ver"),
-                Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{CommonSettingsName}\{CommonSettingsName}.ver"));
+                Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{CommonSettingsName}\{CommonSettingsName}.ver"),
+                out verCommonLocal, out verCommonServer);
             if (!updateRequired)
             {
-                updateInfo +=" Версия общих настроек совпадает с сервером.";                
+                updateInfo +=$" Версия общих настроек совпадает с сервером = '{verCommonServer}'.";                
             }
             // Копирование общих настроек из папки Общие на сервере в локальную папку Settings
             var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, CommonSettingsName));
@@ -133,11 +147,14 @@ namespace AutoCAD_PIK_Manager
         /// <summary>
         /// Равны ли версии общих настроек локально и на сервере
         /// </summary>        
-        public static bool VersionsEqal(string localVerFile, string serverVerFile)
+        public static bool VersionsEqal(string localVerFile, string serverVerFile, out string verLocal, out string verServer)
         {
-            var verServer = GetVersion(serverVerFile);
-            if (verServer == null) return false;
-            var verLocal = GetVersion(localVerFile);            
+            verLocal = GetVersion(localVerFile);
+            verServer = GetVersion(serverVerFile);
+            if (verServer == null)
+            {                
+                return false;
+            }            
             return string.Equals(verLocal, verServer, StringComparison.OrdinalIgnoreCase);
         }        
 
@@ -183,7 +200,7 @@ namespace AutoCAD_PIK_Manager
 
         public static void CopyFiles (List<UpdateFile> filesUpdate, CancellationToken token, bool deleteExcessFiles)
         {
-            int copiedFiles = 0;
+            int copiedFiles = 0;            
             foreach (var fileUpdate in filesUpdate.Where(w => w.UpdateRequired))
             {
                 token.ThrowIfCancellationRequested();
@@ -199,7 +216,7 @@ namespace AutoCAD_PIK_Manager
             }
             updateInfo += $" Файлов скопировано {copiedFiles}.";
             // Удаление лишних файлов
-            if (deleteExcessFiles)
+            if (deleteExcessFiles && copiedFiles>0)
             {
                 var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
                 var allLocalFiles = localDir.GetFiles("*.*", SearchOption.AllDirectories);
