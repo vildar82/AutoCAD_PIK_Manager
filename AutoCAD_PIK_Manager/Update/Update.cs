@@ -287,6 +287,8 @@ namespace AutoCAD_PIK_Manager
         {
             try
             {
+                if (file.Name == "SettingsGroup.xml")
+                    return;
                 file.Delete();
             }
             catch

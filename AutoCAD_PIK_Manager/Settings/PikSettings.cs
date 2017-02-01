@@ -144,9 +144,7 @@ namespace AutoCAD_PIK_Manager.Settings
                 catch { }
             }
             return res;
-        }
-
-        
+        }        
 
         private static T getSettings<T>(string file)
         {
