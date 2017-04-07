@@ -10,7 +10,7 @@ namespace AutoCAD_PIK_Manager
 {
     public static class Update
     {
-        private const string CommonSettingsName = "Общие";
+        private static string CommonSettingsName = "Общие";
         private static string updateInfo = string.Empty;
         private static string verCommonLocal;
         private static string verCommonServer;
@@ -18,6 +18,7 @@ namespace AutoCAD_PIK_Manager
         private static string verUserGroupServer;
         private static string verFBLocal;
         private static string verFBServer;
+        private static bool isTester;
 
         public static void UpdateSettings()
         {
@@ -29,6 +30,13 @@ namespace AutoCAD_PIK_Manager
                     // Проверка доступности сетевых настроек
                     if (Directory.Exists(Settings.PikSettings.ServerSettingsFolder))
                     {
+                        // Проверка - если группа пользователя тестовая (слово тест в имени группы)
+                        isTester = DefineUserTester();
+                        if (isTester)
+                        {
+                            CommonSettingsName = $@"{CommonSettingsName}_Тест";
+                        }
+
                         // Копирование общих настроек                        
                         var filesToCopy = GetCopiedCommonFiles(token.Token);                        
                         
@@ -79,6 +87,16 @@ namespace AutoCAD_PIK_Manager
             }
             catch { }            
         }
+
+        private static bool DefineUserTester()
+        {
+            if (Settings.PikSettings.UserGroup.IndexOf("тест", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static string GetUpdateInfo()
         {
             return updateInfo + " Конец.";
@@ -141,6 +159,11 @@ namespace AutoCAD_PIK_Manager
             {
                 updateInfo +=$" Версия общих настроек совпадает с сервером = '{verCommonServer}'.";                
             }
+            if (isTester)
+            {
+                // Тестовые общие настройки - нужно всегда копировать, т.к. работает политика - которая переписывает локальные файлы из общей dll
+                updateRequired = true;
+            }
             // Копирование общих настроек из папки Общие на сервере в локальную папку Settings
             var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, CommonSettingsName));
             var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
@@ -174,7 +197,8 @@ namespace AutoCAD_PIK_Manager
         /// <summary>
         /// Копирование файлов настроек с сервера
         /// </summary>
-        public static List<UpdateFile> GetCopyedFiles(DirectoryInfo source, DirectoryInfo target, CancellationToken token, bool updateRequired)
+        public static List<UpdateFile> GetCopyedFiles(DirectoryInfo source, DirectoryInfo target, CancellationToken token,
+            bool updateRequired)
         {            
             if (source == null || !source.Exists) return null;
 

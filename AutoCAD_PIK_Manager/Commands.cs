@@ -120,7 +120,7 @@ namespace AutoCAD_PIK_Manager
                     //else
                     //{
                     //// Загрузка сбороки ГП                        
-                    //string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Acad.dll");
+                    //string gpdll = Path.Combine(PikSettings.LocalSettingsFolder, @"Script\NET\ГП\PIK_GP_Civil.dll");
                     //LoadDll.Load(gpdll);                        
                     //}
                 }

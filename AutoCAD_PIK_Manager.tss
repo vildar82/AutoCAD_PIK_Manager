@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<ArrayOfArrayOfArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ArrayOfArrayOfString>
+    <ArrayOfString>
+      <string>c:\dev\autocad_pik_manager\autocad_pik_manager\update\update.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>c:\dev\autocad_pik_manager\autocad_pik_manager\log\log.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>c:\dev\autocad_pik_manager\autocad_pik_manager\commands.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>c:\dev\autocad_pik_manager\updatepikmanager\program.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>c:\dev\autocad_pik_manager\autocad_pik_manager\model\profile.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>C:\dev\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\Settings\PikSettings.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.targets</string>
+    </ArrayOfString>
+  </ArrayOfArrayOfString>
+</ArrayOfArrayOfArrayOfString>
