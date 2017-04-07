@@ -69,6 +69,9 @@ namespace AutoCAD_PIK_Manager
                         {
                             updateInfo += $", {Settings.FlexBrics.FbName} '{verFBLocal}'";
                         }
+
+                        // Удаление пустых папок
+                        DeleteEmptyDirectory(Settings.PikSettings.LocalSettingsFolder);
                     }
                     else
                     {
@@ -83,7 +86,7 @@ namespace AutoCAD_PIK_Manager
                 if (!task.IsCompleted)
                 {
                     token.Cancel(true);
-                }
+                }               
             }
             catch { }            
         }
@@ -262,8 +265,8 @@ namespace AutoCAD_PIK_Manager
             }
             updateInfo += $" Удалены: " + string.Join(",", excessFiles.Select(s => s.Name)) + ".";
 
-            // Удаление путых папок
-            DeleteEmptyFolders(Settings.PikSettings.LocalSettingsFolder);
+            // Удаление пустых папок
+            //DeleteEmptyFolders(Settings.PikSettings.LocalSettingsFolder);
         }
 
         private static void DeleteEmptyFolders(string localSettingsFolder)
@@ -282,7 +285,7 @@ namespace AutoCAD_PIK_Manager
         /// <summary>
         /// Удаление папки локальных настроек
         /// </summary>
-        private static void deleteFilesRecursively(DirectoryInfo target)
+        private static void DeleteFilesRecursively(DirectoryInfo target)
         {
             if (target.Name.Equals(Commands.SystemDriveName, StringComparison.OrdinalIgnoreCase))
                 return;
@@ -302,7 +305,7 @@ namespace AutoCAD_PIK_Manager
                 }
                 catch
                 {
-                    deleteFilesRecursively(item);
+                    DeleteFilesRecursively(item);
                 }
             }
         }
@@ -336,6 +339,19 @@ namespace AutoCAD_PIK_Manager
                 return false;
             }
             return Settings.PikSettings.UserGroups.Contains(name, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static void DeleteEmptyDirectory(string startLocation)
+        {
+            foreach (var directory in Directory.GetDirectories(startLocation))
+            {
+                DeleteEmptyDirectory(directory);
+                if (!Directory.EnumerateFiles(directory).Any() &&
+                    !Directory.EnumerateDirectories(directory).Any())
+                {
+                    Directory.Delete(directory, false);
+                }
+            }
         }
     }
 }
