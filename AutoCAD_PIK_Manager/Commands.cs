@@ -163,6 +163,7 @@ namespace AutoCAD_PIK_Manager
         public void Terminate()
         {
             // Обновление программы (копирование AutoCAD_PIK_Manager.dll)
+            if (IsProcessAny()) return;
             string updater = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "UpdatePIKManager.exe");
             string sourceDllPikManager = string.Empty;
             string destDllPikManager = string.Empty;
@@ -185,15 +186,17 @@ namespace AutoCAD_PIK_Manager
             string roamableFolder = Autodesk.AutoCAD.DatabaseServices.HostApplicationServices.Current.RoamableRootFolder.TrimEnd(new char[] { '\\', '/' });
             string arg = string.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", sourceDllPikManager, destDllPikManager, roamableFolder, PikSettings.PikFileSettings.ProfileName);
             Log.Info("Запущена программа обновления UpdatePIKManager с аргументом: {0}", arg);
-            ProcessStartInfo startInfo = new ProcessStartInfo(updater);
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = arg;
+            var startInfo = new ProcessStartInfo(updater)
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Arguments = arg
+            };
             Process.Start(startInfo);
         }
 
         private static bool IsProcessAny()
         {
-            Process[] acadProcess = Process.GetProcessesByName("acad");
+            var acadProcess = Process.GetProcessesByName("acad");
             if (acadProcess.Count() > 1)
             {
                 Log.Info("Несколько процессов Acad = {0}", acadProcess.Count());
