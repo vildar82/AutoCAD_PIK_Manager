@@ -108,7 +108,7 @@ namespace AutoCAD_PIK_Manager
                 {
                     Profile profile = new Profile();
                     // Настройка профиля ПИК в автокаде
-                    if (PikSettings.UserGroup == "ГП")
+                    if (PikSettings.UserGroup.Contains("ГП"))
                     {
                         profile.SetProfilePIK = false;
                         profile.SetTemplate = false;
