@@ -10,7 +10,7 @@ namespace AutoCAD_PIK_Manager
 {
     public static class Update
     {
-        private static string CommonSettingsName = "Общие";
+        internal static string CommonSettingsName = "Общие";
         private static string updateInfo = string.Empty;
         private static string verCommonLocal;
         private static string verCommonServer;

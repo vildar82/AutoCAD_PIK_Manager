@@ -169,7 +169,8 @@ namespace AutoCAD_PIK_Manager
             string destDllPikManager = string.Empty;
             try
             {
-                sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, "Общие\\Dll\\AutoCAD_PIK_Manager.dll");
+                sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, 
+                    $"{Update.CommonSettingsName}\\Dll\\AutoCAD_PIK_Manager.dll");
             }
             catch
             {
