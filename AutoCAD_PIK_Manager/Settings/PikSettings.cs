@@ -30,6 +30,7 @@ namespace AutoCAD_PIK_Manager.Settings
         private static string _userGroup;
         private static List<string> _userGroups;
         public const string RegAppPath = @"Software\Vildar\AutoCAD_PIK_Manager";
+        public static string CommonSettingsName = "Общие";
 
         /// <summary>
         /// Путь до папки настроек на локальном компьютере: c:\Autodesk\AutoCAD\Pik\Settings
@@ -66,6 +67,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
         internal static void LoadSettings()
         {
+            
             _curDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             //Путь до папки Settings на локальном компьютере.
             _localSettingsFolder = Path.GetDirectoryName(_curDllLocation);
@@ -88,6 +90,10 @@ namespace AutoCAD_PIK_Manager.Settings
             if (_userGroup == "Нет")
             {
                 throw new Exceptions.NoGroupException();
+            }
+            if (IsUserTester())
+            {
+                CommonSettingsName = "Общие_Тест";
             }
             UserGroupsCombined = GetUserCombinedGroups();
             _userGroups = getUserGroups();
@@ -284,6 +290,15 @@ namespace AutoCAD_PIK_Manager.Settings
         private static List<string> GetUserCombinedGroups()
         {
             return UserGroup.Split(',').Select(s => s.Trim()).ToList();
+        }
+
+        public static bool IsUserTester()
+        {
+            if (UserGroup.IndexOf("тест", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -170,7 +170,7 @@ namespace AutoCAD_PIK_Manager
             try
             {
                 sourceDllPikManager = Path.Combine(PikSettings.ServerSettingsFolder, 
-                    $"{Update.CommonSettingsName}\\Dll\\AutoCAD_PIK_Manager.dll");
+                    $"{PikSettings.CommonSettingsName}\\Dll\\AutoCAD_PIK_Manager.dll");
             }
             catch
             {

@@ -10,7 +10,7 @@ namespace AutoCAD_PIK_Manager
 {
     public static class Update
     {
-        internal static string CommonSettingsName = "Общие";
+        
         private static string updateInfo = string.Empty;
         private static string verCommonLocal;
         private static string verCommonServer;
@@ -30,13 +30,6 @@ namespace AutoCAD_PIK_Manager
                     // Проверка доступности сетевых настроек
                     if (Directory.Exists(Settings.PikSettings.ServerSettingsFolder))
                     {
-                        // Проверка - если группа пользователя тестовая (слово тест в имени группы)
-                        isTester = DefineUserTester();
-                        if (isTester)
-                        {
-                            CommonSettingsName = $@"{CommonSettingsName}_Тест";
-                        }
-
                         // Копирование общих настроек                        
                         var filesToCopy = GetCopiedCommonFiles(token.Token);                        
                         
@@ -64,7 +57,7 @@ namespace AutoCAD_PIK_Manager
                         verCommonLocal = verCommonServer;
                         verUserGroupLocal = verUserGroupServer;
                         verFBLocal = verFBServer;
-                        updateInfo += $" Локальные версии: {CommonSettingsName} '{verCommonLocal}', Отдела '{verUserGroupLocal}'";
+                        updateInfo += $" Локальные версии: {Settings.PikSettings.CommonSettingsName} '{verCommonLocal}', Отдела '{verUserGroupLocal}'";
                         if (Settings.FlexBrics.HasFlexBrics())
                         {
                             updateInfo += $", {Settings.FlexBrics.FbName} '{verFBLocal}'";
@@ -89,16 +82,7 @@ namespace AutoCAD_PIK_Manager
                 }               
             }
             catch { }            
-        }
-
-        private static bool DefineUserTester()
-        {
-            if (Settings.PikSettings.UserGroup.IndexOf("тест", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-            return false;
-        }
+        }        
 
         public static string GetUpdateInfo()
         {
@@ -155,8 +139,8 @@ namespace AutoCAD_PIK_Manager
         private static List<UpdateFile> GetCopiedCommonFiles(CancellationToken token)
         {
             // Проверка версии общих настроек            
-            var updateRequired = !VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, CommonSettingsName + ".ver"),
-                Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{CommonSettingsName}\{CommonSettingsName}.ver"),
+            var updateRequired = !VersionsEqal(Path.Combine(Settings.PikSettings.LocalSettingsFolder, Settings.PikSettings.CommonSettingsName + ".ver"),
+                Path.Combine(Settings.PikSettings.ServerSettingsFolder, $@"{Settings.PikSettings.CommonSettingsName}\{Settings.PikSettings.CommonSettingsName}.ver"),
                 out verCommonLocal, out verCommonServer);
             if (!updateRequired)
             {
@@ -168,7 +152,7 @@ namespace AutoCAD_PIK_Manager
                 updateRequired = true;
             }
             // Копирование общих настроек из папки Общие на сервере в локальную папку Settings
-            var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, CommonSettingsName));
+            var serverCommonDir = new DirectoryInfo(Path.Combine(Settings.PikSettings.ServerSettingsFolder, Settings.PikSettings.CommonSettingsName));
             var localDir = new DirectoryInfo(Settings.PikSettings.LocalSettingsFolder);
             return GetCopyedFiles(serverCommonDir, localDir, token, updateRequired);                        
         }
