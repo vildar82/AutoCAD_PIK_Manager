@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 namespace AutoCAD_PIK_Manager
 {
     public static class Update
-    {
-        
+    {        
         private static string updateInfo = string.Empty;
         private static string verCommonLocal;
         private static string verCommonServer;
@@ -79,6 +78,7 @@ namespace AutoCAD_PIK_Manager
                 if (!task.IsCompleted)
                 {
                     token.Cancel(true);
+                    Log.Error("UpdateSettings - Превышено время копирования настроек с сервера. (больше 1 мин. 10 сек.)");
                 }               
             }
             catch { }            
