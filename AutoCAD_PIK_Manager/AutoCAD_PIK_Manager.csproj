@@ -98,9 +98,8 @@
       <HintPath>..\packages\AutoCAD.NET.20.0.0\lib\45\AdWindows.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="EPPlus, Version=4.0.5.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.4.0.5\lib\net20\EPPlus.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="EPPlus">
+      <HintPath>\\picompany.ru\root\dep_ort\8.САПР\технические данные\source\Dll\EPPlus.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
