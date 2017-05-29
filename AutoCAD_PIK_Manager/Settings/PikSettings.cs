@@ -91,10 +91,6 @@ namespace AutoCAD_PIK_Manager.Settings
             {
                 throw new Exceptions.NoGroupException();
             }
-            if (IsUserTester())
-            {
-                CommonSettingsName = "Общие_Тест";
-            }
             UserGroupsCombined = GetUserCombinedGroups();
             _userGroups = getUserGroups();
             _settingsGroupFile = LoadSettingsGroupFiles();            
@@ -294,11 +290,7 @@ namespace AutoCAD_PIK_Manager.Settings
 
         public static bool IsUserTester()
         {
-            if (UserGroup.IndexOf("тест", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-            return false;
+	        return UserGroup.IndexOf("тест", StringComparison.OrdinalIgnoreCase) >= 0;
         }
     }
 }
